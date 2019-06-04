@@ -1,0 +1,620 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>BMNETC 使用 &mdash; NNToolChain  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="BMNETT 使用" href="bmnett.html" />
+    <link rel="prev" title="NNToolChain 安装说明" href="../quickstart/install.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> NNToolChain
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart/abstract.html">NNToolChain 基本概念介绍</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart/abstract.html#id1">版本特性</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart/abstract.html#id2">NNToolChain 整体架构</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart/install.html">NNToolChain 安装说明</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart/install.html#pcie">PCIE模式安装</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart/install.html#soc">SoC模式安装</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">BMNETC 使用</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#caffe">编译Caffe模型</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#caffelayer">实现Caffe自定义Layer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#bmlang">基于BMLang开发</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="bmnett.html">BMNETT 使用</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bmnetm.html">BMNETM 使用</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bmnetp.html">BMNETP 使用</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bmlang.html">BMLang 说明</a></li>
+<li class="toctree-l1"><a class="reference internal" href="runtime.html">BMRuntime 使用</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bmodel.html">bmodel 使用</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../sample.html">示例代码</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">NNToolChain</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>BMNETC 使用</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/usage/bmnetc.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="bmnetc">
+<h1>BMNETC 使用<a class="headerlink" href="#bmnetc" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="caffe">
+<h2>编译Caffe模型<a class="headerlink" href="#caffe" title="Permalink to this headline">¶</a></h2>
+<p>BMNETC是针对caffe的模型编译器，可将某网络的caffemodel和prototxt编译
+成BMRuntime所需要的文件。而且在编译的同时，支持每一层的NPU模型计算结
+果都会和CPU的计算结果进行对比，保证正确性。下面介绍该编译器的使用方式。</p>
+<ol class="arabic">
+<li><p class="first">安装需求</p>
+<ul class="simple">
+<li>python 3.5.x</li>
+<li>linux</li>
+</ul>
+</li>
+<li><p class="first">配置步骤</p>
+<p>设置LD_LIBRARY_PATH。可以使用以下方式在当前shell中设置该库的路径，或者也可以选择将该路径的设置永久地添加到‘.bashrc’文件中，如下：</p>
+<p><code class="docutils literal notranslate"><span class="pre">export</span> <span class="pre">LD_LIBRARY_PATH=path_to_bmcompiler_lib:$</span> <span class="pre">LD_LIBRARY_PATH</span></code></p>
+</li>
+<li><p class="first">使用方法</p>
+<ol class="arabic simple">
+<li>方式一：命令形式</li>
+</ol>
+<p>Command name: bmnetc    - BMNet compiler command for Caffe model</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>/path/to/bmnetc <span class="o">[</span>--model<span class="o">=</span>&lt;path&gt;<span class="o">]</span> <span class="se">\</span>
+                <span class="o">[</span>--weight<span class="o">=</span>&lt;path&gt;<span class="o">]</span> <span class="se">\</span>
+                <span class="o">[</span>--shapes<span class="o">=</span>&lt;string&gt;<span class="o">]</span> <span class="se">\</span>
+                <span class="o">[</span>--net_name<span class="o">=</span>&lt;name&gt;<span class="o">]</span> <span class="se">\</span>
+                <span class="o">[</span>--opt<span class="o">=</span>&lt;value&gt;<span class="o">]</span> <span class="se">\</span>
+                <span class="o">[</span>--dyn<span class="o">=</span>&lt;bool&gt;<span class="o">]</span> <span class="se">\</span>
+                <span class="o">[</span>--outdir<span class="o">=</span>&lt;path&gt;<span class="o">]</span> <span class="se">\</span>
+                <span class="o">[</span>--target<span class="o">=</span>&lt;name&gt;<span class="o">]</span> <span class="se">\</span>
+                <span class="o">[</span>--cmp<span class="o">=</span>&lt;bool&gt;<span class="o">]</span> <span class="se">\</span>
+                <span class="o">[</span>--mode<span class="o">=</span>&lt;string&gt;<span class="o">]</span>
+</pre></div>
+</div>
+<p>参数介绍如下：</p>
+<p>其中mode为compile表示编译float模型。为GenUmodel表示生成BITMAIN定义的统一model，可后续通过BITMAIN定点化工具进行INT8定点化生成INT8 model。</p>
+<p>GenUmodel模式下，参数opt、dyn、target、cmp将没有意义，无需指定。</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="19%" />
+<col width="14%" />
+<col width="68%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">args</th>
+<th class="head">type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>model</td>
+<td>string</td>
+<td><strong>Necessary</strong>. Caffe prototxt path</td>
+</tr>
+<tr class="row-odd"><td>weight</td>
+<td>string</td>
+<td><strong>Necessary</strong>. Caffemodel(weight) path</td>
+</tr>
+<tr class="row-even"><td>shapes</td>
+<td>string</td>
+<td><strong>Optional</strong>. Shapes of all inputs, default use
+the shape in prototxt, format [x,x,x,x],[x,x]…,
+these correspond to inputs one by one in sequence</td>
+</tr>
+<tr class="row-odd"><td>net_name</td>
+<td>string</td>
+<td><strong>Optional</strong>. Name of the network, default use the
+name in prototxt</td>
+</tr>
+<tr class="row-even"><td>opt</td>
+<td>int</td>
+<td><strong>Optional</strong>. Optimization level. Option: 0, 1, 2,
+default 2.</td>
+</tr>
+<tr class="row-odd"><td>dyn</td>
+<td>bool</td>
+<td><strong>Optional</strong>. Use dynamic compilation, default false.</td>
+</tr>
+<tr class="row-even"><td>outdir</td>
+<td>string</td>
+<td><strong>Necessary</strong>. Output directory</td>
+</tr>
+<tr class="row-odd"><td>target</td>
+<td>string</td>
+<td><strong>Necessary</strong>. Option: BM1682, BM1684; default: BM1682</td>
+</tr>
+<tr class="row-even"><td>cmp</td>
+<td>bool</td>
+<td><strong>Optional</strong>.Check result during compilation.
+Default: true</td>
+</tr>
+<tr class="row-odd"><td>mode</td>
+<td>string</td>
+<td><strong>Optional</strong>. Set bmnetc mode. Option: compile,
+GenUmodel. Default: compile.</td>
+</tr>
+</tbody>
+</table>
+<p>examples:</p>
+<p>以下是编译float32的caffe model命令示例</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>/path/to/bmnetc --model<span class="o">=</span>/path/to/prototxt --weight<span class="o">=</span>/path/to/caffemodel --shapes<span class="o">=[</span><span class="m">1</span>,3,224,224<span class="o">]</span> --net_name<span class="o">=</span>resnet18 --outdir<span class="o">=</span>./resnet18 <span class="nv">target</span><span class="o">=</span>BM1682
+</pre></div>
+</div>
+<p>以下是生成Umodel的示例</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>/path/to/bmnetc --mode<span class="o">=</span>GenUmodel --model<span class="o">=</span>/path/to/prototxt --weight<span class="o">=</span>/path/to/caffemodel --shapes<span class="o">=[</span><span class="m">1</span>,3,224,224<span class="o">]</span> --net_name<span class="o">=</span>resnet18 --outdir<span class="o">=</span>./resnet18
+</pre></div>
+</div>
+<ol class="arabic simple" start="2">
+<li>方式二：python接口</li>
+</ol>
+<p>bmnetc的python接口如下, 需要pip3 install –user bmnetc-x.x.x-py2.py3-none-any.whl。</p>
+<p>以下是编译float32的caffe model的python接口。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">bmnetc</span>
+<span class="c1">## compile fp32 model</span>
+<span class="n">bmnetc</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+  <span class="n">model</span> <span class="o">=</span> <span class="s2">&quot;/path/to/prototxt&quot;</span><span class="p">,</span>    <span class="c1">## Necessary</span>
+  <span class="n">weight</span> <span class="o">=</span> <span class="s2">&quot;/path/to/caffemodel&quot;</span><span class="p">,</span> <span class="c1">## Necessary</span>
+  <span class="n">ourdir</span> <span class="o">=</span> <span class="s2">&quot;xxx&quot;</span><span class="p">,</span>                 <span class="c1">## Necessary</span>
+  <span class="n">target</span> <span class="o">=</span> <span class="s2">&quot;BM1682&quot;</span><span class="p">,</span>              <span class="c1">## Necessary</span>
+  <span class="n">shapes</span> <span class="o">=</span> <span class="p">[[</span><span class="n">x</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">x</span><span class="p">],</span> <span class="p">[</span><span class="n">x</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">x</span><span class="p">]],</span>  <span class="c1">## optional, if not set, default use shape in prototxt</span>
+  <span class="n">net_name</span> <span class="o">=</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span>              <span class="c1">## optional, if not set, default use the network name in prototxt</span>
+  <span class="n">opt</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>                        <span class="c1">## optional, if not set, default equal to 2</span>
+  <span class="n">dyn</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span>                    <span class="c1">## optional, if not set, default equal to False</span>
+  <span class="nb">cmp</span> <span class="o">=</span> <span class="bp">True</span>                      <span class="c1">## optional, if not set, default equal to True</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>以下是生成Umodel的python接口。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">bmnetc</span>
+<span class="c1">## Generate BITMAIN U model</span>
+<span class="n">bmnetc</span><span class="o">.</span><span class="n">GenUmodel</span><span class="p">(</span>
+  <span class="n">model</span> <span class="o">=</span> <span class="s2">&quot;/path/to/prototxt&quot;</span><span class="p">,</span>    <span class="c1">## Necessary</span>
+  <span class="n">weight</span> <span class="o">=</span> <span class="s2">&quot;/path/to/caffemodel&quot;</span><span class="p">,</span> <span class="c1">## Necessary</span>
+  <span class="n">ourdir</span> <span class="o">=</span> <span class="s2">&quot;xxx&quot;</span><span class="p">,</span>                 <span class="c1">## Necessary</span>
+  <span class="n">shapes</span> <span class="o">=</span> <span class="p">[[</span><span class="n">x</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">x</span><span class="p">],</span> <span class="p">[</span><span class="n">x</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">x</span><span class="p">]],</span>  <span class="c1">## optional, if not set, default use shape in prototxt</span>
+  <span class="n">net_name</span> <span class="o">=</span> <span class="s2">&quot;name&quot;</span>               <span class="c1">## optional, if not set, default use the network name in prototxt</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>以下是使用bmnetc python的例子：</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">bmnetc</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;../../../nnmodel/caffe_models/lenet/lenet_train_test_thin_4.prototxt&#39;</span>
+<span class="n">weight</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;../../../nnmodel/caffe_models/lenet/lenet_thin_iter_1000.caffemodel&#39;</span>
+<span class="n">target</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;BM1682&quot;</span>
+<span class="n">export_dir</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;./compilation&quot;</span>
+<span class="n">shapes</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">28</span><span class="p">,</span><span class="mi">28</span><span class="p">],[</span><span class="mi">1</span><span class="p">]]</span>
+
+<span class="n">bmnetc</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span><span class="p">,</span> <span class="n">weight</span> <span class="o">=</span> <span class="n">weight</span><span class="p">,</span> <span class="n">target</span> <span class="o">=</span> <span class="n">target</span><span class="p">,</span> <span class="n">outdir</span> <span class="o">=</span> <span class="n">export_dir</span><span class="p">,</span> <span class="n">shapes</span> <span class="o">=</span> <span class="n">shapes</span><span class="p">)</span>
+<span class="n">bmnetc</span><span class="o">.</span><span class="n">GenUmodel</span><span class="p">(</span><span class="n">weight</span> <span class="o">=</span> <span class="n">weight</span><span class="p">,</span> <span class="n">model</span> <span class="o">=</span> <span class="n">model</span><span class="p">,</span> <span class="n">net_name</span> <span class="o">=</span> <span class="s2">&quot;lenet&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</div>
+<div class="section" id="caffelayer">
+<h2>实现Caffe自定义Layer<a class="headerlink" href="#caffelayer" title="Permalink to this headline">¶</a></h2>
+<p>BMNetC前端下自定义layer实现的可编程环境为imp_bmnetc，该编程环境与Caffe相同。</p>
+<div class="section" id="bmlang">
+<h3>基于BMLang开发<a class="headerlink" href="#bmlang" title="Permalink to this headline">¶</a></h3>
+<p>BMLang是提供用户针对BMTPU编程的接口，所实现的算法可以在BMTPU中运行，详细见 <a class="reference internal" href="bmlang.html#bmlang"><span class="std std-ref">BMLang 说明</span></a> 。</p>
+<p>这里介绍如何在bmnetc编程环境下对自定义Layer和bmnetc未支持的layer进行TPU编程，并将BMLang实现的layer插入到网络中，与其他layer一起进行网络级的编译，生成网络的bmodel。</p>
+<p>以下是以exp layer为例介绍基于BMLang开发网络中未支持layer的步骤:</p>
+<ol class="arabic simple">
+<li>修改prototxt文件</li>
+</ol>
+<p>首先需要修改prototxt中bmnetc不支持的layer type的param。bmnetc提供给用户自定义layer的google proto parameters格式如下：</p>
+<blockquote>
+<div><div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">message</span> <span class="n">UserDefinedParameter</span> <span class="p">{</span>
+  <span class="n">repeated</span> <span class="kt">float</span> <span class="n">float_value</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+  <span class="n">repeated</span> <span class="n">string</span> <span class="n">string_value</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>修改.prototxt里面的type为Exp的layer param。caffe原版的Exp prototxt格式为：</p>
+<blockquote>
+<div><div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">layer</span> <span class="p">{</span>
+  <span class="nl">name</span><span class="p">:</span> <span class="s">&quot;exp&quot;</span>
+  <span class="nl">type</span><span class="p">:</span> <span class="s">&quot;Exp&quot;</span>
+  <span class="nl">bottom</span><span class="p">:</span> <span class="s">&quot;log&quot;</span>
+  <span class="nl">top</span><span class="p">:</span> <span class="s">&quot;usr&quot;</span>
+  <span class="n">exp_param</span> <span class="p">{</span>
+    <span class="nl">base</span><span class="p">:</span> <span class="mi">2</span>
+    <span class="nl">scale</span><span class="p">:</span> <span class="mi">2</span>
+    <span class="nl">shift</span><span class="p">:</span> <span class="mi">3</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>需要修改成：</p>
+<blockquote>
+<div><div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">layer</span> <span class="p">{</span>
+  <span class="nl">name</span><span class="p">:</span> <span class="s">&quot;exp&quot;</span>
+  <span class="nl">type</span><span class="p">:</span> <span class="s">&quot;Exp&quot;</span>
+  <span class="nl">bottom</span><span class="p">:</span> <span class="s">&quot;log&quot;</span>
+  <span class="nl">top</span><span class="p">:</span> <span class="s">&quot;usr&quot;</span>
+  <span class="n">user_defined_param</span> <span class="p">{</span>
+    <span class="nl">float_value</span><span class="p">:</span> <span class="mi">2</span>
+    <span class="nl">float_value</span><span class="p">:</span> <span class="mi">2</span>
+    <span class="nl">float_value</span><span class="p">:</span> <span class="mi">3</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+<ol class="arabic simple" start="2">
+<li>然后在imp_bmnetc的inclue和src里，加入exp layer的.hpp和.cpp代码文件。</li>
+</ol>
+<p>示例.hpp代码如下：</p>
+<blockquote>
+<div><div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#ifndef CAFFE_USER_DEFINED_LAYER_HPP_</span>
+<span class="cp">#define CAFFE_USER_DEFINED_LAYER_HPP_</span>
+
+<span class="cp">#include</span> <span class="cpf">&lt;vector&gt;</span><span class="cp"></span>
+
+<span class="cp">#include</span> <span class="cpf">&quot;bmnetc/blob.hpp&quot;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&quot;bmnetc/layer.hpp&quot;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&quot;bmnetc/proto/bmnetc.pb.h&quot;</span><span class="cp"></span>
+
+<span class="cp">#include</span> <span class="cpf">&quot;bmnetc/layers/neuron_layer.hpp&quot;</span><span class="cp"></span>
+
+<span class="k">namespace</span> <span class="n">bmnetc</span> <span class="p">{</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * @brief Computes @f$ y = \gamma ^ {\alpha x + \beta} @f$,</span>
+<span class="cm"> *        as specified by the scale @f$ \alpha @f$, shift @f$ \beta @f$,</span>
+<span class="cm"> *        and base @f$ \gamma @f$.</span>
+<span class="cm"> */</span>
+<span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">Dtype</span><span class="o">&gt;</span>
+<span class="k">class</span> <span class="nc">ExpLayer</span> <span class="o">:</span> <span class="k">public</span> <span class="n">NeuronLayer</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;</span> <span class="p">{</span>
+ <span class="k">public</span><span class="o">:</span>
+  <span class="cm">/**</span>
+<span class="cm">   * @param param provides UserDefinedParameter UserDefined_param,</span>
+<span class="cm">   *     with ExpLayer options:</span>
+<span class="cm">   */</span>
+  <span class="k">explicit</span> <span class="n">ExpLayer</span><span class="p">(</span><span class="k">const</span> <span class="n">LayerParameter</span><span class="o">&amp;</span> <span class="n">param</span><span class="p">)</span>
+      <span class="o">:</span> <span class="n">NeuronLayer</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;</span><span class="p">(</span><span class="n">param</span><span class="p">)</span> <span class="p">{}</span>
+  <span class="k">virtual</span> <span class="kt">void</span> <span class="n">LayerSetUp</span><span class="p">(</span><span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Blob</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;*&gt;&amp;</span> <span class="n">bottom</span><span class="p">,</span>
+      <span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Blob</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;*&gt;&amp;</span> <span class="n">top</span><span class="p">);</span>
+
+  <span class="k">virtual</span> <span class="kr">inline</span> <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="nf">type</span><span class="p">()</span> <span class="k">const</span> <span class="p">{</span> <span class="k">return</span> <span class="s">&quot;Exp&quot;</span><span class="p">;</span> <span class="p">}</span>
+
+ <span class="k">protected</span><span class="o">:</span>
+  <span class="cm">/**</span>
+<span class="cm">   * @param bottom input Blob vector (length 1)</span>
+<span class="cm">   *   -# @f$ (N \times C \times H \times W) @f$</span>
+<span class="cm">   *      the inputs @f$ x @f$</span>
+<span class="cm">   * @param top output Blob vector (length 1)</span>
+<span class="cm">   *   -# @f$ (N \times C \times H \times W) @f$</span>
+<span class="cm">   *      the computed outputs @f$</span>
+<span class="cm">   *        y = \gamma ^ {\alpha x + \beta}</span>
+<span class="cm">   *      @f$</span>
+<span class="cm">   */</span>
+  <span class="k">virtual</span> <span class="kt">void</span> <span class="n">CheckBlobCounts</span><span class="p">(</span><span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Blob</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;*&gt;&amp;</span> <span class="n">bottom</span><span class="p">,</span>
+      <span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Blob</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;*&gt;&amp;</span> <span class="n">top</span><span class="p">){};</span>
+  <span class="k">virtual</span> <span class="kt">void</span> <span class="nf">Forward_cpu</span><span class="p">(</span><span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Blob</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;*&gt;&amp;</span> <span class="n">bottom</span><span class="p">,</span>
+      <span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Blob</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;*&gt;&amp;</span> <span class="n">top</span><span class="p">);</span>
+  <span class="k">virtual</span> <span class="kt">void</span> <span class="nf">layer_deploy</span><span class="p">(</span><span class="kt">void</span><span class="o">*</span> <span class="n">p_bmcompiler</span><span class="p">,</span> <span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Blob</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;*&gt;&amp;</span> <span class="n">bottom</span><span class="p">,</span>
+      <span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Blob</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;*&gt;&amp;</span> <span class="n">top</span><span class="p">);</span>
+  <span class="k">virtual</span> <span class="kt">void</span> <span class="nf">Forward_bmtpu</span><span class="p">(</span><span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Blob</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;*&gt;&amp;</span> <span class="n">bottom</span><span class="p">,</span>
+    <span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Blob</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;*&gt;&amp;</span> <span class="n">top</span><span class="p">);</span>
+
+  <span class="kt">void</span> <span class="nf">bmtpu_module</span><span class="p">(</span><span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Blob</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;*&gt;&amp;</span> <span class="n">bottom</span><span class="p">,</span>
+    <span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Blob</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;*&gt;&amp;</span> <span class="n">top</span><span class="p">);</span>
+
+  <span class="n">Dtype</span> <span class="n">inner_scale_</span><span class="p">,</span> <span class="n">outer_scale_</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="p">}</span>  <span class="c1">// namespace bmnetc</span>
+
+<span class="cp">#endif</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>示例.cpp代码如下:</p>
+<p>其中，LayerSetup需要获取的是UserDefinedParameter，然后根据该UserDefinedParameter设置Exp Layer的变量。</p>
+<p>bmtpu_module是用BMLang对Exp编程的模块。</p>
+<p>Forward_bmtpu中，需要set_mode(BMLANG_COMPUTE)，表明使用cpu来模拟bmtpu_module的计算，以便于我们调试用BMLang对exp layer编程对不对。</p>
+<p>layer_deploy则需要set_mode(BMLANG_COMPILE)，此时进入compile模式。在运行bmnetc编译caffe model时，会进入layer_deploy函数，并生成可在BMTPU芯片运行的bmodel。</p>
+<blockquote>
+<div><div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;vector&gt;</span><span class="cp"></span>
+
+<span class="cp">#include</span> <span class="cpf">&quot;exp_layer.hpp&quot;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&quot;bmnetc/util/math_functions.hpp&quot;</span><span class="cp"></span>
+
+<span class="k">namespace</span> <span class="n">bmnetc</span> <span class="p">{</span>
+
+<span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">Dtype</span><span class="o">&gt;</span>
+<span class="kt">void</span> <span class="n">ExpLayer</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;::</span><span class="n">LayerSetUp</span><span class="p">(</span><span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Blob</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;*&gt;&amp;</span> <span class="n">bottom</span><span class="p">,</span>
+      <span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Blob</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;*&gt;&amp;</span> <span class="n">top</span><span class="p">)</span> <span class="p">{</span>
+  <span class="n">NeuronLayer</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;::</span><span class="n">LayerSetUp</span><span class="p">(</span><span class="n">bottom</span><span class="p">,</span> <span class="n">top</span><span class="p">);</span>
+  <span class="k">const</span> <span class="n">UserDefinedParameter</span><span class="o">&amp;</span> <span class="n">param</span> <span class="o">=</span> <span class="k">this</span><span class="o">-&gt;</span><span class="n">layer_param_</span><span class="p">.</span><span class="n">user_defined_param</span><span class="p">();</span>
+  <span class="k">const</span> <span class="n">Dtype</span> <span class="n">base</span> <span class="o">=</span> <span class="n">param</span><span class="p">.</span><span class="n">float_value</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">base</span> <span class="o">!=</span> <span class="n">Dtype</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span> <span class="p">{</span>
+    <span class="n">CHECK_GT</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;base must be strictly positive.&quot;</span><span class="p">;</span>
+  <span class="p">}</span>
+  <span class="c1">// If base == -1, interpret the base as e and set log_base = 1 exactly.</span>
+  <span class="c1">// Otherwise, calculate its log UserDefinedlicitly.</span>
+  <span class="k">const</span> <span class="n">Dtype</span> <span class="n">log_base</span> <span class="o">=</span> <span class="p">(</span><span class="n">base</span> <span class="o">==</span> <span class="n">Dtype</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span> <span class="o">?</span> <span class="n">Dtype</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">:</span> <span class="n">log</span><span class="p">(</span><span class="n">base</span><span class="p">);</span>
+  <span class="n">CHECK</span><span class="p">(</span><span class="o">!</span><span class="n">isnan</span><span class="p">(</span><span class="n">log_base</span><span class="p">))</span>
+      <span class="o">&lt;&lt;</span> <span class="s">&quot;NaN result: log(base) = log(&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">base</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;) = &quot;</span> <span class="o">&lt;&lt;</span> <span class="n">log_base</span><span class="p">;</span>
+  <span class="n">CHECK</span><span class="p">(</span><span class="o">!</span><span class="n">isinf</span><span class="p">(</span><span class="n">log_base</span><span class="p">))</span>
+      <span class="o">&lt;&lt;</span> <span class="s">&quot;Inf result: log(base) = log(&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">base</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;) = &quot;</span> <span class="o">&lt;&lt;</span> <span class="n">log_base</span><span class="p">;</span>
+  <span class="k">const</span> <span class="n">Dtype</span> <span class="n">input_scale</span> <span class="o">=</span> <span class="n">param</span><span class="p">.</span><span class="n">float_value</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+  <span class="k">const</span> <span class="n">Dtype</span> <span class="n">input_shift</span> <span class="o">=</span> <span class="n">param</span><span class="p">.</span><span class="n">float_value</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
+  <span class="n">inner_scale_</span> <span class="o">=</span> <span class="n">log_base</span> <span class="o">*</span> <span class="n">input_scale</span><span class="p">;</span>
+  <span class="n">outer_scale_</span> <span class="o">=</span> <span class="p">(</span><span class="n">input_shift</span> <span class="o">==</span> <span class="n">Dtype</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span> <span class="o">?</span> <span class="n">Dtype</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">:</span>
+     <span class="p">(</span> <span class="p">(</span><span class="n">base</span> <span class="o">!=</span> <span class="n">Dtype</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span> <span class="o">?</span> <span class="n">pow</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="n">input_shift</span><span class="p">)</span> <span class="o">:</span> <span class="n">exp</span><span class="p">(</span><span class="n">input_shift</span><span class="p">)</span> <span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">Dtype</span><span class="o">&gt;</span>
+<span class="kt">void</span> <span class="n">ExpLayer</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;::</span><span class="n">Forward_cpu</span><span class="p">(</span><span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Blob</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;*&gt;&amp;</span> <span class="n">bottom</span><span class="p">,</span>
+    <span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Blob</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;*&gt;&amp;</span> <span class="n">top</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">const</span> <span class="kt">int</span> <span class="n">count</span> <span class="o">=</span> <span class="n">bottom</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-&gt;</span><span class="n">count</span><span class="p">();</span>
+  <span class="k">const</span> <span class="n">Dtype</span><span class="o">*</span> <span class="n">bottom_data</span> <span class="o">=</span> <span class="n">bottom</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-&gt;</span><span class="n">cpu_data</span><span class="p">();</span>
+  <span class="n">Dtype</span><span class="o">*</span> <span class="n">top_data</span> <span class="o">=</span> <span class="n">top</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-&gt;</span><span class="n">mutable_cpu_data</span><span class="p">();</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">inner_scale_</span> <span class="o">==</span> <span class="n">Dtype</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span> <span class="p">{</span>
+    <span class="n">bmnetc_exp</span><span class="p">(</span><span class="n">count</span><span class="p">,</span> <span class="n">bottom_data</span><span class="p">,</span> <span class="n">top_data</span><span class="p">);</span>
+  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+    <span class="n">bmnetc_cpu_scale</span><span class="p">(</span><span class="n">count</span><span class="p">,</span> <span class="n">inner_scale_</span><span class="p">,</span> <span class="n">bottom_data</span><span class="p">,</span> <span class="n">top_data</span><span class="p">);</span>
+    <span class="n">bmnetc_exp</span><span class="p">(</span><span class="n">count</span><span class="p">,</span> <span class="n">top_data</span><span class="p">,</span> <span class="n">top_data</span><span class="p">);</span>
+  <span class="p">}</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">outer_scale_</span> <span class="o">!=</span> <span class="n">Dtype</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span> <span class="p">{</span>
+    <span class="n">bmnetc_scal</span><span class="p">(</span><span class="n">count</span><span class="p">,</span> <span class="n">outer_scale_</span><span class="p">,</span> <span class="n">top_data</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">Dtype</span><span class="o">&gt;</span>
+<span class="kt">void</span> <span class="n">ExpLayer</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;::</span><span class="n">layer_deploy</span><span class="p">(</span><span class="kt">void</span><span class="o">*</span> <span class="n">p_bmcompiler</span><span class="p">,</span>
+        <span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Blob</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;*&gt;&amp;</span> <span class="n">bottom</span><span class="p">,</span>
+        <span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Blob</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;*&gt;&amp;</span> <span class="n">top</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="cp">#if defined(BMCOMPILE) &amp;&amp; defined(BMLANG)</span>
+  <span class="n">set_mode</span><span class="p">(</span><span class="n">BMLANG_COMPILE</span><span class="p">);</span>
+  <span class="n">bmtpu_module</span><span class="p">(</span><span class="n">bottom</span><span class="p">,</span><span class="n">top</span><span class="p">);</span>
+<span class="cp">#endif</span>
+<span class="p">}</span>
+
+<span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">Dtype</span><span class="o">&gt;</span>
+<span class="kt">void</span> <span class="n">ExpLayer</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;::</span><span class="n">Forward_bmtpu</span><span class="p">(</span><span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Blob</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;*&gt;&amp;</span> <span class="n">bottom</span><span class="p">,</span>
+    <span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Blob</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;*&gt;&amp;</span> <span class="n">top</span><span class="p">)</span> <span class="p">{</span>
+<span class="cp">#if defined(BMCOMPILE) &amp;&amp; defined(BMLANG)</span>
+  <span class="n">set_mode</span><span class="p">(</span><span class="n">BMLANG_COMPUTE</span><span class="p">);</span>
+  <span class="n">bmtpu_module</span><span class="p">(</span><span class="n">bottom</span><span class="p">,</span><span class="n">top</span><span class="p">);</span>
+<span class="cp">#endif</span>
+<span class="p">}</span>
+
+<span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">Dtype</span><span class="o">&gt;</span>
+<span class="kt">void</span> <span class="n">ExpLayer</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;::</span><span class="n">bmtpu_module</span><span class="p">(</span><span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Blob</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;*&gt;&amp;</span> <span class="n">bottom</span><span class="p">,</span>
+    <span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Blob</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;*&gt;&amp;</span> <span class="n">top</span><span class="p">)</span> <span class="p">{</span>
+<span class="cp">#if defined(BMCOMPILE) &amp;&amp; defined(BMLANG)</span>
+    <span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;</span> <span class="n">bottom_tensor</span><span class="p">(</span><span class="k">this</span><span class="o">-&gt;</span><span class="n">layer_param_</span><span class="p">.</span><span class="n">bottom</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span><span class="n">bottom</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-&gt;</span><span class="n">shape</span><span class="p">());</span>
+    <span class="n">bottom_tensor</span><span class="p">.</span><span class="n">set_data</span><span class="p">(</span><span class="n">bottom</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-&gt;</span><span class="n">cpu_data</span><span class="p">());</span>
+    <span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;</span> <span class="n">top_tensor</span><span class="p">(</span><span class="k">this</span><span class="o">-&gt;</span><span class="n">layer_param_</span><span class="p">.</span><span class="n">top</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span><span class="n">top</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-&gt;</span><span class="n">shape</span><span class="p">());</span>
+    <span class="n">top_tensor</span><span class="p">.</span><span class="n">set_data</span><span class="p">(</span><span class="n">top</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-&gt;</span><span class="n">cpu_data</span><span class="p">());</span>
+
+    <span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;</span> <span class="n">coeff_tensor</span><span class="p">(</span><span class="s">&quot;coef&quot;</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">);</span>
+    <span class="n">coeff_tensor</span><span class="p">.</span><span class="n">set_tensor_type</span><span class="p">(</span><span class="n">COEFF_TENSOR</span><span class="p">);</span>
+    <span class="n">coeff_tensor</span><span class="p">.</span><span class="n">data</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">inner_scale_</span><span class="p">;</span>
+    <span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;</span> <span class="n">mul_tensor</span><span class="p">(</span><span class="s">&quot;mul_res&quot;</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">inner_scale_</span> <span class="o">!=</span> <span class="n">Dtype</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span> <span class="p">{</span>
+      <span class="n">bm_mul</span><span class="p">(</span><span class="n">bottom_tensor</span><span class="p">,</span><span class="n">coeff_tensor</span><span class="p">,</span><span class="n">mul_tensor</span><span class="p">);</span>
+    <span class="p">}</span><span class="k">else</span><span class="p">{</span>
+      <span class="n">bm_setdata</span><span class="p">(</span><span class="n">bottom_tensor</span><span class="p">,</span><span class="n">top_tensor</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="n">bm_active</span><span class="p">(</span><span class="n">mul_tensor</span><span class="p">,</span><span class="n">top_tensor</span><span class="p">,</span><span class="n">ACTIVE_EXP</span><span class="p">);</span>
+
+    <span class="n">coeff_tensor</span><span class="p">.</span><span class="n">data</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">outer_scale_</span><span class="p">;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">outer_scale_</span> <span class="o">!=</span> <span class="n">Dtype</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span> <span class="p">{</span>
+      <span class="n">bm_mul</span><span class="p">(</span><span class="n">top_tensor</span><span class="p">,</span><span class="n">coeff_tensor</span><span class="p">,</span><span class="n">top_tensor</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="cp">#endif</span>
+<span class="p">}</span>
+
+<span class="n">INSTANTIATE_CLASS</span><span class="p">(</span><span class="n">ExpLayer</span><span class="p">);</span>
+<span class="n">REGISTER_LAYER_CLASS</span><span class="p">(</span><span class="n">Exp</span><span class="p">);</span>
+
+<span class="p">}</span>  <span class="c1">// namespace bmnetc</span>
+</pre></div>
+</div>
+</div></blockquote>
+<ol class="arabic" start="3">
+<li><p class="first">完成代码后，在imp_bmnetc下source build.sh即可编译，将生成的libimpbmnetc.so通过以下命令加入到LD_LIBRARY_PATH中。</p>
+<p><code class="docutils literal notranslate"><span class="pre">export</span> <span class="pre">LD_LIBRARY_PATH=path_to_libimpbmnetc:$</span> <span class="pre">LD_LIBRARY_PATH</span></code></p>
+</li>
+<li><p class="first">启动bmnetc编译该caffe model，其中prototxt为修改后的，.caffemodel为已经用原版.prototxt训练好的。最终生成bmodel，在bmruntime时可将bmodel下发到BMTPU芯片中运行。</p>
+</li>
+<li><p class="first">我们也可以对BMLang程序进行单元测试并调试，看bmlang描述的计算模式对不对。可以写一个test程序，创建该ExpLayer，设置参数，启动Forward_cpu()，再启动Forward_tpu()，对比两个的结果是否相同。如果不同，则对bmtpu_module中的程序进行调试并修改。</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="bmnett.html" class="btn btn-neutral float-right" title="BMNETT 使用" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="../quickstart/install.html" class="btn btn-neutral float-left" title="NNToolChain 安装说明" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Sophon
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

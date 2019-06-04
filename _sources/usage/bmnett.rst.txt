@@ -1,0 +1,121 @@
+BMNETT 使用
+===========
+
+BMNETT是针对tensorflow的模型编译器，在该device下创建graph，可以被编译成BMRuntime所需的文件。而且在编译graph的同时，可选择将每一个操作的NPU模型计算结果和CPU的计算结果进行对比，保证正确性。下面分别介绍该编译器的安装需求、安装步骤和使用方法。
+
+1. 安装需求
+
+   * python 2.7.x
+   * tensorflow>1.9.0
+   * linux 
+
+2. 安装步骤
+
+安装该编译器的安装包。选择以下命令其一使用。使用命令（1）则安装在本地目录中，不需要root权限，而命令（2）则安装在系统目录中，需要root权限。
+
+``pip install --user bmnett-x.x.x-py2.py3-none-any.whl``
+
+``pip install bmnett-x.x.x-py2.py3-none-any.whl`` 
+
+设置LD_LIBRARY_PATH。可以使用以下方式在当前shell中设置该库的路径，或者也可以选择将该路径的设置永久地添加到 .bashrc 文件中。
+
+``export LD_LIBRARY_PATH=path_to_bmcompiler_lib``
+
+3. 使用方法
+
+   1. 方式一：命令形式
+
+   Command name: python -m bmnett    - BMNet compiler command for TensorFlow model
+
+   .. code-block:: shell
+
+     python -m bmnett  [--model=<path>] \
+                       [--input_names=<string>] \
+                       [--shapes=<string>] \
+                       [--output_names=<string>] \
+                       [--net_name=<name>] \
+                       [--opt=<value>] \
+                       [--dyn=<bool>] \
+                       [--outdir=<path>] \
+                       [--target=<name>] \
+                       [--cmp=<bool>] \
+                       [--mode=<string>]
+
+   参数介绍如下：
+
+   其中mode为compile表示编译float模型。为GenUmodel表示生成BITMAIN定义的统一model，可后续通过BITMAIN定点化工具进行INT8定点化生成INT8 model。
+   为summay或者show模式表示显示网络graph。
+   
+   GenUmodel模式下，参数opt、dyn、target、cmp将没有意义，无需指定。
+
+   +---------------+-----------+-------------------------------------------------------+
+   |    args       |    type   |                   Description                         |
+   +===============+===========+=======================================================+
+   |    model      |  string   | **Necessary**. Tensorflow .pb path                    |
+   +---------------+-----------+-------------------------------------------------------+
+   |  input_names  |  string   | **Necessary**. Set name of all network inputs one by  |
+   |               |           | one in sequence. Format "name1,name2,name3"           |
+   +---------------+-----------+-------------------------------------------------------+
+   |               |           | **Necessary**. Shapes of all inputs, default use      |
+   |    shapes     |  string   | the shape in prototxt, format [x,x,x,x],[x,x]…,       |
+   |               |           | these correspond to inputs one by one in sequence     |
+   +---------------+-----------+-------------------------------------------------------+
+   | output_names  |  string   | **Necessary**. Set name of all network outputs one by |
+   |               |           | one in sequence. Format "name1,name2,name2"           |
+   +---------------+-----------+-------------------------------------------------------+
+   |    net_name   |  string   | **Necessary**. Name of the network, default use the   |
+   |               |           | name in prototxt                                      |
+   +---------------+-----------+-------------------------------------------------------+
+   |      opt      |   int     | **Optional**. Optimization level. Option: 0, 1, 2,    |
+   |               |           | default 1.                                            |
+   +---------------+-----------+-------------------------------------------------------+
+   |      dyn      |   bool    | **Optional**. Use dynamic compilation, default false. |
+   +---------------+-----------+-------------------------------------------------------+
+   |     outdir    |  string   | **Necessary**. Output directory                       |
+   +---------------+-----------+-------------------------------------------------------+
+   |     target    |  string   | **Necessary**. Option: BM1682, BM1684; default: BM1682|
+   +---------------+-----------+-------------------------------------------------------+
+   |      cmp      |   bool    | **Optional**.Check result during compilation.         |
+   |               |           | Default: true                                         |
+   +---------------+-----------+-------------------------------------------------------+
+   |     mode      |  string   | **Optional**. Set bmnetc mode. Option: compile,       |
+   |               |           | GenUmodel, summary, show. Default: compile.           |
+   +---------------+-----------+-------------------------------------------------------+
+
+   2. 方式二：python接口
+
+
+   bmnett编译float32 tf model的python接口如下：
+
+   .. code-block:: python
+
+      import bmnett
+      ## compile fp32 model
+      bmnett.compile(
+        model = "/path/to/.pb",         ## Necessary
+        ourdir = "xxx",                 ## Necessary
+        target = "BM1682"               ## Necessary
+        shapes = [[x,x,x,x], [x,x,x]],  ## Necessary
+        net_name = "name",              ## Necessary
+        input_names=["name1", "name2"], ## Necessary
+        output_names=["out_name1", "out_name2"], ## Necessary
+        opt = 2,                        ## optional, if not set, default equal to 1
+        dyn = False,                    ## optional, if not set, default equal to False
+        cmp = True                      ## optional, if not set, default equal to True
+      )
+
+   bmnett转化float32 tf model为BITMAIN U Model的python接口如下：
+
+   .. code-block:: python
+
+      import bmnett
+      ## compile fp32 model
+      bmnett.GenUmodel(
+        model = "/path/to/.pb",         ## Necessary
+        ourdir = "xxx",                 ## Necessary
+        shapes = [[x,x,x,x], [x,x,x]],  ## Necessary
+        net_name = "name",              ## Necessary
+        input_names=["name1", "name2"], ## Necessary
+        output_names=["out_name1", "out_name2"] ## Necessary
+      )
+

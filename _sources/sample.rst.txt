@@ -1,0 +1,419 @@
+示例代码
+========
+
+BMLang Examples
+_________________
+
+Example with BMLang Python
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+This example implements the standard LSTM algorithm independently. 
+BMLang has two mode: COMPILE mode and DEBUG mode. DEBUG mode is for checking whether the BMLang program is correct or not. COMPILE mode is to generate bmodel. 
+After COMPILE mode, we can use the BMRuntime to run this lstm bmodel in BMTPU device.
+
+.. code-block:: python
+
+  #!/usr/bin/env python
+  
+  import numpy as np
+  from bmlang import *
+  
+  class Lstm:
+    def __init__(self, x_len, h_len):
+      self.x_len = x_len
+      self.h_len = h_len
+
+      ## Vector for recording the reference data, it is of use when using BMLANG_BOTH
+      ## We can check the result during compiling
+      ## Here is optional 
+      # self.refTenVec = bmtfPtrVector()
+      # self.inpTenVec = bmtfPtrVector()
+
+      ## get the coefficient data
+      self.Ui, self.Wi, self.Bi = self.init_coeff('lstm_coeff_i')  
+      self.Uf, self.Wf, self.Bf = self.init_coeff('lstm_coeff_f')
+      self.Uo, self.Wo, self.Bo = self.init_coeff('lstm_coeff_o')
+      self.Ug, self.Wg, self.Bg = self.init_coeff('lstm_coeff_g') 
+    
+    def init_coeff(self, coeff_name):
+      uSize = self.x_len * self.h_len
+      wSize = self.h_len * self.h_len
+      bSize = self.h_len
+      ## Here we use random data. In fact, here should use real trained data
+      u = np.random.uniform(-np.sqrt(1.0 / self.x_len), np.sqrt(1.0 / self.x_len), uSize)
+      w = np.random.uniform(-np.sqrt(1.0 / self.h_len), np.sqrt(1.0 / self.h_len), wSize)
+      b = np.random.uniform(-np.sqrt(1.0 / self.h_len), np.sqrt(1.0 / self.h_len), bSize)
+      bmlang_print('u = ', u)
+      bmlang_print('w = ', w)
+      bmlang_print('b = ', b)
+      uArray = floatArray(uSize)
+      wArray = floatArray(wSize)
+      bArray = floatArray(bSize)
+      for ui in range(0, uSize):
+        uArray[ui] = float(u[ui])
+      for wi in range(0, wSize):
+        wArray[wi] = float(w[wi])
+      for bi in range(0, bSize):
+        bArray[bi] = float(b[bi])
+
+      ## Create coefficient tensors, including uTensor, wTensor and bTensor
+      ## A bmtensor_float params include the name and shapes.
+      ## the shape dimension can be 8 at most
+      uTensor = bmtensor_float(coeff_name + '_u', self.x_len, self.h_len)
+      wTensor = bmtensor_float(coeff_name + '_w', self.h_len, self.h_len)
+      bTensor = bmtensor_float(coeff_name + '_b', 1, self.h_len)
+      ## declare these tensors are coefficient tensor
+      ## This mean these data are fixed
+      ## If not declare, this data must feed during runtime
+      uTensor.set_tensor_type(COEFF_TENSOR)
+      wTensor.set_tensor_type(COEFF_TENSOR)
+      bTensor.set_tensor_type(COEFF_TENSOR)
+      ## feed data to these tensors
+      uTensor.fill_data(uArray)
+      wTensor.fill_data(wArray)
+      bTensor.fill_data(bArray)
+      return uTensor, wTensor, bTensor
+
+    ## The following is the LSTM computation decribed by BMLang Operators
+    def forward(self, x, T):
+      ## Create come intermediate bmtensors for computation
+      ## We must set the name, but we can not always set shapes
+      ## because the shapes of these intermediate tensors can be inferred
+      iTensor = bmtensor_float('i_tensor')
+      fTensor = bmtensor_float('f_tensor')
+      oTensor = bmtensor_float('o_tensor')
+      gTensor = bmtensor_float('g_tensor')
+      tmpTensor = bmtensor_float('tmp_tensor')
+      
+      ## Create input x tensor, the shape must be set, because it is the input
+      xTensor = bmtensor_float('x_tensor', 1, self.x_len * T)
+      ## filling the data for input
+      xTensor.set_data(x)
+      ## create a vector to save multiple bm_tensors
+      xTenVec = bmtfPtrVector()
+      s_op_t = SPLIT_OP_t() ## OP to use bm_split_float
+      s_size = intArray(T)  ## a int array
+      xTenList = []
+      for i in range(0, T):
+        s_xTensor = bmtensor_float('x_tensor_' + str(i), 1, self.x_len)
+        xTenList.append(s_xTensor)
+        xTenVec.push_back(xTenList[i].this)
+      s_size[0] = T
+      s_op_t.size = s_size
+      #s_op_t.num = T
+      s_op_t.num = 1
+      s_op_t.axis_ = 1
+  
+      bm_split_float(xTensor, xTenVec, s_op_t)
+
+      ## Create other intermediate tensors
+      inpTenList = []
+      inpTenList.append(xTensor)
+      phTensor = bmtensor_float('h_tensor_t-1', 1, self.h_len)
+      inpTenList.append(phTensor)
+      pcTensor = bmtensor_float('c_tensor_t-1', 1, self.h_len)
+      inpTenList.append(pcTensor)
+      
+      ## Recode the input data, it is of use when using BMLANG_BOTH
+      ## We can check the result during compiling
+      ## Here is optional 
+      # for j in range(len(inpTenList)):
+      #  self.inpTenVec.push_back(inpTenList[j].this)
+  
+      hTenList = []
+      for t in range(0, T):
+        hTensor = bmtensor_float('h_tensor_t' + str(t), 1, self.h_len)
+        cTensor = bmtensor_float('c_tensor_t' + str(t), 1, self.h_len)
+  
+        bm_matrixmul_float(xTenVec[t], self.Ui, self.Bi, iTensor)
+        bm_matrixmul_float(phTensor, self.Wi, tmpTensor)
+        bm_add_float(iTensor, tmpTensor, iTensor)
+        bm_active_float(iTensor, iTensor, ACTIVE_SIGMOID)
+  
+        bmlang_print('i gate: ', iTensor.data_at(0, 0))
+  
+        bm_matrixmul_float(xTenVec[t], self.Uf, self.Bf, fTensor)
+        bm_matrixmul_float(phTensor, self.Wf, tmpTensor)
+        bm_add_float(fTensor, tmpTensor, fTensor)
+        bm_active_float(fTensor, fTensor, ACTIVE_SIGMOID)
+  
+        bm_matrixmul_float(xTenVec[t], self.Uo, self.Bo, oTensor)
+        bm_matrixmul_float(phTensor, self.Wo, tmpTensor)
+        bm_add_float(oTensor, tmpTensor, oTensor)
+        bm_active_float(oTensor, oTensor, ACTIVE_SIGMOID)  
+  
+        bm_matrixmul_float(xTenVec[t], self.Ug, self.Bg, gTensor)
+        bm_matrixmul_float(phTensor, self.Wg, tmpTensor)
+        bm_add_float(gTensor, tmpTensor, gTensor)
+        bm_active_float(gTensor, gTensor, ACTIVE_TANH) 
+  
+        bmlang_print('g gate: ', gTensor.data_at(0, 0))
+  
+        bm_mul_float(pcTensor, fTensor, cTensor)
+        bm_mul_float(gTensor, iTensor, tmpTensor)
+        bm_add_float(cTensor, tmpTensor, cTensor)
+  
+        bmlang_print('c tensor: ', cTensor.data_at(0, 0))
+  
+        bm_active_float(cTensor, tmpTensor, ACTIVE_TANH)
+        bm_mul_float(tmpTensor, oTensor, hTensor)
+  
+        bmlang_print('h tensor: ', hTensor.data_at(0, 0))
+  
+        phTensor = bmtensor_float(hTensor)
+        pcTensor = bmtensor_float(cTensor)
+  
+        hTenList.append(hTensor)
+
+      ## Recode the reference data, it is of use when using BMLANG_BOTH
+      ## We can check the result during compiling
+      ## Here is optional 
+      ## for i in range(len(hTenList)):
+      ##   self.refTenVec.push_back(hTenList[i].this)
+  
+      return hTenList
+
+  def compile(self):
+    ## It is of use when using BMLANG_BOTH, it can check result when compiling
+    ## When using this, we must turn on sefl.inpTenVec and self.refTenVec above
+    # bmlang_compile_with_result_check('lstm', 2, True, self.inpTenVec, self.refTenVec)
+
+    ## The funciton only compile, and generate bmodel
+    bmlang_compile('lstm', 2, True)
+
+  def forward_cpu(self, x, T):
+    ## Here we can call the cpu implementation for lstm
+    ## This is only for debug whether lstm BMLang computation is corrent or wrong
+    result = lstm(x, T)
+    return result
+  
+  PYBMLANG_DEBUG = False
+  def bmlang_print(*arg):
+    if PYBMLANG_DEBUG: 
+      print('PYBMLANG LOG: ', *arg, end = "\n\n")
+    else:
+      pass
+
+  def debug_mode(lstm, x, T):
+    set_mode(BMLANG_COMPILE) # This only compile
+    ## set_mode(BMLANG_BOTH) # This can compile and compare the results
+    oupList = lstm.forward(inpArray, T)
+    ref = lstm.forward_cpu(inpArray, T)
+    correct = compare_data(oupList, ref)
+    if correct is True:
+      print("LSTM with bmlang is right.")
+    else :
+      print("LSTM with bmlang compuation is wrong")
+
+  def compile_mode(lstm, x, T):
+    set_mode(BMLANG_COMPUTE) # This is only for debug whether BMLANG lstm is right or not
+    oupList = lstm.forward(inpArray, T)
+    lstm.compile()
+
+  def lstm_main(xLen, hLen, T, mode):
+    ## initialize the bmlang 
+    bmlang_init('BM1682', BMLANG_BOTH)
+    inp = np.random.uniform(-10, 10, xLen * T)
+    #inp = np.ones(xLen)
+    bmlang_print(inp)
+    inpArray = floatArray(xLen * T)
+    for i in range(0, xLen * T):
+      inpArray[i] = float(inp[i]) 
+    lstm = Lstm(xLen, hLen)
+    if mode == "compile":
+      compile_mode(lstm, inpArray, T)
+    else :
+      debug_mode(lstm, inpArray, T)
+    ## finish bmlang independently
+    bmlang_deinit()
+  
+  if __name__ == '__main__':
+    lstm_main(1056, 896, 10, "compile")
+    bmlang_print('LSTM IS FINISHED!')
+
+
+
+
+BMRuntime examples
+______________________________
+
+Example with basic C interface
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+该example读取网络的reference输入数据，启动inference，最后将TPU inference结果与reference输出数据进行比对。
+
+.. code-block:: c++
+
+  void bmrt_test()
+  {
+    //create bmruntime
+    void* p_bmrt = create_bmrt_helper(NULL, CHIPNAME.c_str(), dev_id);
+  
+    // load bmodel
+    string bmodel_path = CONTEXT_DIR + "/compilation.bmodel";
+    bool flag = bmrt_load_bmodel(p_bmrt, bmodel_path.c_str());
+    if(!flag) {
+      printf("Load bmodel[%s] failed\n", bmodel_path.c_str());
+      exit(-1);
+    }
+  
+    //get network number
+    int net_num = bmrt_get_network_number(p_bmrt);
+  
+    char **net_names;
+    bmrt_get_network_names(p_bmrt, (const char***)&net_names);
+    string input_ref_dir = CONTEXT_DIR + "/" + INPUT_REF_DATA;
+    string output_ref_dir = CONTEXT_DIR + "/" + OUTPUT_REF_DATA;
+  
+    FILE* f_input_ref = fopen(input_ref_dir.c_str(), "rb");
+    if(f_input_ref == NULL) {
+      printf("Error: cannot open file %s\n", input_ref_dir.c_str());
+      exit(-1);
+    }
+    FILE* f_output_ref = fopen(output_ref_dir.c_str(), "rb");
+    if(f_output_ref == NULL) {
+      printf("Error: cannot open file %s\n", output_ref_dir.c_str());
+      exit(-1);
+    }
+  
+    const char** input_tensor_names = NULL;
+    int input_tensor_num = 0;
+    const char** output_tensor_names = NULL;
+    int output_tensor_num = 0;
+    for(int net_idx = 0; net_idx < net_num; ++net_idx) {
+      printf("==> running network #%d: '%s'\n",net_idx, net_names[net_idx]);
+      //get input tensor and output tensor info
+      bmrt_get_input_tensor(p_bmrt, net_idx, NULL, &input_tensor_num, &input_tensor_names);
+      bmrt_get_output_tensor(p_bmrt, net_idx, NULL, &output_tensor_num, &output_tensor_names);
+  
+      //alloc input memory
+      int8_t** host_input_data = (int8_t**)(new int8_t* [input_tensor_num]);
+      bm_device_mem_t* dev_input_data = new bm_device_mem_t [input_tensor_num];
+      int in = 0, ic = 0, ih = 0, iw = 0;
+      int* input_dim = new int [input_tensor_num];
+      int* input_shape = new int [input_tensor_num * 4];
+      for(int i = 0; i < input_tensor_num; ++i) {
+        //get the shape of the input tensor
+        bmrt_get_input_blob_max_nhw(p_bmrt, input_tensor_names[i], net_idx, NULL, &in, &ic, &ih, &iw);
+        input_dim[i] = 4;
+        input_shape[4*i + 0] = in;
+        input_shape[4*i + 1] = ic;
+        input_shape[4*i + 2] = ih;
+        input_shape[4*i + 3] = iw;
+        //get the data type of the input tensor
+        int i_dtype = bmrt_get_input_data_type(p_bmrt, input_tensor_names[i], net_idx, NULL);
+        //malloc host memory for input data
+        host_input_data[i] = new int8_t [in * ic * ih * iw * dtype_size(i_dtype)];
+        //read input data from reference
+        if(!(fread(host_input_data[i], in * ic * ih * iw * dtype_size(i_dtype), 1, f_input_ref))) {
+          printf("Failed to fread reference data for the %d-th input\n", i);
+          exit(-1);
+        }
+        //malloc device memory
+        bmrt_malloc_device_byte(p_bmrt, &dev_input_data[i], in * ic * ih * iw * dtype_size(i_dtype));
+      }
+  
+      //alloc output memory
+      int8_t** host_output_data = (int8_t**)(new int8_t* [output_tensor_num]);
+      int8_t** ref_output_data = (int8_t**)(new int8_t* [output_tensor_num]);
+      bm_device_mem_t* dev_output_data = new bm_device_mem_t [output_tensor_num];
+      int* on = new int [output_tensor_num];
+      int* oc = new int [output_tensor_num];
+      int* oh = new int [output_tensor_num];
+      int* ow = new int [output_tensor_num];
+      int* o_dtpye = new int [output_tensor_num];
+      for(int i = 0; i < output_tensor_num; ++i) {
+        //get the shape of the output tensor
+        bmrt_get_output_blob_max_nhw(p_bmrt, output_tensor_names[i], net_idx, NULL,
+                                     &on[i], &oc[i], &oh[i], &ow[i]);
+        //get the data type of the output tensor
+        o_dtpye[i] = bmrt_get_output_data_type(p_bmrt, output_tensor_names[i], net_idx, NULL);
+        host_output_data[i] = new int8_t [on[i] * oc[i] * oh[i] * ow[i] * dtype_size(o_dtpye[i])];
+        ref_output_data[i] = new int8_t [on[i] * oc[i] * oh[i] * ow[i] * dtype_size(o_dtpye[i])];
+        //read output data from reference
+        if(!(fread(ref_output_data[i], on[i] * oc[i] * oh[i] * ow[i] * dtype_size(o_dtpye[i]),
+                   1, f_output_ref))) {
+          printf("Failed to fread reference data for the %d-th output\n", i);
+          exit(-1);
+        }
+        //malloc device memory
+        bmrt_malloc_device_byte(p_bmrt, &dev_output_data[i],
+            on[i] * oc[i] * oh[i] * ow[i] * dtype_size(o_dtpye[i]));
+      }
+  
+      //memcpy input data from system to device
+      for(int i = 0; i < input_tensor_num; ++i) {
+        bmrt_memcpy_s2d(p_bmrt, dev_input_data[i], ((void*)host_input_data[i]));
+      }
+  
+      //neuron network inference
+      bool success = false;
+      if(bmrt_can_batch_size_change(p_bmrt, net_idx, NULL) ||
+         bmrt_can_height_and_width_change(p_bmrt, net_idx, NULL)) {
+        //call inference if input shape can be changed
+        success = bmrt_launch_shape(p_bmrt, net_idx, NULL, (const void*)(dev_input_data), input_tensor_num, input_dim, input_shape,
+                                  (const void*)(dev_output_data), output_tensor_num);
+      } else {
+        //call inference if input shape cannot changed
+        success = bmrt_launch(p_bmrt, net_idx, NULL, (const void*)(dev_input_data), input_tensor_num,
+                              (const void*)(dev_output_data), output_tensor_num);
+      }
+  
+      if(!success) {
+        printf("The %d-th neuron network '%s' inference failed\n", net_idx, net_names[net_idx]);
+      }
+  
+      //sync, wait for finishing inference
+      bmrt_thread_sync(p_bmrt);
+  
+      //memcpy output data from device to system
+      for(int i = 0; i < output_tensor_num; ++i) {
+        bmrt_memcpy_d2s(p_bmrt, host_output_data[i], dev_output_data[i]);
+      }
+  
+      //get true performance time
+      long unsigned int last_api_process_time_us = 0;
+      bmrt_get_last_api_process_time_us(p_bmrt, &last_api_process_time_us);
+      printf("the last_api_process_time_us is %lu us\n", last_api_process_time_us);
+  
+      //compare inference output data with reference data
+      int flag = result_cmp(host_output_data, ref_output_data, output_tensor_num, on, oc, oh, ow, o_dtpye);
+      if(flag != 0) {
+        printf("+++ The %d-th network '%s' cmp failed +++\n", net_idx, net_names[net_idx]);
+        exit(-1);
+      } else {
+        printf("+++ The %d-th network '%s' cmp success +++\n", net_idx, net_names[net_idx]);
+      }
+  
+      //free tensor name
+      free(input_tensor_names);
+      free(output_tensor_names);
+      //free memory
+      delete [] dev_input_data;
+      for(int i = 0; i < input_tensor_num; ++i) {
+        delete [] host_input_data[i];
+      }
+      delete [] host_input_data;
+      delete [] dev_output_data;
+      for(int i = 0; i < output_tensor_num; ++i) {
+        delete [] host_output_data[i];
+        delete [] ref_output_data[i];
+      }
+      delete [] host_output_data;
+      delete [] ref_output_data;
+      delete [] on;
+      delete [] oc;
+      delete [] oh;
+      delete [] ow;
+      delete [] o_dtpye;
+      delete [] input_dim;
+      delete [] input_shape;
+    }
+  
+    free(net_names);
+    fclose(f_input_ref);
+    fclose(f_output_ref);
+  }
+
+
+

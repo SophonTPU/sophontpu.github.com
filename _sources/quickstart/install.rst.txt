@@ -1,0 +1,53 @@
+NNToolChain 安装说明
+====================
+
+针对不同的应用场景，BITMAIN基于BM168x芯片提供了PCIE和SOC两种产品形态，对应于两种不同的运行模式：
+
+* PCIE模式：SDK运行于X86平台，BM168x作为PCIE接口的深度学习计算加速卡存在；
+* SOC模式：SDK独立运行于BM168x平台，支持通过千兆以太网与其他设备连接。
+
+BMNNSDK支持以上两种运行模式，在应用接口上完全兼容，请根据产品形态和需求下载对应的BMNNSDK进行安装。
+
+PCIE模式安装
+============
+
+1. 安装需求
+
+   1. 硬件环境：带有PCIE接口的X86主机
+   2. 操作系统：Ubuntu/CentOS/Debian
+   3. PCIE模式的BMDNNSDK安装包
+   4. 第三方依赖：
+
+      * libopencv-dev
+      * libboost-all-dev
+      * libgflags-dev
+
+2. 安装方式
+
+进入安装目录，执行以下脚本，其功能包括初始化库的路径以及添加一些编译或运行的示例函数等。
+
+``cd release_dir``
+``source envsetup.sh``
+
+安装驱动，等待结束后就安装成功了。
+
+``sudo ./install_driver.sh``
+
+SoC模式安装
+============
+
+1. 安装需求
+
+    1. 硬件环境：BM168x SOC板卡
+    2. 操作系统：BM168x Linux Release
+    3. 带有升级包的TF卡
+
+2. 安装方式
+
+    1. 板卡断电后，插入带有升级包的TF卡。
+    2. 上电后会看到外壳power绿灯和err红灯交替闪烁，表明正在升级。
+    3. 几分钟后闪烁结束，只有power绿灯亮，表示升级结束。
+    4. 断电并拔出TF卡。
+    5. 重新上电，bmdnn的环境会从eMMC启动，BMDNNSDK安装在了/system/bmdnn/目录下。
+
+

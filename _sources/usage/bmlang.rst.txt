@@ -1,0 +1,1533 @@
+.. _BMLANG:
+
+BMLang 说明
+===========
+
+BMLANG 是在BMTPU的基础之上封装了一些基本操作，开放给客户，客户可以基于此来实现其自定义或现有平台不支持的一些layer。
+BMLANG现在支持的一些操作以及说明在下面第一章中详细讲述。
+对于 mul、div、add、sub、max、min、gt、ge、lt、le、eq、ne， tensorA, tensorB 可以为data 或 coeff tensor，但不能同时为coeff tensor。
+除了个别ops 不能由输入tensor 推断出输出tensor shape，其它ops 由推断输出tensor shape的功能。例外的ops 为 bm_setdata。
+
+Install
+__________
+
+如果使用C++编程，则需要链接libbmlang_C11ABI0.so或者libbmlang_C11ABI1.so，头文件为bmlang_common.h，bmlang.h和bmtensor.h。
+
+如果使用Python编程，需要安装BMLang Python包。
+
+Python版本为2.x需要安装
+
+   .. code-block:: shell
+
+      #安装bmlang python 2.x包
+      pip install --user bmlang-x.x.x-py2-none-any.whl
+
+Python版本为3.x需要安装
+
+   .. code-block:: shell
+
+      #安装bmlang python 3.x包
+      pip3 install --user bmlang-x.x.x-py2-none-any.whl
+
+
+1. Class
+__________
+
+C++ Class
+>>>>>>>>>>
+
+bmtensor
+::::::::::
+
+简介：在bmlang C++ API中使用bmtensor来定义tensor，支持float和double的数据类型，其具体的成员变量和方法的定义在bmtensor.h 中。
+示例：定义一个float类型的4D tensor，
+
+   .. code-block:: c++
+
+      bmtensor<float>  tensor_float("name", 2, 3, 4, 5);
+
+Python Class
+>>>>>>>>>>>>>
+
+bmtensor_float
+::::::::::::::
+
+简介：在bmlang python API中使用bmtensor_float来定义tensor，仅支持float的数据类型，其成员方法和变量的定义与bmtensor一致。
+示例：定义一个4D的tensor，
+
+    .. code-block:: python
+
+       Ftensor = bmtensor_float('name', 2, 3, 4, 5)
+
+intVector
+:::::::::
+
+简介：python中定义vector<int>类型的数据，其使用方法同std::vector。
+示例：定义一个vector并赋值，
+
+    .. code-block:: python
+
+       Intvec = intVector()
+       Intvec.push_back(6)
+
+floatArray
+:::::::::::
+
+简介：python中定义一个float类型的数组。
+示例：定义并赋值一个数组，
+
+    .. code-block:: python
+
+       Farray = floatArray(10)
+       for i in range(10):
+         Farray[i] = i
+
+bmtfPtrVector
+:::::::::::::::
+
+简介：python中定义一个类似c++的vector<bmtensor_float*>
+示例：
+
+    .. code-block:: python
+
+      refTenVec = bmtfPtrVector()
+      ## Create other intermediate tensors
+      inpTenList = []
+      phTensor = bmtensor_float('x_tensor', 1, 10)
+      inpTenList.append(xTensor)
+      phTensor = bmtensor_float('h_tensor_t-1', 1, 10)
+      inpTenList.append(phTensor)
+      pcTensor = bmtensor_float('c_tensor_t-1', 1, 10)
+      inpTenList.append(pcTensor)
+      for j in range(len(inpTenList)):
+        self.inpTenVec.push_back(inpTenList[j].this)
+    
+
+2 Operation Mode
+_________________
+
+2.1 mode
+>>>>>>>>>>>>
+
+Bmlang 有两种工作模式：compute 和 compile。可以通过下面的接口实现：
+
+    .. code-block:: c++
+
+       set_mode(BMLANG_MODE_e mode);
+       typedef enum bmlang_mode {
+         BMLANG_COMPUTE,
+         BMLANG_COMPILE,
+         BMLANG_BOTH,
+         UNKNOWN_BMLANG_MODE
+       }BMLANG_MODE_e;
+
+计算模式（BMLANG_COMPUTE）：基于cpu实现op，用来辅助比对基于bmlang 实现的layer的正确性。
+编译模式（BMLANG_COMPILE）：基于BMTPU 实现op，实现网络的编译。
+BMLANG_BOTH则是既COMPILE又COMPUTE，只有在调用bmlang_compile_with_result_check才是用这种mode。
+
+2.2 Standalone
+>>>>>>>>>>>>>>>>>
+
+Bmlang可以脱离bmnetc/bmnetp/bmnett/bmnetm等编程框架使用。此时将单独实现算法在BMTPU里运行。以下接口用于单独使用Bmlang。
+
+  1. 初始化bmlang
+
+    c++ API:
+
+    .. code-block:: c++
+
+       void bmlang_init(const string& chip_name, BMLANG_MODE_e mode);
+
+    python API:
+
+    .. code-block:: python
+
+       bmlang_init(chip_name, BMLANG_MODE_e)
+
+  2. 结束bmlang
+
+    c++ API:
+
+    .. code-block:: c++
+
+       void bmlang_deinit();
+
+    python API:
+
+    .. code-block:: python
+
+       bmlang_deinit()
+
+   3. 启动compile only.
+
+    C++ API:
+
+    .. code-block:: c++
+
+       void bmlang_compile(const string& net_name, int opt_level, bool dyn_cpl);
+
+    Pyhton API:
+
+    .. code-block:: python
+
+       bmlang_compile(net_name, opt_level, dyn_cpl)
+
+   4. 启动compile with result check。
+
+    C++ API:
+
+    .. code-block:: c++
+
+       void bmlang_compile_with_result_check(
+           const string& net_name,
+           int opt_level,
+           bool dyn_cpl,
+           vector<bmtensor<float>*> inp_tensor,
+           vector<bmtensor<float>*> ref_tensor);
+
+    Python API:
+
+    .. code-block:: python
+
+       bmlang_compile_with_result_check(
+           net_name,
+           opt_level,
+           dyn_cpl,
+           inp_tensor, ## it is bmtfPtrVector type
+           ref_tensor) ## it is bmtfPtrVector type
+
+3 Calculation Op
+_________________
+
+3.1  bm_mul
+>>>>>>>>>>>
+
+tensor_result = tensorA * tensorB，实现两个tensor按元素乘，支持数据类型：float32。
+
+1. C++ API:
+
+    .. code-block:: c++
+
+       bm_mul(
+       const bmtensor<Dtype>& tensorA,
+       const bmtensor<Dtype>& tensorB,
+       bmtensor<Dtype>& tensor_result)
+
+参数说明：tensorA，tensorB，tensor_result均是bmtensor类型。
+
+2. Python API:
+
+    .. code-block:: python
+
+       bm_mul_float(tensorA,  tensorB, tensor_result)
+
+参数说明：tensorA，tensorB，tensor_result均是bmtensor_float类型。
+
+3.2  bm_div
+>>>>>>>>>>>
+
+tensor_result = tensorA / tensorB，实现两个tensor按元素除，支持数据类型：float32。
+
+1. C++ API:
+
+    .. code-block:: c++
+
+       bm_div(
+       const bmtensor<Dtype>& tensorA,
+       const bmtensor<Dtype>& tensorB,
+       bmtensor<Dtype>& tensor_result)
+
+参数说明：tensorA，tensorB，tensor_result均是bmtensor类型。
+
+2. Python API:
+
+    .. code-block:: python
+
+       bm_div_float(tensorA,  tensorB, tensor_result)
+
+参数说明：tensorA，tensorB，tensor_result均是bmtensor_float类型。
+
+3.3  bm_add
+>>>>>>>>>>>
+
+tensor_result = tensorA + tensorB，实现两个tensor按元素加，支持数据类型：float32。
+
+1. C++ API:
+
+    .. code-block:: c++
+
+       bm_add(
+       const bmtensor<Dtype>& tensorA,
+       const bmtensor<Dtype>& tensorB,
+       bmtensor<Dtype>& tensor_result)
+
+参数说明：tensorA，tensorB，tensor_result均是bmtensor类型。
+
+2. Python API:
+
+    .. code-block:: python
+
+       bm_add_float(tensorA,  tensorB, tensor_result)
+
+参数说明：tensorA，tensorB，tensor_result均是bmtensor_float类型。
+
+3.4  bm_sub
+>>>>>>>>>>>
+
+tensor_result = tensorA - tensorB，实现两个tensor按元素减，支持数据类型：float32。
+
+1. C++ API:
+
+    .. code-block:: c++
+
+       bm_sub(
+       const bmtensor<Dtype>& tensorA,
+       const bmtensor<Dtype>& tensorB,
+       bmtensor<Dtype>& tensor_result)
+
+参数说明：tensorA，tensorB，tensor_result均是bmtensor类型。
+
+2. Python API:
+
+    .. code-block:: python
+
+      bm_sub_float(tensorA,  tensorB, tensor_result)
+
+参数说明：tensorA，tensorB，tensor_result均是bmtensor_float类型。
+
+3.5  bm_max
+>>>>>>>>>>>
+
+tensor_result = max(tensorA, tensorB)，实现两个tensor按元素取最大值，支持数据类型：float32。
+
+1. C++ API:
+
+    .. code-block:: c++
+
+       bm_max(
+       const bmtensor<Dtype>& tensorA,
+       const bmtensor<Dtype>& tensorB,
+       bmtensor<Dtype>& tensor_result)
+
+参数说明：tensorA，tensorB，tensor_result均是bmtensor类型。
+
+2. Python API:
+
+    .. code-block:: python
+
+       bm_max_float(tensorA,  tensorB, tensor_result)
+
+参数说明：tensorA，tensorB，tensor_result均是bmtensor_float类型。
+
+3.6  bm_min
+>>>>>>>>>>>>
+
+tensor_result = min(tensorA, tensorB)，实现两个tensor按元素取最小值，支持数据类型：float32。
+
+1. C++ API:
+
+    .. code-block:: c++
+
+       bm_min(
+       const bmtensor<Dtype>& tensorA,
+       const bmtensor<Dtype>& tensorB,
+       bmtensor<Dtype>& tensor_result)
+
+参数说明：tensorA，tensorB，tensor_result均是bmtensor类型。
+
+2. Python API:
+
+    .. code-block:: python
+
+       bm_min_float(tensorA,  tensorB, tensor_result)
+
+参数说明：tensorA，tensorB，tensor_result均是bmtensor_float类型。
+
+3.7  bm_adds
+>>>>>>>>>>>>
+
+tensor_result = tensorA + scalar，实现tensorA中每个元素都加上scalar，支持数据类型：float32。
+
+1. C++ API:
+
+    .. code-block:: c++
+
+       bm_adds(
+       const bmtensor<Dtype>& tensorA,
+       const Dtype scalar,
+       bmtensor<Dtype>& tensor_result)
+
+参数说明：tensorA， tensor_result均是bmtensor类型，scalar是float32类型。
+
+2. Python API:
+
+    .. code-block:: python
+
+       bm_adds_float(tensorA,  scalar, tensor_result)
+
+参数说明：tensorA， tensor_result均是bmtensor_float类型，scalar是标量类型。
+
+3.8  bm_muls
+>>>>>>>>>>>>
+
+tensor_result = tensorA * scalar，实现tensorA中每个元素都乘以scalar，支持数据类型：float32。
+
+1. C++ API:
+
+    .. code-block:: c++
+
+       bm_muls(
+       const bmtensor<Dtype>& tensorA,
+       const Dtype scalar,
+       bmtensor<Dtype>& tensor_result)
+
+参数说明：tensorA， tensor_result均是bmtensor类型，scalar是float32类型。
+
+2. Python API:
+
+    .. code-block:: python
+
+       bm_muls_float(tensorA,  scalar, tensor_result)
+
+参数说明：tensorA， tensor_result均是bmtensor_float类型，scalar是标量类型。
+
+
+3.9  bm_maxs（TODO）
+>>>>>>>>>>>>>>>>>>>>>>
+
+tensor_result = max(tensorA, scalar)，实现tensorA中每个元素都与scalar比较大小，取大值输出，支持数据类型：float32。
+
+1. C++ API:
+
+    .. code-block:: c++
+
+       bm_maxs(
+       const bmtensor<Dtype>& tensorA,
+       const Dtype scalar,
+       bmtensor<Dtype>& tensor_result)
+
+参数说明：tensorA， tensor_result均是bmtensor类型，scalar是float32类型。
+
+2. Python API:
+
+    .. code-block:: python
+
+       bm_maxs_float(tensorA,  scalar, tensor_result)
+
+参数说明：tensorA， tensor_result均是bmtensor_float类型，scalar是标量类型。
+
+3.10  bm_mins（TODO）
+>>>>>>>>>>>>>>>>>>>>>>
+
+tensor_result = min(tensorA, scalar)，实现tensorA中每个元素都与scalar比较大小，取小值输出，支持数据类型：float32。
+
+1. C++ API:
+
+    .. code-block:: c++
+
+       bm_mins(
+       const bmtensor<Dtype>& tensorA,
+       const Dtype scalar,
+       bmtensor<Dtype>& tensor_result)
+
+参数说明：tensorA， tensor_result均是bmtensor类型，scalar是float32类型。
+
+2. Python API:
+
+    .. code-block:: python
+
+       bm_mins_float(tensorA, scalar, tensor_result)
+
+参数说明：tensorA，tensor_result均是bmtensor_float类型，scalar是标量类型。
+
+3.11 bm_axpy
+>>>>>>>>>>>>>
+
+tensor_result = scalar * tensorA + tensor_result，实现tensorA中每个元素都与scalar相乘，再与tensor_result每个元素相加，支持数据类型：float32。
+
+1. C++ API:
+
+    .. code-block:: c++
+
+       bm_axpy(
+       const bmtensor<Dtype>& tensorA,
+       const Dtype scalar,
+       bmtensor<Dtype>& tensor_result)
+
+参数说明：tensorA， tensor_result均是bmtensor类型，scalar是float32类型。
+
+2. Python API:
+
+    .. code-block:: python
+
+       bm_axpy_float(tensorA, scalar, tensor_result)
+
+参数说明：tensorA，tensor_result均是bmtensor_float类型，scalar是标量类型。
+
+3.12 bm_strideadd（TODO）
+>>>>>>>>>>>>>>>>>>>>>>>>>
+
+tensor_result = tensorA_i + tensorB_i，依据各个dimation上设置的stride值执行两个tensor相应index的元素加，支持数据类型：float32。
+
+1. C++ API:
+
+    .. code-block:: c++
+
+       bm_strideadd(
+       const bmtensor<Dtype>& tensorA,
+       const bmtensor<Dtype>& tensorB,
+       bmtensor<Dtype>& tensor_result,
+       vector<int> stride)
+
+参数说明：tensorA，tensorB，tensor_result均是bmtensor类型；stride是vector<int>类型，用于指定shape每个维度上的stride。
+
+2. Python API:
+
+    .. code-block:: python
+
+       bm_strideadd_float(tensorA,  tensorB, tensor_result, stride)
+
+参数说明：tensorA，tensorB，tensor_result均是bmtensor_float类型；stride是intVector类型，用于指定shape每个维度上的stride。
+
+3.13 bm_stridesub（TODO）
+>>>>>>>>>>>>>>>>>>>>>>>>>
+
+tensor_result = tensorA_i - tensorB_i，依据各个dimation上设置的stride值执行两个tensor相应index的元素减，支持数据类型：float32。
+
+1. C++ API:
+
+    .. code-block:: c++
+
+       bm_stridesub(
+       const bmtensor<Dtype>& tensorA,
+       const bmtensor<Dtype>& tensorB,
+       bmtensor<Dtype>& tensor_result,
+       vector<int> stride)
+
+参数说明：tensorA，tensorB，tensor_result均是bmtensor类型；stride是vector<int>类型，用于指定shape每个维度上的stride。
+
+2. Python API:
+
+    .. code-block:: python
+
+       bm_stridesub_float(tensorA,  tensorB, tensor_result, stride)
+
+参数说明：tensorA，tensorB，tensor_result均是bmtensor_float类型；stride是intVector类型，用于指定shape每个维度上的stride。
+
+3.14 bm_stridemul（TODO）
+>>>>>>>>>>>>>>>>>>>>>>>>>
+
+tensor_result = tensorA_i * tensorB_i，依据各个dimation上设置的stride值执行两个tensor相应index的元素乘，支持数据类型：float32。
+
+1. C++ API:
+
+    .. code-block:: c++
+
+       bm_stridemul(
+       const bmtensor<Dtype>& tensorA,
+       const bmtensor<Dtype>& tensorB,
+       bmtensor<Dtype>& tensor_result,
+       vector<int> stride)
+
+参数说明：tensorA，tensorB，tensor_result均是bmtensor类型；stride是vector<int>类型，用于指定shape每个维度上的stride。
+
+2. Python API:
+
+    .. code-block:: python
+
+       bm_stridemul_float(tensorA,  tensorB, tensor_result, stride)
+
+参数说明：tensorA，tensorB，tensor_result均是bmtensor_float类型；stride是intVector类型，用于指定shape每个维度上的stride。
+
+3.15 bm_stridemax（TODO）
+>>>>>>>>>>>>>>>>>>>>>>>>>
+
+tensor_result = max(tensorA_i, tensorB_i)，依据各个dimation上设置的stride值执行两个tensor相应index的元素比较，取大值输出，支持数据类型：float32。
+
+1. C++ API:
+
+    .. code-block:: c++
+
+       bm_stridemax(
+       const bmtensor<Dtype>& tensorA,
+       const bmtensor<Dtype>& tensorB,
+       bmtensor<Dtype>& tensor_result,
+       vector<int> stride)
+
+参数说明：tensorA，tensorB，tensor_result均是bmtensor类型；stride是vector<int>类型，用于指定shape每个维度上的stride。
+
+2. Python API:
+
+    .. code-block:: python
+
+       bm_stridemax_float(tensorA,  tensorB, tensor_result, stride)
+
+参数说明：tensorA，tensorB，tensor_result均是bmtensor_float类型；stride是intVector类型，用于指定shape每个维度上的stride。
+
+3.16 bm_strideadd_offset（TODO）
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+tensor_result = tensorA_i_offset + tensorB_i_offset，以各个dimation上设置的offset为起点，并依据设置的stride值执行两个tensor相应index的元素加，支持数据类型：float32。
+
+1. C++ API:
+
+    .. code-block:: c++
+
+       bm_strideadd_offset(
+       const bmtensor<Dtype>& tensorA,
+       const bmtensor<Dtype>& tensorB,
+       bmtensor<Dtype>& tensor_result,
+       vector<int> stride,
+       vector<int> offset)
+
+参数说明：
+tensorA，tensorB，tensor_result均是bmtensor类型；
+stride是vector<int>类型，用于指定shape每个维度上的stride；
+offset是vector<int>类型，用于指定shape每个维度上的offset。
+
+2. Python API:
+
+    .. code-block:: python
+
+       bm_strideadd_offset_float(tensorA,  tensorB, tensor_result, stride, offset)
+
+参数说明：
+tensorA，tensorB，tensor_result均是bmtensor_float类型；
+stride是intVector类型，用于指定shape每个维度上的stride；
+offset是intVector类型，用于指定shape每个维度上的offset。
+
+3.17 bm_stridesub_offset（TODO）
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+tensor_result = tensorA_i_offset - tensorB_i_offset，以各个dimation上设置的offset为起点，并依据设置的stride值执行两个tensor相应index的元素减，支持数据类型：float32。
+
+1. C++ API:
+
+    .. code-block:: c++
+
+       bm_stridesub_offset(
+       const bmtensor<Dtype>& tensorA,
+       const bmtensor<Dtype>& tensorB,
+       bmtensor<Dtype>& tensor_result,
+       vector<int> stride,
+       vector<int> offset)
+
+参数说明：
+tensorA，tensorB，tensor_result均是bmtensor类型；
+stride是vector<int>类型，用于指定shape每个维度上的stride；
+offset是vector<int>类型，用于指定shape每个维度上的offset。
+
+2. Python API:
+
+    .. code-block:: python
+
+       bm_stridesub_offset_float(tensorA,  tensorB, tensor_result, stride, offset)
+
+参数说明：
+tensorA，tensorB，tensor_result均是bmtensor_float类型；
+stride是intVector类型，用于指定shape每个维度上的stride；
+offset是intVector类型，用于指定shape每个维度上的offset。
+
+3.18 bm_stridemul_offset（TODO）
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+tensor_result = tensorA_i_offset * tensorB_i_offset，以各个dimation上设置的offset为起点，并依据设置的stride值执行两个tensor相应index的元素乘，支持数据类型：float32。
+
+1. C++ API:
+
+    .. code-block:: c++
+
+       bm_stridemul_offset(
+       const bmtensor<Dtype>& tensorA,
+       const bmtensor<Dtype>& tensorB,
+       bmtensor<Dtype>& tensor_result,
+       vector<int> stride,
+       vector<int> offset)
+
+参数说明：
+tensorA，tensorB，tensor_result均是bmtensor类型；
+stride是vector<int>类型，用于指定shape每个维度上的stride；
+offset是vector<int>类型，用于指定shape每个维度上的offset。
+
+2. Python API:
+
+    .. code-block:: python
+
+       bm_stridemul_offset_float(tensorA,  tensorB, tensor_result, stride, offset)
+
+参数说明：
+tensorA，tensorB，tensor_result均是bmtensor_float类型；
+stride是intVector类型，用于指定shape每个维度上的stride；
+offset是intVector类型，用于指定shape每个维度上的offset。
+
+3.19 bm_stridemax_offset（TODO）
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+tensor_result = max(tensorA_i_offset, tensorB_i_offset)，以各个dimation上设置的offset为起点，并依据设置的stride值执行两个tensor相应index的元素比较，取大值输出，支持数据类型：float32。
+
+1. C++ API:
+
+    .. code-block:: c++
+
+       bm_stridemax_offset(
+       const bmtensor<Dtype>& tensorA,
+       const bmtensor<Dtype>& tensorB,
+       bmtensor<Dtype>& tensor_result,
+       vector<int> stride,
+       vector<int> offset)
+
+参数说明：
+tensorA，tensorB，tensor_result均是bmtensor类型；
+stride是vector<int>类型，用于指定shape每个维度上的stride；
+offset是vector<int>类型，用于指定shape每个维度上的offset。
+
+2. Python API:
+
+    .. code-block:: python
+
+       bm_stridemax_offset_float(tensorA,  tensorB, tensor_result, stride, offset)
+
+参数说明：
+tensorA，tensorB，tensor_result均是bmtensor_float类型；
+stride是intVector类型，用于指定shape每个维度上的stride；
+offset是intVector类型，用于指定shape每个维度上的offset。
+
+3.20 bm_active
+>>>>>>>>>>>>>>>
+
+对输入的tensor使用激活函数进行处理，激活类型在bmlang_common.h文件中ACTIVE_TYPE_e定义，支持数据类型：float32。
+支持的active type如下:
+
+    .. code-block:: c++
+
+       typedef enum active_type {
+         ACTIVE_TANH   ,
+         ACTIVE_SIGMOID,
+         ACTIVE_RELU   ,
+         ACTIVE_EXP    ,
+         ACTIVE_ELU    ,
+         ACTIVE_SQRT   ,
+         ACTIVE_SQUARE ,
+         ACTIVE_RSQRT  ,
+         ACTIVE_ABSVAL , 
+         ACTIVE_LN, //（ln对数）
+         UNKNOWN_ACTIVE_TYPE
+       } ACTIVE_TYPE_e;
+
+1. C++ API:
+
+    .. code-block:: c++
+
+       bm_active(
+       const bmtensor<Dtype>& tensorA,
+       bmtensor<Dtype>& tensor_result,
+       ACTIVE_TYPE_e active_type)
+
+参数说明：
+tensorA，tensor_result均是bmtensor类型；
+active_type是ACTIVE_TYPE_e类型，指定激活函数的类型。
+
+2. Python API:
+
+    .. code-block:: python
+
+       bm_active_float(tensorA, tensor_result, active_type)
+
+参数说明：
+tensorA，tensor_result均是bmtensor_float类型；
+active_type是ACTIVE_TYPE_e类型，指定激活函数的类型。
+
+3.21 bm_arg
+>>>>>>>>>>>>>
+
+对输入tensor的指定的axis求最大或最小值，输出对应的index，并将该axis的dim设置为1，支持数据类型：float32。
+Arg参数结构体如下：
+
+    .. code-block:: c++
+
+       typedef struct arg_op{
+         int axis;
+         int method;  //0->max, 1->min
+       } ARG_OP_t;
+
+1. C++ API:
+
+    .. code-block:: c++
+
+       bm_arg(
+       const bmtensor<Dtype>& tensorA,
+       bmtensor<Dtype>& tensor_result,
+       ARG_OP_t arg_op)
+
+参数说明：
+tensorA，tensor_result均是bmtensor类型；
+arg_op是ARG_OP_t类型，指定处理的轴和操作（max or min）。
+
+2. Python API:
+
+    .. code-block:: python
+
+       bm_arg_float(tensorA, tensor_result, arg_op)
+
+参数说明：
+tensorA，tensor_result均是bmtensor_float类型；
+arg_op是ARG_OP_t类型，指定处理的轴和操作（max or min）。
+
+3.22 bm_pool
+>>>>>>>>>>>>>>
+
+对输入tensor进行池化处理，支持的数据类型：float32。
+池化参数如下：
+
+    .. code-block:: c++
+
+       typedef enum pooling_type {
+         AVE,
+         MAX,
+         STOCHASTIC,
+         UNKNOWN,
+       }  POOLING_TYPE_e;
+       typedef struct pooling_param {
+         int stride_h;
+         int stride_w;
+         int pad_h = 0;
+         int pad_w = 0;
+         int kernel_h; // if global pooling, no need to specify kernel height and weight.
+         int kernel_w;
+         POOLING_TYPE_e pooling_type = AVE;
+         bool is_global_pooling = false;
+         bool is_ceil_mode = false;
+       }  POOLING_PARAM_t;
+
+1. C++ API:
+
+    .. code-block:: c++
+
+       bm_pool(
+       const bmtensor<Dtype>& tensorA,
+       bmtensor<Dtype>& tensor_result,
+       const PoolingParam& pooling_param)
+
+参数说明：
+tensorA，tensor_result均是bmtensor类型；
+pooling_param是PoolingParam类型，指定池化相关参数。
+
+2. Python API:
+
+    .. code-block:: python
+
+       bm_pool_float(tensorA, tensor_result, pooling_param)
+
+参数说明：
+tensorA，tensor_result均是bmtensor_float类型；
+pooling_param是PoolingParam类型，指定池化相关参数。
+
+3.23 bm_reduce
+>>>>>>>>>>>>>>>>
+
+依据reduce way，对输入的tensor做reduce操作，支持数据类型：float32。
+reduce的算子类型如下：
+
+    .. code-block:: c++
+
+       typedef enum reduce_method {
+         REDUCE_MEAN = 0,
+         REDUCE_SUM = 1,
+         REDUCE_MAX = 2,
+         REDUCE_MIN = 3,
+         REDUCE_PROD= 4
+       } REDUCE_METHOD_e;
+       //对被reduce的所有轴求平均，求和，求最大值，求最小值，求内积。
+
+       //reduce 参数如下：
+       typedef struct reduce_op{
+         REDUCE_METHOD_e reduce_method;
+         int reduce_axis;
+         int reduce_way; 
+       } REDUCE_OP_t;
+       /*
+       reduce_method指定reduce算子类型；
+       reduce_axis指定reduce轴；
+       reduce_way指定reduce策略 —— 0：对reduce_axis轴及其之后的轴进行reduce操作
+                                   1：只对reduce_axis轴进行reduce操作
+                                   2：对除axis==1（即C轴）外的所有轴进行reduce。
+       */
+
+       //For example:
+       tensorA_shape = { 10, 20,30,40}, reduce_axis = 2
+       /*educe_way = 0 –>*/ tensor_result_shape = { 10, 20, 1, 1} 
+       /*reduce_way = 1 –>*/ tensor_result_shape = { 10, 20, 1, 40} 
+       /*reduce_way = 2 –>*/ tensor_result_shape = { 1, 20, 1, 1}
+       void bm_reduce(const bmtensor<Dtype>& tensorA, bmtensor<Dtype>& tensor_result,);
+
+1. C++ API:
+
+    .. code-block:: c++
+
+       bm_reduce(
+       const bmtensor<Dtype>& tensorA,
+       bmtensor<Dtype>& tensor_result,
+       REDUCE_OP_t reduce_op)
+
+参数说明：
+tensorA，tensor_result均是bmtensor类型；
+reduce_op是REDUCE_OP_t类型，指定reduce相关参数。
+
+2. Python API:
+
+    .. code-block:: python
+
+       bm_reduce_float(tensorA, tensor_result, reduce_op)
+
+参数说明：
+tensorA，tensor_result均是bmtensor_float类型；
+reduce_op是REDUCE_OP_t类型，指定reduce相关参数。
+
+4 Relation Op
+_____________
+
+4.1  bm_gt
+>>>>>>>>>>>
+
+tensor_result = tensorA  > tensorB  ?  1 : 0，两个tensor按元素比较，如果A大于B输出1，否则输出0，支持数据类型：float32。
+
+1. C++ API:
+
+    .. code-block:: c++
+
+       bm_gt(
+       const bmtensor<Dtype>& tensorA ,
+       const bmtensor<Dtype>& tensorB, 
+       bmtensor<Dtype>& result_tensor)
+
+参数说明：
+tensorA，tensorB，tensor_result均是bmtensor类型。
+
+2. Python API:
+
+    .. code-block:: python
+
+       bm_gt_float(tensorA, tensorB, tensor_result)
+
+参数说明：
+tensorA，tensorB，tensor_result均是bmtensor_float类型。
+
+4.2  bm_ge
+>>>>>>>>>>>
+
+tensor_result = tensorA  >= tensorB  ?  1 : 0，两个tensor按元素比较，如果A大于等于B输出1，否则输出0，支持数据类型：float32。
+
+1. C++ API:
+
+    .. code-block:: c++
+
+       bm_ge(
+       const bmtensor<Dtype>& tensorA ,
+       const bmtensor<Dtype>& tensorB, 
+       bmtensor<Dtype>& result_tensor)
+
+参数说明：
+tensorA，tensorB，tensor_result均是bmtensor类型。
+
+2. Python API:
+
+    .. code-block:: python
+
+       bm_ge_float(tensorA, tensorB, tensor_result)
+
+参数说明：
+tensorA，tensorB，tensor_result均是bmtensor_float类型。
+
+4.3  bm_lt
+>>>>>>>>>>>>
+
+tensor_result = tensorA  < tensorB  ?  1 : 0，两个tensor按元素比较，如果A小于B输出1，否则输出0，支持数据类型：float32。
+
+1. C++ API:
+
+    .. code-block:: c++
+
+       bm_lt(
+       const bmtensor<Dtype>& tensorA ,
+       const bmtensor<Dtype>& tensorB, 
+       bmtensor<Dtype>& result_tensor)
+
+参数说明：
+tensorA，tensorB，tensor_result均是bmtensor类型。
+
+2. Python API:
+
+    .. code-block:: python
+
+       bm_lt_float(tensorA, tensorB, tensor_result)
+
+参数说明：
+tensorA，tensorB，tensor_result均是bmtensor_float类型。
+
+4.4  bm_le
+>>>>>>>>>>>
+
+tensor_result = tensorA  <= tensorB  ?  1 : 0，两个tensor按元素比较，如果A小于等于B输出1，否则输出0，支持数据类型：float32。
+
+1. C++ API:
+
+    .. code-block:: c++
+
+       bm_le(
+       const bmtensor<Dtype>& tensorA ,
+       const bmtensor<Dtype>& tensorB, 
+       bmtensor<Dtype>& result_tensor)
+
+参数说明：
+tensorA，tensorB，tensor_result均是bmtensor类型。
+
+2. Python API:
+
+    .. code-block:: python
+
+       bm_le_float(tensorA, tensorB, tensor_result)
+
+参数说明：
+tensorA，tensorB，tensor_result均是bmtensor_float类型。
+
+4.5  bm_eq
+
+tensor_result = tensorA  == tensorB  ?  1 : 0，两个tensor按元素比较，如果A等于B输出1，否则输出0，支持数据类型：float32。
+
+1. C++ API:
+
+    .. code-block:: c++
+
+       bm_eq(
+       const bmtensor<Dtype>& tensorA ,
+       const bmtensor<Dtype>& tensorB, 
+       bmtensor<Dtype>& result_tensor)
+
+参数说明：
+tensorA，tensorB，tensor_result均是bmtensor类型。
+
+2. Python API:
+
+    .. code-block:: python
+
+       bm_le_float(tensorA, tensorB, tensor_result)
+
+参数说明：
+tensorA，tensorB，tensor_result均是bmtensor_float类型。
+
+4.6  bm_ne
+>>>>>>>>>>>
+
+tensor_result = tensorA  != tensorB  ?  1 : 0，两个tensor按元素比较，如果A不等于B输出1，否则输出0，支持数据类型：float32。
+
+1. C++ API:
+
+    .. code-block:: c++
+
+       bm_ne(
+       const bmtensor<Dtype>& tensorA ,
+       const bmtensor<Dtype>& tensorB, 
+       bmtensor<Dtype>& result_tensor)
+
+参数说明：
+tensorA，tensorB，tensor_result均是bmtensor类型。
+
+2. Python API:
+
+    .. code-block:: python
+
+       bm_ne_float(tensorA, tensorB, tensor_result)
+
+参数说明：
+tensorA，tensorB，tensor_result均是bmtensor_float类型。
+
+5 Selection Op
+_______________
+
+5.1  bm_condselect
+>>>>>>>>>>>>>>>>>>>>>
+
+tensor_result = cond > 0  ?  tensorB : tensorC，tensor cond按元素与0比较，大于0时输出tensorB对应位置元素，否则输出tensorC，支持数据类型：float32。cond 不能为常数，tensorC 和 tensorB 可以为常系数，需要设置tensor type 为COEFF_TENSOR 。
+
+1. C++ API:
+
+    .. code-block:: c++
+
+       bm_condselect(
+       const bmtensor<Dtype>& cond,
+       const bmtensor<Dtype>& tensorB,
+       const bmtensor<Dtype>& tensorC,
+       bmtensor<Dtype>& tensor_result)
+
+参数说明：
+cond，tensorB，tensorC，tensor_result均是bmtensor类型。
+
+2. Python API:
+
+    .. code-block:: python
+
+       bm_condselect_float(cond, tensorB, tensorC, tensor_result)
+
+参数说明：
+cond，tensorB，tensorC，tensor_result均是bmtensor_float类型。
+
+5.2  bm_select
+>>>>>>>>>>>>>>>>
+
+select有两种method：
+
+
+    .. code-block:: c++
+
+       typedef enum select_op {
+         GREATER_THAN,
+         GREATER_EQUAL,
+         UNKNOWN_SELECT_OP
+       } SELECT_OP_e;
+       
+       select_opt == GREATER_THAN:  
+       tensor_result = tensorA > tensor B  ?  tensorC : tensorD; //tensor按元素比较，A大于B时输出tensorC对应位置的元素值，否则输出tensorD。
+       
+       select_opt == GREATER_ EQUAL: 
+       tensor_result = tensorA >= tensor B  ?  tensorC : tensorD; //tensor按元素比较，A大于等于B时输出tensorC对应位置的元素值，否则输出tensorD。
+
+tensorA 和 tensorB 其中之一可以为常系数，需要设置tensor type为COEFF_TENSOR。
+tensorC 和 tensorD 可以为常系数，需要设置tensor type 为COEFF_TENSOR。
+支持数据类型为：float32。
+
+1. C++ API:
+
+    .. code-block:: c++
+
+       bm_select(
+       const bmtensor<Dtype>& tensorA,
+       const bmtensor<Dtype>& tensorB,
+       const bmtensor<Dtype>& tensorC,
+       const bmtensor<Dtype>& tensorD,
+       bmtensor<Dtype>& tensor_result,
+       SELECT_OP_e select_op)
+
+参数说明：
+tensorA，tensorB，tensorC，tensorD，tensor_result均是bmtensor类型；
+select_op是SELECT_OP_e类型，指定select method。
+
+2. Python API:
+
+    .. code-block:: python
+
+       bm_select_float(tensorA, tensorB, tensorC, tensorD, tensor_result, select_op)
+
+参数说明：
+tensorA，tensorB，tensorC，tensorD，tensor_result均是bmtensor_float类型;
+select_op是SELECT_OP_e类型，指定select method。
+
+6 Data Manipulate Op
+________________________
+
+6.1  bm_permute
+>>>>>>>>>>>>>>>>>>
+
+置换tensor shape的axis，并相应进行数据的交换，支持数据类型：float32。
+例如：输入shape为（6，7，8，9），置换参数order为（1，3，2，0），则输出的shape为（7，9，8，6）。
+
+1. C++ API:
+
+    .. code-block:: c++
+
+       bm_permute(
+       const bmtensor<Dtype>& tensorA,
+       bmtensor<Dtype>& tensor_result,
+       vector<int>& permute_order)
+
+参数说明：
+tensorA， tensor_result均是bmtensor类型；
+permute_order是vector<int>类型，指定permute order参数。
+
+2. Python API:
+
+    .. code-block:: python
+
+       bm_permute_float(tensorA, tensor_result, permute_order)
+
+参数说明：
+tensorA， tensor_result均是bmtensor_float类型;
+permute_order是intVector类型，指定permute order参数。
+
+6.2  bm_extract
+>>>>>>>>>>>>>>>>
+
+对tensor 4个维度上的数据做带stride的抽取操作，支持数据类型：float32。
+extract参数如下：
+
+    .. code-block:: c++
+
+       typedef struct extract_op{
+         int start[4];
+         int stride[4];
+         int end[4];
+       } EXTRACT_OP_t;
+
+输出shape的每个axis计算方式为：(end[i] – start[i]) / stride[i]。
+例如某个axis的值为10，start为1，end为7，stride为2，则extract之后输出axis的值为（7-1）/ 2 = 3，index分别为1，3，5。
+
+1. C++ API:
+
+    .. code-block:: c++
+
+       bm_extract(
+       const bmtensor<Dtype>& tensorA,
+       bmtensor<Dtype>& tensor_result,
+       EXTRACT_OP_t extract_op)
+
+参数说明：
+tensorA， tensor_result均是bmtensor类型；
+extract_op是EXTRACT_OP_t类型，指定data extract method参数。
+
+2. Python API:
+
+    .. code-block:: python
+
+       bm_extract_float(tensorA, tensor_result, extract_op)
+
+参数说明：
+tensorA， tensor_result均是bmtensor_float类型;
+extract_op是EXTRACT_OP_t类型，指定data extract method参数。
+
+6.3  bm_setdata
+>>>>>>>>>>>>>>>>>
+
+tensor_result = tensorA ，tensorA 的tensor type可以是DATA_TENSOR或 COEFF_TENSOR，支持广播，被广播的那一维度的维度值需要设置为1，需要指定tensor_result 的shape，因为不能由输入推断出输出的维度，支持数据类型：float32。
+**Note:** 该op并不是TPU的实际操作。若tensor type是DATA_TENSOR，则该操作只在COMPILE/COMPUTE模式下设置数据值，实际TPU runtime时不会是这里所设置的数据。若tensor type是COEFF_TENSOR，则此时设置的数据是固定的，并且在TPU runtime时，也将是这里设置的数据。
+
+1. C++ API:
+
+    .. code-block:: c++
+
+       bm_setdata(
+       const bmtensor<Dtype>& tensorA,
+       bmtensor<Dtype>& tensor_result)
+
+参数说明：
+tensorA， tensor_result均是bmtensor类型。
+
+2. Python API:
+
+    .. code-block:: python
+
+       bm_setdata_float(tensorA, tensor_result)
+
+参数说明：
+tensorA， tensor_result均是bmtensor_float类型。
+
+6.4  bm_broadcast
+>>>>>>>>>>>>>>>>>>>
+
+将输入tensor数据广播到输出，支持数据类型：float32。
+broadcast参数为：
+
+    .. code-block:: c++
+
+       typedef struct broadcast_op{
+         int times[4];
+       } BROADCAST_OP_t;
+       //times[4] 分别表示每一维度被广播的份数。
+
+1. C++ API:
+
+    .. code-block:: c++
+
+       bm_broadcast (
+       const bmtensor<Dtype>& tensorA,
+       bmtensor<Dtype>& tensor_result,
+       BROADCAST_OP_t broadcast_op)
+
+参数说明：
+tensorA， tensor_result均是bmtensor类型；
+broadcast_op是BROADCAST_OP_t类型，指定每个维度广播的份数。
+
+2. Python API:
+
+    .. code-block:: python
+
+       bm_broadcast_float(tensorA, tensor_result, broadcast_op)
+
+参数说明：
+tensorA， tensor_result均是bmtensor_float类型；
+broadcast_op是BROADCAST_OP_t类型，指定每个维度广播的份数。
+
+6.5  bm_concat
+>>>>>>>>>>>>>>>
+
+对多个tensor 在指定的轴上进行拼接，支持的数据类型：float32。
+
+1. C++ API:
+
+    .. code-block:: c++
+
+       bm_concat (
+       const vector<bmtensor<Dtype>* >& tensorA,
+       bmtensor<Dtype>& tensor_result,
+       int axis_)
+
+参数说明：
+tensorA是vector<bmtensor*>类型，多个tensor的指针；
+tensor_result是bmtensor类型；
+axis_是int类型，指定在哪一个轴上进行拼接。
+
+2. Python API:
+
+    .. code-block:: python
+
+       bm_concat_float(tfp_tensorA, tensor_result, axis_)
+
+参数说明：
+tfp_tensorA是bmtfpVector类型，多个tensor的指针；
+tensor_result是bmtensor_float类型；
+axis_是标量，指定在哪一个轴上进行拼接。
+
+6.6  bm_split
+>>>>>>>>>>>>>>>>
+
+bm_concat 的逆操作。
+Split 参数：
+
+    .. code-block:: c++
+
+       typedef struct split_op{
+         int size[MAX_SPLITNUM];
+         int axis_;
+         int num;
+       } SPLIT_OP_t;
+       //axis_：指定在哪个轴上split；
+       //num：分裂份数；
+       //size[]：每一份的大小（支持非平均分裂）。
+
+1. C++ API:
+
+    .. code-block:: c++
+
+       bm_split (
+       const bmtensor<Dtype>& tensorA,
+       vector<bmtensor<Dtype>* >& tensor_result,
+       SPLIT_OP_t split_op)
+
+参数说明：
+tensorA是bmtensor类型；
+tensor_result是vector<bmtensor*>类型，多个tensor的指针；
+split_op是SPLIT_OP_t类型，指定split参数。
+
+2. Python API:
+
+    .. code-block:: python
+
+       bm_split_float(tensorA, tfp_vector_result, split_op)
+
+参数说明： 
+tensorA是bmtensor_float类型；
+tfp_vector_result是bmtfpVector类型，多个tensor的指针；
+split_op是SPLIT_OP_t类型，指定split参数。
+
+6.7 bm_reshape
+>>>>>>>>>>>>>>>>
+
+对输入tensor做reshape的操作，支持数据类型：float32。
+void bm_reshape(const bmtensor<Dtype>& tensorA,bmtensor<Dtype>& tensor_result, RESHAPE_OP_t reshape_op);
+reshap参数：
+
+    .. code-block:: c++
+
+       typedef struct reshape_op{
+         int param[4];
+       } RESHAPE_OP_t;
+       /*
+       RESHAPE_OP_t  specify the output dimensions. 
+       If some of the dimensions are set to 0,   
+       the corresponding dimension from the bottom layer is used (unchanged).
+       Exactly one dimension may be set to -1, in which case its value is inferred from the count of the bottom blob and the remaining dimensions.
+       */
+
+For example:
+tensorA_shape = (10, 20, 30, 40)
+param = (0, 10, -1, 10)
+tensor_result_shape = (10, 10, 240, 10)
+
+1. C++ API:
+
+    .. code-block:: c++
+
+       bm_reshape (
+       const bmtensor<Dtype>& tensorA,
+       bmtensor<Dtype>& tensor_result,
+       RESHAPE_OP_t reshape_op)
+
+参数说明：
+tensorA和tensor_result均是bmtensor类型； 
+reshape_op是RESHAPE_OP_t类型，指定reshape参数。
+
+2. Python API:
+
+    .. code-block:: python
+
+       bm_reshape_float(tensorA, tensor_result, reshape_op)
+
+参数说明： 
+tensorA和tensor_result均是bmtensor_float类型； 
+reshape_op是RESHAPE_OP_t类型，指定reshape参数。
+
+6.8  bm_stridecpy（TODO）
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+tensor_result = tensorA_i，依据各个dimation上设置的stride值复制输入tensor相应index的元素到输出，支持数据类型：float32。
+
+1. C++ API:
+
+    .. code-block:: c++
+
+       bm_stridecpy(
+       const bmtensor<Dtype>& tensorA,
+       bmtensor<Dtype>& tensor_result,
+       vector<int> stride)
+
+参数说明：
+tensor，tensor_result均是bmtensor类型；
+stride是vector<int>类型，用于指定shape每个维度上的stride。
+
+2. Python API:
+
+    .. code-block:: python
+
+       bm_stridecpy_float(tensorA,  tensor_result, stride)
+
+参数说明：
+tensorA，tensor_result均是bmtensor_float类型；
+stride是intVector类型，用于指定shape每个维度上的stride。
+
+6.9  bm_stridecpy_offset（TODO）
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+tensor_result = tensorA_i_offset，以各个dimation上设置的offset为起点，并依据设置的stride值复制输入tensor相应index的元素到输出，支持数据类型：float32。
+
+1. C++ API:
+
+    .. code-block:: c++
+
+       bm_stridecpy_offset(
+       const bmtensor<Dtype>& tensorA,
+       bmtensor<Dtype>& tensor_result,
+       vector<int> stride,
+       vector<int> offset)
+
+参数说明：
+tensorA，tensor_result均是bmtensor类型；
+stride是vector<int>类型，用于指定shape每个维度上的stride；
+offset是vector<int>类型，用于指定shape每个维度上的offset。
+
+2. Python API:
+
+    .. code-block:: python
+
+       bm_stridecpy_offset_float(tensorA, tensor_result, stride, offset)
+
+参数说明：
+tensorA，tensor_result均是bmtensor_float类型；
+stride是intVector类型，用于指定shape每个维度上的stride；
+offset是intVector类型，用于指定shape每个维度上的offset。
+
+6.10  bm_lshift（TODO）
+>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+tensor_result = lshift(tensorA, shift_num)，对指定axis左移数据操作，支持数据类型：float32。
+举例：
+一个tensor是n c h w四个维度，当做c维度的逻辑左移时，高序号的c维度数据转到低序号的低维度数据，最高序号的c维度数据补0。逻辑右移时则相反。比如对一个tensor做c维度上的逻辑左移2位，c的范围为0~c-1, 则c=0, c=1的数据丢弃，原来Ci上的数据等于移到了Ci-2位置上面。c-1和c-2上的数据补0。
+
+1. C++ API:
+
+    .. code-block:: c++
+
+       bm_lshift(
+       const bmtensor<Dtype>& tensorA,
+       bmtensor<Dtype>& tensor_result,
+       int shift_dim,
+       int shift_num)
+
+参数说明：
+tensorA，tensor_result均是bmtensor类型；
+shift_dim是int类型，用于指定左移的轴；
+shift_num是int类型，用于指定左移位数。
+
+2. Python API:
+
+    .. code-block:: python
+
+       bm_lshift_float(tensorA, tensor_result, shift_dim, shift_num)
+
+参数说明：
+tensorA，tensor_result均是bmtensor_float类型；
+shift_dim是标量类型，用于指定左移的轴；
+shift_num是标量类型，用于指定左移位数。
+
+6.11  bm_rshift（TODO）
+>>>>>>>>>>>>>>>>>>>>>>>
+
+tensor_result = rshift(tensorA, shift_num)，对指定axis右移数据操作，支持数据类型：float32。
+
+1. C++ API:
+
+    .. code-block:: c++
+
+       bm_rshift(
+       const bmtensor<Dtype>& tensorA,
+       bmtensor<Dtype>& tensor_result,
+       int shift_dim,
+       int shift_num)
+
+参数说明：
+tensorA，tensor_result均是bmtensor类型；
+shift_dim是int类型，用于指定右移的轴；
+shift_num是int类型，用于指定右移位数。
+
+2. Python API:
+
+    .. code-block:: python
+
+       bm_rshift_float(tensorA, tensor_result, shift_dim, shift_num)
+
+参数说明：
+tensorA，tensor_result均是bmtensor_float类型；
+shift_dim是标量类型，用于指定右移的轴；
+shift_num是标量类型，用于指定右移位数。
+
+7 Matrix Op
+____________
+
+7.1  bm_matrixmul
+>>>>>>>>>>>>>>>>>>
+
+tensor_result = mat_tensorA * mat_tensorB，对输入两个矩阵做乘法，例如：matA(m,k) * matB(k,n)输出的matrix是matR(m,n)，支持数据类型：float32。
+
+1. C++ API:
+
+    .. code-block:: c++
+
+       bm_matrixmul(
+       const bmtensor<Dtype>& tensorA,
+       const bmtensor<Dtype>& tensorB,
+       const bmtensor<Dtype>& tensorC,
+       bmtensor<Dtype>& tensor_result)
+
+参数说明：
+tensorA，tensorB ，tensorC，tensor_result均是bmtensor类型。
+
+2. Python API:
+
+    .. code-block:: python
+
+       bm_matrixmul_float(tensorA, tensorB , [tensorC,] tensor_result)
+
+参数说明：
+tensorA，tensorB ，tensorC，tensor_result均是bmtensor_float类型。
+特殊说明：tensorC为可选，传参存在tensorC，执行加bias，否则不加，bias个数等于右矩阵列数。
+
+
+
+

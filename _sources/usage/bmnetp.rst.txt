@@ -1,0 +1,92 @@
+BMNETP 使用
+===========
+
+BMNETP是针对pytorch的模型编译器，可以把pytorch的model直接编译成BMRuntime所需的执行指令。支持python代码或已经保存的trace文件。在编译model的同时，可选择将每一个操作的NPU模型计算结果和CPU的计算结果进行对比，保证正确性。下面分别介绍该编译器的安装需求、安装步骤和使用方法。
+
+1. 安装需求
+
+   * python 3.5.x
+   * linux
+   * pytorch==1.0.0、torchvision
+
+2. 安装步骤
+
+安装该编译器的安装包。选择以下命令其一使用。使用命令（1）则安装在本地目录中，不需要root权限，而命令（2）则安装在系统目录中，需要root权限。
+
+``pip install --user bmnetp-x.x.x-py2.py3-none-any.whl``
+
+``pip install bmnetp-x.x.x-py2.py3-none-any.whl``
+
+
+3. 使用方法
+
+   1. 方式一：命令形式
+
+   Command name: python3 -m bmnetp    - BMNet compiler command for PyTorch model
+
+   .. code-block:: shell
+
+     python3 -m bmnetp [--model=<path>] \
+                       [--shapes=<string>] \
+                       [--net_name=<name>] \
+                       [--opt=<value>] \
+                       [--dyn=<bool>] \
+                       [--outdir=<path>] \
+                       [--target=<name>] \
+                       [--cmp=<bool>]
+
+   参数介绍如下：
+
+   +---------------+-----------+-------------------------------------------------------+
+   |    args       |    type   |                   Description                         |
+   +===============+===========+=======================================================+
+   |    model      |  string   | **Necessary**. PyTorch model .pt/pth path             |
+   +---------------+-----------+-------------------------------------------------------+
+   |               |           | **Necessary**. Shapes of all inputs, default use      |
+   |    shapes     |  string   | the shape in prototxt, format [x,x,x,x],[x,x]…,       |
+   |               |           | these correspond to inputs one by one in sequence     |
+   +---------------+-----------+-------------------------------------------------------+
+   |    net_name   |  string   | **Necessary**. Name of the network, default use the   |
+   |               |           | name in prototxt                                      |
+   +---------------+-----------+-------------------------------------------------------+
+   |      opt      |   int     | **Optional**. Optimization level. Option: 0, 1, 2,    |
+   |               |           | default 1.                                            |
+   +---------------+-----------+-------------------------------------------------------+
+   |      dyn      |   bool    | **Optional**. Use dynamic compilation, default false. |
+   +---------------+-----------+-------------------------------------------------------+
+   |     outdir    |  string   | **Necessary**. Output directory                       |
+   +---------------+-----------+-------------------------------------------------------+
+   |     target    |  string   | **Necessary**. Option: BM1682, BM1684; default: BM1682|
+   +---------------+-----------+-------------------------------------------------------+
+   |      cmp      |   bool    | **Optional**. Check result during compilation.        |
+   |               |           | Default: true                                         |
+   +---------------+-----------+-------------------------------------------------------+
+   |     desc      |  string   | **Optional**. Describe data type and value range of   |
+   |               |           | some input in format:                                 |
+   |               |           | "[ index, data format, lower bound, upper bound ]",   |
+   |               |           | where data format could be fp32, int64. For example,  |
+   |               |           | [0, int64, 0, 100], meaning input of index 0 has data |
+   |               |           | type as int64 and values in [0, 100). If no           |  
+   |               |           | description of some input given, the data type will be|
+   |               |           | fp32 as default and uniformly distributed in 0 ~ 1.   |
+   +---------------+-----------+-------------------------------------------------------+
+
+   2. 方式二：python接口
+
+   bmnetp的python接口如下：
+
+   .. code-block:: python
+
+      import bmnetp
+      ## compile fp32 model
+      bmnetp.compile(
+        model = "/path/to/.pth",        ## Necessary
+        ourdir = "xxx",                 ## Necessary
+        target = "BM1682"               ## Necessary
+        shapes = [[x,x,x,x], [x,x,x]],  ## Necessary
+        net_name = "name",              ## Necessary
+        opt = 2,                        ## optional, if not set, default equal to 1
+        dyn = False,                    ## optional, if not set, default equal to False
+        cmp = True                      ## optional, if not set, default equal to True
+      )
+

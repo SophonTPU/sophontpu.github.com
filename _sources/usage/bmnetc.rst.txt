@@ -1,0 +1,391 @@
+BMNETC 使用
+===========
+
+编译Caffe模型
+_________________
+
+BMNETC是针对caffe的模型编译器，可将某网络的caffemodel和prototxt编译
+成BMRuntime所需要的文件。而且在编译的同时，支持每一层的NPU模型计算结
+果都会和CPU的计算结果进行对比，保证正确性。下面介绍该编译器的使用方式。
+
+1. 安装需求
+
+   * python 3.5.x
+   * linux
+
+2. 配置步骤
+
+   设置LD_LIBRARY_PATH。可以使用以下方式在当前shell中设置该库的路径，或者也可以选择将该路径的设置永久地添加到‘.bashrc’文件中，如下：
+
+   ``export LD_LIBRARY_PATH=path_to_bmcompiler_lib:$ LD_LIBRARY_PATH``
+
+3. 使用方法
+
+   1. 方式一：命令形式
+
+   Command name: bmnetc    - BMNet compiler command for Caffe model
+
+   .. code-block:: shell
+
+      /path/to/bmnetc [--model=<path>] \
+                      [--weight=<path>] \
+                      [--shapes=<string>] \
+                      [--net_name=<name>] \
+                      [--opt=<value>] \
+                      [--dyn=<bool>] \
+                      [--outdir=<path>] \
+                      [--target=<name>] \
+                      [--cmp=<bool>] \
+                      [--mode=<string>]
+
+   参数介绍如下：
+
+   其中mode为compile表示编译float模型。为GenUmodel表示生成BITMAIN定义的统一model，可后续通过BITMAIN定点化工具进行INT8定点化生成INT8 model。
+   
+   GenUmodel模式下，参数opt、dyn、target、cmp将没有意义，无需指定。
+
+   +---------------+-----------+-------------------------------------------------------+
+   |    args       |    type   |                   Description                         |
+   +===============+===========+=======================================================+
+   |    model      |  string   | **Necessary**. Caffe prototxt path                    |
+   +---------------+-----------+-------------------------------------------------------+
+   |    weight     |  string   | **Necessary**. Caffemodel(weight) path                |
+   +---------------+-----------+-------------------------------------------------------+
+   |               |           | **Optional**. Shapes of all inputs, default use       |
+   |    shapes     |  string   | the shape in prototxt, format [x,x,x,x],[x,x]…,       |
+   |               |           | these correspond to inputs one by one in sequence     |
+   +---------------+-----------+-------------------------------------------------------+
+   |    net_name   |  string   | **Optional**. Name of the network, default use the    |
+   |               |           | name in prototxt                                      |
+   +---------------+-----------+-------------------------------------------------------+
+   |      opt      |   int     | **Optional**. Optimization level. Option: 0, 1, 2,    |
+   |               |           | default 2.                                            |
+   +---------------+-----------+-------------------------------------------------------+
+   |      dyn      |   bool    | **Optional**. Use dynamic compilation, default false. |
+   +---------------+-----------+-------------------------------------------------------+
+   |     outdir    |  string   | **Necessary**. Output directory                       |
+   +---------------+-----------+-------------------------------------------------------+
+   |     target    |  string   | **Necessary**. Option: BM1682, BM1684; default: BM1682|
+   +---------------+-----------+-------------------------------------------------------+
+   |      cmp      |   bool    | **Optional**.Check result during compilation.         |
+   |               |           | Default: true                                         |
+   +---------------+-----------+-------------------------------------------------------+
+   |     mode      |  string   | **Optional**. Set bmnetc mode. Option: compile,       |
+   |               |           | GenUmodel. Default: compile.                          |
+   +---------------+-----------+-------------------------------------------------------+
+
+   examples:
+
+   以下是编译float32的caffe model命令示例
+
+   .. code-block:: shell
+
+     /path/to/bmnetc --model=/path/to/prototxt --weight=/path/to/caffemodel --shapes=[1,3,224,224] --net_name=resnet18 --outdir=./resnet18 target=BM1682
+
+   以下是生成Umodel的示例
+
+   .. code-block:: shell
+
+     /path/to/bmnetc --mode=GenUmodel --model=/path/to/prototxt --weight=/path/to/caffemodel --shapes=[1,3,224,224] --net_name=resnet18 --outdir=./resnet18
+   
+
+   2. 方式二：python接口
+
+   bmnetc的python接口如下, 需要pip3 install --user bmnetc-x.x.x-py2.py3-none-any.whl。
+
+   以下是编译float32的caffe model的python接口。
+
+   .. code-block:: python
+
+      import bmnetc
+      ## compile fp32 model
+      bmnetc.compile(
+        model = "/path/to/prototxt",    ## Necessary
+        weight = "/path/to/caffemodel", ## Necessary
+        ourdir = "xxx",                 ## Necessary
+        target = "BM1682",              ## Necessary
+        shapes = [[x,x,x,x], [x,x,x]],  ## optional, if not set, default use shape in prototxt
+        net_name = "name",              ## optional, if not set, default use the network name in prototxt
+        opt = 2,                        ## optional, if not set, default equal to 2
+        dyn = False,                    ## optional, if not set, default equal to False
+        cmp = True                      ## optional, if not set, default equal to True
+      )
+
+   以下是生成Umodel的python接口。
+
+   .. code-block:: python
+
+      import bmnetc
+      ## Generate BITMAIN U model
+      bmnetc.GenUmodel(
+        model = "/path/to/prototxt",    ## Necessary
+        weight = "/path/to/caffemodel", ## Necessary
+        ourdir = "xxx",                 ## Necessary
+        shapes = [[x,x,x,x], [x,x,x]],  ## optional, if not set, default use shape in prototxt
+        net_name = "name"               ## optional, if not set, default use the network name in prototxt
+      )
+
+   以下是使用bmnetc python的例子：
+
+   .. code-block:: python
+
+      import bmnetc
+      
+      model = r'../../../nnmodel/caffe_models/lenet/lenet_train_test_thin_4.prototxt'
+      weight = r'../../../nnmodel/caffe_models/lenet/lenet_thin_iter_1000.caffemodel'
+      target = r"BM1682"
+      export_dir = r"./compilation"
+      shapes = [[1,1,28,28],[1]]
+      
+      bmnetc.compile(model = model, weight = weight, target = target, outdir = export_dir, shapes = shapes)
+      bmnetc.GenUmodel(weight = weight, model = model, net_name = "lenet")
+
+实现Caffe自定义Layer
+________________________
+
+BMNetC前端下自定义layer实现的可编程环境为imp_bmnetc，该编程环境与Caffe相同。
+
+基于BMLang开发
+>>>>>>>>>>>>>>>>>>
+
+BMLang是提供用户针对BMTPU编程的接口，所实现的算法可以在BMTPU中运行，详细见 :ref:`BMLang` 。
+
+这里介绍如何在bmnetc编程环境下对自定义Layer和bmnetc未支持的layer进行TPU编程，并将BMLang实现的layer插入到网络中，与其他layer一起进行网络级的编译，生成网络的bmodel。
+
+以下是以exp layer为例介绍基于BMLang开发网络中未支持layer的步骤:
+
+1. 修改prototxt文件
+
+首先需要修改prototxt中bmnetc不支持的layer type的param。bmnetc提供给用户自定义layer的google proto parameters格式如下：
+
+  .. code-block:: c++
+
+    message UserDefinedParameter {
+      repeated float float_value = 1;
+      repeated string string_value = 2;
+    }
+
+修改.prototxt里面的type为Exp的layer param。caffe原版的Exp prototxt格式为：
+
+  .. code-block:: c++
+
+    layer {
+      name: "exp"
+      type: "Exp"
+      bottom: "log"
+      top: "usr"
+      exp_param {
+        base: 2
+        scale: 2
+        shift: 3
+      }
+    }
+
+需要修改成：
+
+  .. code-block:: c++
+
+    layer {
+      name: "exp"
+      type: "Exp"
+      bottom: "log"
+      top: "usr"
+      user_defined_param {
+        float_value: 2
+        float_value: 2
+        float_value: 3
+      }
+    }
+
+2. 然后在imp_bmnetc的inclue和src里，加入exp layer的.hpp和.cpp代码文件。
+
+示例.hpp代码如下：
+
+  .. code-block:: c++
+
+    #ifndef CAFFE_USER_DEFINED_LAYER_HPP_
+    #define CAFFE_USER_DEFINED_LAYER_HPP_
+    
+    #include <vector>
+    
+    #include "bmnetc/blob.hpp"
+    #include "bmnetc/layer.hpp"
+    #include "bmnetc/proto/bmnetc.pb.h"
+    
+    #include "bmnetc/layers/neuron_layer.hpp"
+    
+    namespace bmnetc {
+    
+    /**
+     * @brief Computes @f$ y = \gamma ^ {\alpha x + \beta} @f$,
+     *        as specified by the scale @f$ \alpha @f$, shift @f$ \beta @f$,
+     *        and base @f$ \gamma @f$.
+     */
+    template <typename Dtype>
+    class ExpLayer : public NeuronLayer<Dtype> {
+     public:
+      /**
+       * @param param provides UserDefinedParameter UserDefined_param,
+       *     with ExpLayer options:
+       */
+      explicit ExpLayer(const LayerParameter& param)
+          : NeuronLayer<Dtype>(param) {}
+      virtual void LayerSetUp(const vector<Blob<Dtype>*>& bottom,
+          const vector<Blob<Dtype>*>& top);
+    
+      virtual inline const char* type() const { return "Exp"; }
+    
+     protected:
+      /**
+       * @param bottom input Blob vector (length 1)
+       *   -# @f$ (N \times C \times H \times W) @f$
+       *      the inputs @f$ x @f$
+       * @param top output Blob vector (length 1)
+       *   -# @f$ (N \times C \times H \times W) @f$
+       *      the computed outputs @f$
+       *        y = \gamma ^ {\alpha x + \beta}
+       *      @f$
+       */
+      virtual void CheckBlobCounts(const vector<Blob<Dtype>*>& bottom,
+          const vector<Blob<Dtype>*>& top){};
+      virtual void Forward_cpu(const vector<Blob<Dtype>*>& bottom,
+          const vector<Blob<Dtype>*>& top);
+      virtual void layer_deploy(void* p_bmcompiler, const vector<Blob<Dtype>*>& bottom,
+          const vector<Blob<Dtype>*>& top);
+      virtual void Forward_bmtpu(const vector<Blob<Dtype>*>& bottom,
+        const vector<Blob<Dtype>*>& top);
+    
+      void bmtpu_module(const vector<Blob<Dtype>*>& bottom,
+        const vector<Blob<Dtype>*>& top);
+    
+      Dtype inner_scale_, outer_scale_;
+    };
+    
+    }  // namespace bmnetc
+    
+    #endif
+
+示例.cpp代码如下:
+
+其中，LayerSetup需要获取的是UserDefinedParameter，然后根据该UserDefinedParameter设置Exp Layer的变量。
+
+bmtpu_module是用BMLang对Exp编程的模块。
+
+Forward_bmtpu中，需要set_mode(BMLANG_COMPUTE)，表明使用cpu来模拟bmtpu_module的计算，以便于我们调试用BMLang对exp layer编程对不对。
+
+layer_deploy则需要set_mode(BMLANG_COMPILE)，此时进入compile模式。在运行bmnetc编译caffe model时，会进入layer_deploy函数，并生成可在BMTPU芯片运行的bmodel。
+
+
+  .. code-block:: c++
+
+    #include <vector>
+    
+    #include "exp_layer.hpp"
+    #include "bmnetc/util/math_functions.hpp"
+    
+    namespace bmnetc {
+    
+    template <typename Dtype>
+    void ExpLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype>*>& bottom,
+          const vector<Blob<Dtype>*>& top) {
+      NeuronLayer<Dtype>::LayerSetUp(bottom, top);
+      const UserDefinedParameter& param = this->layer_param_.user_defined_param();
+      const Dtype base = param.float_value(0);
+      if (base != Dtype(-1)) {
+        CHECK_GT(base, 0) << "base must be strictly positive.";
+      }
+      // If base == -1, interpret the base as e and set log_base = 1 exactly.
+      // Otherwise, calculate its log UserDefinedlicitly.
+      const Dtype log_base = (base == Dtype(-1)) ? Dtype(1) : log(base);
+      CHECK(!isnan(log_base))
+          << "NaN result: log(base) = log(" << base << ") = " << log_base;
+      CHECK(!isinf(log_base))
+          << "Inf result: log(base) = log(" << base << ") = " << log_base;
+      const Dtype input_scale = param.float_value(1);
+      const Dtype input_shift = param.float_value(2);
+      inner_scale_ = log_base * input_scale;
+      outer_scale_ = (input_shift == Dtype(0)) ? Dtype(1) :
+         ( (base != Dtype(-1)) ? pow(base, input_shift) : exp(input_shift) );
+    }
+    
+    template <typename Dtype>
+    void ExpLayer<Dtype>::Forward_cpu(const vector<Blob<Dtype>*>& bottom,
+        const vector<Blob<Dtype>*>& top) {
+      const int count = bottom[0]->count();
+      const Dtype* bottom_data = bottom[0]->cpu_data();
+      Dtype* top_data = top[0]->mutable_cpu_data();
+      if (inner_scale_ == Dtype(1)) {
+        bmnetc_exp(count, bottom_data, top_data);
+      } else {
+        bmnetc_cpu_scale(count, inner_scale_, bottom_data, top_data);
+        bmnetc_exp(count, top_data, top_data);
+      }
+      if (outer_scale_ != Dtype(1)) {
+        bmnetc_scal(count, outer_scale_, top_data);
+      }
+    }
+    
+    template <typename Dtype>
+    void ExpLayer<Dtype>::layer_deploy(void* p_bmcompiler,
+            const vector<Blob<Dtype>*>& bottom,
+            const vector<Blob<Dtype>*>& top)
+    {
+    #if defined(BMCOMPILE) && defined(BMLANG)
+      set_mode(BMLANG_COMPILE);
+      bmtpu_module(bottom,top);
+    #endif
+    }
+    
+    template <typename Dtype>
+    void ExpLayer<Dtype>::Forward_bmtpu(const vector<Blob<Dtype>*>& bottom,
+        const vector<Blob<Dtype>*>& top) {
+    #if defined(BMCOMPILE) && defined(BMLANG)
+      set_mode(BMLANG_COMPUTE);
+      bmtpu_module(bottom,top);
+    #endif
+    }
+    
+    template <typename Dtype>
+    void ExpLayer<Dtype>::bmtpu_module(const vector<Blob<Dtype>*>& bottom,
+        const vector<Blob<Dtype>*>& top) {
+    #if defined(BMCOMPILE) && defined(BMLANG)
+        bmtensor<Dtype> bottom_tensor(this->layer_param_.bottom(0),bottom[0]->shape());
+        bottom_tensor.set_data(bottom[0]->cpu_data());
+        bmtensor<Dtype> top_tensor(this->layer_param_.top(0),top[0]->shape());
+        top_tensor.set_data(top[0]->cpu_data());
+    
+        bmtensor<Dtype> coeff_tensor("coef",1,1,1,1);
+        coeff_tensor.set_tensor_type(COEFF_TENSOR);
+        coeff_tensor.data()[0] = inner_scale_;
+        bmtensor<Dtype> mul_tensor("mul_res");
+        if (inner_scale_ != Dtype(1)) {
+          bm_mul(bottom_tensor,coeff_tensor,mul_tensor);
+        }else{
+          bm_setdata(bottom_tensor,top_tensor);
+        }
+    
+        bm_active(mul_tensor,top_tensor,ACTIVE_EXP);
+    
+        coeff_tensor.data()[0] = outer_scale_;
+        if (outer_scale_ != Dtype(1)) {
+          bm_mul(top_tensor,coeff_tensor,top_tensor);
+        }
+    #endif
+    }
+    
+    INSTANTIATE_CLASS(ExpLayer);
+    REGISTER_LAYER_CLASS(Exp);
+    
+    }  // namespace bmnetc
+
+3. 完成代码后，在imp_bmnetc下source build.sh即可编译，将生成的libimpbmnetc.so通过以下命令加入到LD_LIBRARY_PATH中。
+
+   ``export LD_LIBRARY_PATH=path_to_libimpbmnetc:$ LD_LIBRARY_PATH``
+
+
+4. 启动bmnetc编译该caffe model，其中prototxt为修改后的，.caffemodel为已经用原版.prototxt训练好的。最终生成bmodel，在bmruntime时可将bmodel下发到BMTPU芯片中运行。
+
+5. 我们也可以对BMLang程序进行单元测试并调试，看bmlang描述的计算模式对不对。可以写一个test程序，创建该ExpLayer，设置参数，启动Forward_cpu()，再启动Forward_tpu()，对比两个的结果是否相同。如果不同，则对bmtpu_module中的程序进行调试并修改。
+
+
+

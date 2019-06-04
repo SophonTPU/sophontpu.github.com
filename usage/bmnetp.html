@@ -1,0 +1,332 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>BMNETP 使用 &mdash; NNToolChain  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="BMLang 说明" href="bmlang.html" />
+    <link rel="prev" title="BMNETM 使用" href="bmnetm.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> NNToolChain
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart/abstract.html">NNToolChain 基本概念介绍</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart/abstract.html#id1">版本特性</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart/abstract.html#id2">NNToolChain 整体架构</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart/install.html">NNToolChain 安装说明</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart/install.html#pcie">PCIE模式安装</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart/install.html#soc">SoC模式安装</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="bmnetc.html">BMNETC 使用</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bmnett.html">BMNETT 使用</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bmnetm.html">BMNETM 使用</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">BMNETP 使用</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bmlang.html">BMLang 说明</a></li>
+<li class="toctree-l1"><a class="reference internal" href="runtime.html">BMRuntime 使用</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bmodel.html">bmodel 使用</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../sample.html">示例代码</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">NNToolChain</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>BMNETP 使用</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/usage/bmnetp.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="bmnetp">
+<h1>BMNETP 使用<a class="headerlink" href="#bmnetp" title="Permalink to this headline">¶</a></h1>
+<p>BMNETP是针对pytorch的模型编译器，可以把pytorch的model直接编译成BMRuntime所需的执行指令。支持python代码或已经保存的trace文件。在编译model的同时，可选择将每一个操作的NPU模型计算结果和CPU的计算结果进行对比，保证正确性。下面分别介绍该编译器的安装需求、安装步骤和使用方法。</p>
+<ol class="arabic simple">
+<li>安装需求<ul>
+<li>python 3.5.x</li>
+<li>linux</li>
+<li>pytorch==1.0.0、torchvision</li>
+</ul>
+</li>
+<li>安装步骤</li>
+</ol>
+<p>安装该编译器的安装包。选择以下命令其一使用。使用命令（1）则安装在本地目录中，不需要root权限，而命令（2）则安装在系统目录中，需要root权限。</p>
+<p><code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">--user</span> <span class="pre">bmnetp-x.x.x-py2.py3-none-any.whl</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">bmnetp-x.x.x-py2.py3-none-any.whl</span></code></p>
+<ol class="arabic" start="3">
+<li><p class="first">使用方法</p>
+<ol class="arabic simple">
+<li>方式一：命令形式</li>
+</ol>
+<p>Command name: python3 -m bmnetp    - BMNet compiler command for PyTorch model</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python3 -m bmnetp <span class="o">[</span>--model<span class="o">=</span>&lt;path&gt;<span class="o">]</span> <span class="se">\</span>
+                  <span class="o">[</span>--shapes<span class="o">=</span>&lt;string&gt;<span class="o">]</span> <span class="se">\</span>
+                  <span class="o">[</span>--net_name<span class="o">=</span>&lt;name&gt;<span class="o">]</span> <span class="se">\</span>
+                  <span class="o">[</span>--opt<span class="o">=</span>&lt;value&gt;<span class="o">]</span> <span class="se">\</span>
+                  <span class="o">[</span>--dyn<span class="o">=</span>&lt;bool&gt;<span class="o">]</span> <span class="se">\</span>
+                  <span class="o">[</span>--outdir<span class="o">=</span>&lt;path&gt;<span class="o">]</span> <span class="se">\</span>
+                  <span class="o">[</span>--target<span class="o">=</span>&lt;name&gt;<span class="o">]</span> <span class="se">\</span>
+                  <span class="o">[</span>--cmp<span class="o">=</span>&lt;bool&gt;<span class="o">]</span>
+</pre></div>
+</div>
+<p>参数介绍如下：</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="19%" />
+<col width="14%" />
+<col width="68%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">args</th>
+<th class="head">type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>model</td>
+<td>string</td>
+<td><strong>Necessary</strong>. PyTorch model .pt/pth path</td>
+</tr>
+<tr class="row-odd"><td>shapes</td>
+<td>string</td>
+<td><strong>Necessary</strong>. Shapes of all inputs, default use
+the shape in prototxt, format [x,x,x,x],[x,x]…,
+these correspond to inputs one by one in sequence</td>
+</tr>
+<tr class="row-even"><td>net_name</td>
+<td>string</td>
+<td><strong>Necessary</strong>. Name of the network, default use the
+name in prototxt</td>
+</tr>
+<tr class="row-odd"><td>opt</td>
+<td>int</td>
+<td><strong>Optional</strong>. Optimization level. Option: 0, 1, 2,
+default 1.</td>
+</tr>
+<tr class="row-even"><td>dyn</td>
+<td>bool</td>
+<td><strong>Optional</strong>. Use dynamic compilation, default false.</td>
+</tr>
+<tr class="row-odd"><td>outdir</td>
+<td>string</td>
+<td><strong>Necessary</strong>. Output directory</td>
+</tr>
+<tr class="row-even"><td>target</td>
+<td>string</td>
+<td><strong>Necessary</strong>. Option: BM1682, BM1684; default: BM1682</td>
+</tr>
+<tr class="row-odd"><td>cmp</td>
+<td>bool</td>
+<td><strong>Optional</strong>. Check result during compilation.
+Default: true</td>
+</tr>
+<tr class="row-even"><td>desc</td>
+<td>string</td>
+<td><strong>Optional</strong>. Describe data type and value range of
+some input in format:
+“[ index, data format, lower bound, upper bound ]”,
+where data format could be fp32, int64. For example,
+[0, int64, 0, 100], meaning input of index 0 has data
+type as int64 and values in [0, 100). If no
+description of some input given, the data type will be
+fp32 as default and uniformly distributed in 0 ~ 1.</td>
+</tr>
+</tbody>
+</table>
+<ol class="arabic simple" start="2">
+<li>方式二：python接口</li>
+</ol>
+<p>bmnetp的python接口如下：</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">bmnetp</span>
+<span class="c1">## compile fp32 model</span>
+<span class="n">bmnetp</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+  <span class="n">model</span> <span class="o">=</span> <span class="s2">&quot;/path/to/.pth&quot;</span><span class="p">,</span>        <span class="c1">## Necessary</span>
+  <span class="n">ourdir</span> <span class="o">=</span> <span class="s2">&quot;xxx&quot;</span><span class="p">,</span>                 <span class="c1">## Necessary</span>
+  <span class="n">target</span> <span class="o">=</span> <span class="s2">&quot;BM1682&quot;</span>               <span class="c1">## Necessary</span>
+  <span class="n">shapes</span> <span class="o">=</span> <span class="p">[[</span><span class="n">x</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">x</span><span class="p">],</span> <span class="p">[</span><span class="n">x</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">x</span><span class="p">]],</span>  <span class="c1">## Necessary</span>
+  <span class="n">net_name</span> <span class="o">=</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span>              <span class="c1">## Necessary</span>
+  <span class="n">opt</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>                        <span class="c1">## optional, if not set, default equal to 1</span>
+  <span class="n">dyn</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span>                    <span class="c1">## optional, if not set, default equal to False</span>
+  <span class="nb">cmp</span> <span class="o">=</span> <span class="bp">True</span>                      <span class="c1">## optional, if not set, default equal to True</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="bmlang.html" class="btn btn-neutral float-right" title="BMLang 说明" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="bmnetm.html" class="btn btn-neutral float-left" title="BMNETM 使用" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Sophon
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

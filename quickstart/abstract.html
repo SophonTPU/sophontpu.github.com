@@ -1,0 +1,275 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>NNToolChain 基本概念介绍 &mdash; NNToolChain  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="NNToolChain 安装说明" href="install.html" />
+    <link rel="prev" title="NNToolChain 中文文档" href="../index.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> NNToolChain
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">NNToolChain 基本概念介绍</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#id1">版本特性</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#id2">NNToolChain 整体架构</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install.html">NNToolChain 安装说明</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install.html#pcie">PCIE模式安装</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install.html#soc">SoC模式安装</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../usage/bmnetc.html">BMNETC 使用</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/bmnett.html">BMNETT 使用</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/bmnetm.html">BMNETM 使用</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/bmnetp.html">BMNETP 使用</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/bmlang.html">BMLang 说明</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/runtime.html">BMRuntime 使用</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/bmodel.html">bmodel 使用</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../sample.html">示例代码</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">NNToolChain</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>NNToolChain 基本概念介绍</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/quickstart/abstract.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="nntoolchain">
+<h1>NNToolChain 基本概念介绍<a class="headerlink" href="#nntoolchain" title="Permalink to this headline">¶</a></h1>
+<p><strong>BMNNSDK</strong></p>
+<p>比特大陆原创深度学习开发工具包</p>
+<p><strong>BM168x</strong></p>
+<p>比特大陆面向深度学习领域推出的第x代云端张量处理器</p>
+<p><strong>PCIE-Mode</strong></p>
+<p>一种产品形态，SDK运行于X86平台，BM168x作为PCIE接口的深度学习计算加速卡存在</p>
+<p><strong>SOC-Mode</strong></p>
+<p>一种产品形态，SDK独立运行于BM168x平台，支持通过千兆以太网与其他设备互联</p>
+<p><strong>BMCompile</strong></p>
+<p>是一个面向比特大陆 TPU处理器研发的深度神经网络的优化编译器，可以将深度学习框架定义的各种深度神经网络转化为TPU上运行的指令流。</p>
+<p><strong>BMRuntime</strong>: 匹配BMCompiler的运行时库，提供上层应用程序可编程调用的接口</p>
+<p><strong>BMDNN</strong>:     深度学习layer级别的加速库接口</p>
+<p><strong>BMCV</strong>:      使用TPU进行CV处理的加速库接口</p>
+<p><strong>BMNetC</strong>:    面向Caffe model的BMCompiler前端</p>
+<p><strong>BMNetT</strong>:    面向TensorFlow model的BMCompiler前端</p>
+<p><strong>BMNetM</strong>:    面向MxNet model的BMCompiler前端</p>
+<p><strong>BMNetP</strong>:    面向PyTorch model的BMCompiler前端</p>
+<p><strong>BMLang</strong>:    面向TPU的高级编程模型，用户开发时无需了解底层TPU硬件信息</p>
+<p><strong>bmodel</strong>:    面向比特大陆TPU处理器的深度神经网络模型文件格式</p>
+</div>
+<div class="section" id="id1">
+<h1>版本特性<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<p>BMNNSDK包含设备驱动、运行库、头文件和相应工具，主要特性如下：</p>
+<ol class="arabic simple">
+<li>设备驱动<ul>
+<li>PCIE支持多种Linux发行版本和Linux内核。</li>
+<li>SOC模式提供ko模块，可以直接安装到BM168x SOC Linux Release。</li>
+</ul>
+</li>
+<li>运行库<ul>
+<li>提供深度学习推理引擎，提供最大的推理吞吐量和最简单的应用部署环境；</li>
+<li>提供三层接口，网络级接口/layer级接口/指令集接口</li>
+<li>利用TPU提供灵活的图像处理功能(BMCV)</li>
+<li>提供运行库编程接口，用户可以直接操作bmlib/bmdnn等底层接口，进行深度的开发</li>
+<li>运行库支持多线程、多进程，提供并发处理能力。</li>
+</ul>
+</li>
+<li>工具<ul>
+<li>提供bmnetc工具，支持Caffe网络模型进行编译</li>
+<li>提供bmnett工具, 支持TensorFlow模型进行编译</li>
+<li>提供bmnetm工具，支持MxNet模型进行编译</li>
+<li>提供bmnetp工具，支持PyTorch模型进行编译</li>
+<li>提供bm_model.bin工具，查看bmodel文件的参数信息，也可以将bmodel文件进行分解和合并</li>
+<li>提供profiling的工具，展示每一层执行所使用的指令和指令所消耗的时间</li>
+<li>提供bm_smi工具，支持对BM1682设备的运行状态进行监测</li>
+</ul>
+</li>
+</ol>
+</div>
+<div class="section" id="id2">
+<h1>NNToolChain 整体架构<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h1>
+<p>BMNNSDK（Bitmain Neural Network SDK）是比特大陆基于其自主研发的AI芯片，所定制的深度学习SDK，涵盖了神经网络推理阶段所需的模型优化、高效运行时支持等能力，为深度学习应用开发和部署提供易用、高效的全栈式解决方案。</p>
+<p>BMNNSDK由Compiler和Runtime两部分组成，Compiler负责对各种深度神经网络模型（如caffemodel、tensorflow model等）进行编译和优化，最终生成运行时需要的Bmodel。Runtime负责驱动TPU芯片，为上层应用程序提供统一的可编程接口，既能使程序可以通过Compiler编译的Context进行神经网络推理，也能使用BMDNN和BMCV对DNN和CV算法进行加速，而用户无需关心底层硬件实现细节。</p>
+<img alt="../_images/overview.png" src="../_images/overview.png" />
+<p>Compiler是一个模型转换工具，可以对各种框架的模型进行离线转换，将模型转换成TPU能够执行的模型格式，然后调用bmrutime在初始化阶段读取模型，运行时则将输入数据拷给TPU，TPU进行神经网络推理，再将输出读取出来。</p>
+<img alt="../_images/compiler-runtime.png" src="../_images/compiler-runtime.png" />
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="install.html" class="btn btn-neutral float-right" title="NNToolChain 安装说明" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="../index.html" class="btn btn-neutral float-left" title="NNToolChain 中文文档" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Sophon
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

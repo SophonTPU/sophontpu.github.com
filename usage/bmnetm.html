@@ -1,0 +1,559 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>BMNETM 使用 &mdash; NNToolChain  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="BMNETP 使用" href="bmnetp.html" />
+    <link rel="prev" title="BMNETT 使用" href="bmnett.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> NNToolChain
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart/abstract.html">NNToolChain 基本概念介绍</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart/abstract.html#id1">版本特性</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart/abstract.html#id2">NNToolChain 整体架构</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart/install.html">NNToolChain 安装说明</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart/install.html#pcie">PCIE模式安装</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart/install.html#soc">SoC模式安装</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="bmnetc.html">BMNETC 使用</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bmnett.html">BMNETT 使用</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">BMNETM 使用</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#mxnet">编译MxNet模型</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mxnetlayer">实现MxNet自定义layer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#bmlang">基于BMLang开发</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="bmnetp.html">BMNETP 使用</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bmlang.html">BMLang 说明</a></li>
+<li class="toctree-l1"><a class="reference internal" href="runtime.html">BMRuntime 使用</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bmodel.html">bmodel 使用</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../sample.html">示例代码</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">NNToolChain</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>BMNETM 使用</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/usage/bmnetm.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="bmnetm">
+<h1>BMNETM 使用<a class="headerlink" href="#bmnetm" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="mxnet">
+<h2>编译MxNet模型<a class="headerlink" href="#mxnet" title="Permalink to this headline">¶</a></h2>
+<p>BMNETM是针对mxnet的模型编译器，可以将mxnet格式的模型结构文件和参数文件（比如：lenet-symbol.json和lenet-0100.params）在经过图编译优化后，转换成BMRuntime所需的文件。可选择将每一个操作的NPU模型计算结果和原始模型在mxnet框架上的计算结果进行对比，保证模型转换的正确性。下面分别介绍该编译器的安装需求、配置步骤和使用方法及命令参数简介。</p>
+<ol class="arabic">
+<li><p class="first">安装需求</p>
+<ul class="simple">
+<li>python 3.5.x</li>
+<li>mxnet&gt;=1.3.0</li>
+<li>linux</li>
+</ul>
+</li>
+<li><p class="first">配置步骤</p>
+<ul class="simple">
+<li>步骤1：</li>
+</ul>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1">#安装mxnet 1.3.0</span>
+pip3 install <span class="nv">mxnet</span><span class="o">==</span><span class="m">1</span>.3.0
+<span class="c1">#验证mxnet安装的正确性，安装异常提示No module named &quot;mxnet&quot;;</span>
+python3 –c <span class="s2">&quot;import mxnet as mx&quot;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li>步骤2:</li>
+</ul>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1">#安装bmnetm python包</span>
+pip3 install --user bmnetm-x.x.x-py2.py3-none-any.whl
+</pre></div>
+</div>
+<ul class="simple">
+<li>步骤3:</li>
+</ul>
+<p>设置LD_LIBRARY_PATH。可以使用以下方式在当前shell中设置该库的路径，或者也可以选择将该路径的设置永久地添加到‘.bashrc’文件中，如下：</p>
+<p><code class="docutils literal notranslate"><span class="pre">export</span> <span class="pre">LD_LIBRARY_PATH=path_to_bmcompiler_lib:$</span> <span class="pre">LD_LIBRARY_PATH</span></code></p>
+</li>
+<li><p class="first">使用方法</p>
+<ol class="arabic simple">
+<li>方式一：命令形式</li>
+</ol>
+<p>Command name: python3 -m bmnetm    - BMNet compiler command for MxNet model</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python3 -m bmnetm <span class="o">[</span>--model<span class="o">=</span>&lt;path&gt;<span class="o">]</span> <span class="se">\</span>
+                  <span class="o">[</span>--weight<span class="o">=</span>&lt;path&gt;<span class="o">]</span> <span class="se">\</span>
+                  <span class="o">[</span>--shapes<span class="o">=</span>&lt;string&gt;<span class="o">]</span> <span class="se">\</span>
+                  <span class="o">[</span>--input_names<span class="o">=</span>&lt;string&gt;<span class="o">]</span> <span class="se">\</span>
+                  <span class="o">[</span>--net_name<span class="o">=</span>&lt;name&gt;<span class="o">]</span> <span class="se">\</span>
+                  <span class="o">[</span>--opt<span class="o">=</span>&lt;value&gt;<span class="o">]</span> <span class="se">\</span>
+                  <span class="o">[</span>--dyn<span class="o">=</span>&lt;bool&gt;<span class="o">]</span> <span class="se">\</span>
+                  <span class="o">[</span>--outdir<span class="o">=</span>&lt;path&gt;<span class="o">]</span> <span class="se">\</span>
+                  <span class="o">[</span>--target<span class="o">=</span>&lt;name&gt;<span class="o">]</span> <span class="se">\</span>
+                  <span class="o">[</span>--cmp<span class="o">=</span>&lt;bool&gt;<span class="o">]</span>
+</pre></div>
+</div>
+<p>参数介绍如下：</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="19%" />
+<col width="14%" />
+<col width="68%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">args</th>
+<th class="head">type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>model</td>
+<td>string</td>
+<td><strong>Necessary</strong>. MxNet symbol .json path</td>
+</tr>
+<tr class="row-odd"><td>weight</td>
+<td>string</td>
+<td><strong>Necessary</strong>. MxNet weight .params path</td>
+</tr>
+<tr class="row-even"><td>shapes</td>
+<td>string</td>
+<td><strong>Necessary</strong>. Shapes of all inputs, default use
+the shape in prototxt, format [x,x,x,x],[x,x]…,
+these correspond to inputs one by one in sequence</td>
+</tr>
+<tr class="row-odd"><td>input_names</td>
+<td>string</td>
+<td><strong>Optional</strong>. Set input name according to .json. They
+correspond to shapes one by one. Default: “data”.
+Format “name1,name2,…”.</td>
+</tr>
+<tr class="row-even"><td>net_name</td>
+<td>string</td>
+<td><strong>Necessary</strong>. Name of the network, default use the
+name in prototxt</td>
+</tr>
+<tr class="row-odd"><td>opt</td>
+<td>int</td>
+<td><strong>Optional</strong>. Optimization level. Option: 0, 1, 2,
+default 1.</td>
+</tr>
+<tr class="row-even"><td>dyn</td>
+<td>bool</td>
+<td><strong>Optional</strong>. Use dynamic compilation, default false.</td>
+</tr>
+<tr class="row-odd"><td>outdir</td>
+<td>string</td>
+<td><strong>Necessary</strong>. Output directory</td>
+</tr>
+<tr class="row-even"><td>target</td>
+<td>string</td>
+<td><strong>Necessary</strong>. Option: BM1682, BM1684; default: BM1682</td>
+</tr>
+<tr class="row-odd"><td>cmp</td>
+<td>bool</td>
+<td><strong>Optional</strong>.Check result during compilation.
+Default: true</td>
+</tr>
+</tbody>
+</table>
+<ol class="arabic simple" start="2">
+<li>方式二：python接口</li>
+</ol>
+<p>bmnetm的python接口如下：</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">bmnetm</span>
+<span class="c1">## compile fp32 model</span>
+<span class="n">bmnetm</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+  <span class="n">model</span> <span class="o">=</span> <span class="s2">&quot;/path/to/.json&quot;</span><span class="p">,</span>       <span class="c1">## Necessary</span>
+  <span class="n">weight</span> <span class="o">=</span> <span class="s2">&quot;/path/to/.params&quot;</span><span class="p">,</span>    <span class="c1">## Necessary</span>
+  <span class="n">ourdir</span> <span class="o">=</span> <span class="s2">&quot;xxx&quot;</span><span class="p">,</span>                 <span class="c1">## Necessary</span>
+  <span class="n">target</span> <span class="o">=</span> <span class="s2">&quot;BM1682&quot;</span><span class="p">,</span>              <span class="c1">## Necessary</span>
+  <span class="n">shapes</span> <span class="o">=</span> <span class="p">[[</span><span class="n">x</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">x</span><span class="p">],</span> <span class="p">[</span><span class="n">x</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">x</span><span class="p">]],</span>  <span class="c1">## Necessary</span>
+  <span class="n">net_name</span> <span class="o">=</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span>              <span class="c1">## Necessary</span>
+  <span class="n">input_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;name1&quot;</span><span class="p">,</span><span class="s2">&quot;name2&quot;</span><span class="p">]</span>   <span class="c1">## optional, if not set, default is &quot;data&quot;</span>
+  <span class="n">opt</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>                        <span class="c1">## optional, if not set, default equal to 1</span>
+  <span class="n">dyn</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span>                    <span class="c1">## optional, if not set, default equal to False</span>
+  <span class="nb">cmp</span> <span class="o">=</span> <span class="bp">True</span>                      <span class="c1">## optional, if not set, default equal to True</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</div>
+<div class="section" id="mxnetlayer">
+<h2>实现MxNet自定义layer<a class="headerlink" href="#mxnetlayer" title="Permalink to this headline">¶</a></h2>
+<p>BMNetM前端下自定义layer实现的可编程环境为python环境，该环境请见layers_ext文件夹。Note：bmnetm下自定义layer加入网络一起编译目前支持使用Python接口的方式。</p>
+<div class="section" id="bmlang">
+<h3>基于BMLang开发<a class="headerlink" href="#bmlang" title="Permalink to this headline">¶</a></h3>
+<p>BMLang是提供用户针对BMTPU编程的接口，所实现的算法可以在BMTPU中运行，详细见 <a class="reference internal" href="bmlang.html#bmlang"><span class="std std-ref">BMLang 说明</span></a> 。</p>
+<p>这里介绍如何在bmnetm编程环境下对自定义layer或者bmnetm未支持的layer进行TPU编程，并将BMLang实现的layer插入到网络中，与其他layer一起进行网络级的编译，生成网络的bmodel。</p>
+<p>这里我们以activate_layer为例，介绍基于BMLang开发网络中未支持layer的步骤：</p>
+<ol class="arabic simple">
+<li>MxNet的python包更新</li>
+</ol>
+<p>在进行BMLang开发前，需要将包含自定义layer实现的mxnet python包安装替换原来的mxnet python包。如果已经安装的mxnet python包中已经包含用户自定义layer的cpu实现，则直接进入第2步。</p>
+<ol class="arabic simple" start="2">
+<li>在layer_ext文件夹里加入代码文件</li>
+</ol>
+<p>文件夹中已经存在activate_layer.py这个example。其源代码为：</p>
+<p>其中，activation_core函数是使用BMLang对activate这个算法进行编程。user_activation则是解析改OP的参数，并调用activation_core。</p>
+<blockquote>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">The following is an example that use bmlang(python) to implement a operation for BITMAIN TPU</span>
+<span class="sd">A typical bmlang program for an OP implementation should include</span>
+<span class="sd">1. A compute core that is written by bmlang</span>
+<span class="sd">2. A register that import the bmlang program to bmnetm compiler</span>
+<span class="sd">3. (Optional) A debug module that check the accuracy of bmlang program</span>
+<span class="sd">&#39;&#39;&#39;</span>
+
+<span class="kn">import</span> <span class="nn">bmlang</span>
+
+<span class="n">ACTIVE_TYPE_DICT</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;tanh&#39;</span>    <span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="s1">&#39;sigmoid&#39;</span> <span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s1">&#39;Sigmoid&#39;</span> <span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s1">&#39;relu&#39;</span>    <span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="s1">&#39;exp&#39;</span>     <span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+    <span class="s1">&#39;elu&#39;</span>     <span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
+    <span class="s1">&#39;sort&#39;</span>    <span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+    <span class="s1">&#39;square&#39;</span>  <span class="p">:</span> <span class="mi">6</span><span class="p">,</span>
+    <span class="s1">&#39;rsort&#39;</span>   <span class="p">:</span> <span class="mi">7</span><span class="p">,</span>
+    <span class="s1">&#39;absval&#39;</span>  <span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+    <span class="s1">&#39;ln&#39;</span>      <span class="p">:</span> <span class="mi">9</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">The following is the activation compute core that is written by bmlang API</span>
+<span class="sd">The parameters in this function are defined by users</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="k">def</span> <span class="nf">activation_core</span><span class="p">(</span><span class="n">bottom_name</span><span class="p">,</span> <span class="n">top_name</span><span class="p">,</span> <span class="n">shape_dim</span><span class="p">,</span> <span class="n">tensor_shape</span><span class="p">,</span> <span class="n">active_type_id</span><span class="p">):</span>
+  <span class="k">print</span><span class="p">(</span><span class="n">shape_dim</span><span class="p">)</span>
+  <span class="k">print</span><span class="p">(</span><span class="s1">&#39;in tensor name: &#39;</span><span class="p">,</span> <span class="n">bottom_name</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;out tensor name: &#39;</span><span class="p">,</span> <span class="n">top_name</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+  <span class="k">if</span> <span class="n">shape_dim</span> <span class="o">==</span> <span class="p">[</span><span class="mi">4</span><span class="p">]:</span>
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;add active layer, dim is 4&#39;</span><span class="p">)</span>
+    <span class="c1">## create bmlang tensor of activation input</span>
+    <span class="n">inp_tensor</span> <span class="o">=</span> <span class="n">bmlang</span><span class="o">.</span><span class="n">bmtensor_float</span><span class="p">(</span><span class="n">bottom_name</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">tensor_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">tensor_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">tensor_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">],</span> <span class="n">tensor_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">3</span><span class="p">])</span>
+    <span class="c1">## create bmlang tensor of activation output</span>
+    <span class="n">oup_tensor</span> <span class="o">=</span> <span class="n">bmlang</span><span class="o">.</span><span class="n">bmtensor_float</span><span class="p">(</span><span class="n">top_name</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">tensor_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">tensor_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">tensor_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">],</span> <span class="n">tensor_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">3</span><span class="p">])</span>
+    <span class="c1">## bmlang compution operation</span>
+    <span class="n">bmlang</span><span class="o">.</span><span class="n">bm_active_float</span><span class="p">(</span><span class="n">inp_tensor</span><span class="p">,</span> <span class="n">oup_tensor</span><span class="p">,</span> <span class="n">active_type_id</span><span class="p">)</span>
+  <span class="k">elif</span> <span class="n">shape_dim</span> <span class="o">==</span> <span class="p">[</span><span class="mi">2</span><span class="p">]:</span>
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;add active layer, dim is 2&#39;</span><span class="p">)</span>
+    <span class="c1">## create bmlang tensor of activation input</span>
+    <span class="n">inp_tensor</span> <span class="o">=</span> <span class="n">bmlang</span><span class="o">.</span><span class="n">bmtensor_float</span><span class="p">(</span><span class="n">bottom_name</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">tensor_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">tensor_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span>
+    <span class="c1">## create bmlang tensor of activation output</span>
+    <span class="n">oup_tensor</span> <span class="o">=</span> <span class="n">bmlang</span><span class="o">.</span><span class="n">bmtensor_float</span><span class="p">(</span><span class="n">top_name</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">tensor_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">tensor_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span>
+    <span class="c1">## bmlang compution operation</span>
+    <span class="n">bmlang</span><span class="o">.</span><span class="n">bm_active_float</span><span class="p">(</span><span class="n">inp_tensor</span><span class="p">,</span> <span class="n">oup_tensor</span><span class="p">,</span> <span class="n">active_type_id</span><span class="p">)</span>
+
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">The following is the register that import bmlang program to bmnetm compiler</span>
+<span class="sd">When we finish it. We must register this function in layer_ext_register.py</span>
+<span class="sd">The name of the function can be defined by users</span>
+<span class="sd">But the paramteters must be set as follows</span>
+<span class="sd">  @param node           The node of mxnet. It correspond to each node of mxnet symbol.json</span>
+<span class="sd">  @param tensor         The input and output tensors of the node</span>
+<span class="sd">  The tensor information include</span>
+<span class="sd">    tensor.InTensorName           The name of the inputs of this node. It is corresponding to the input name in mxnet symbol.json</span>
+<span class="sd">    tensor.InTensorShape          The input shapes of the node.</span>
+<span class="sd">    tensor.InTensorDim            The dimension number of each input shapes.</span>
+<span class="sd">    tensor.InTensorRawData        The raw data of tensor. Mainly for coefficient.</span>
+<span class="sd">    tensor.OutTensorName          The name of the outputs of this node. It is corresponding to the output name in mxnet symbol.json</span>
+<span class="sd">    tensor.OutTensorShape         The output shapes of the node.</span>
+<span class="sd">    tensor.OutTensorDim           The dimension number of each output shapes.</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="k">def</span> <span class="nf">user_activation</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">tensor</span><span class="p">):</span>
+  <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">  In the register, we should firstly parse the params of the OP</span>
+<span class="sd">  The following is parser of this OP</span>
+<span class="sd">  The key/value of node is the same with node information in symbol.json</span>
+<span class="sd">  &#39;&#39;&#39;</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">ACTIVE_TYPE_DICT</span><span class="o">.</span><span class="fm">__contains__</span><span class="p">(</span><span class="n">node</span><span class="p">[</span><span class="s2">&quot;op&quot;</span><span class="p">])):</span>
+    <span class="n">active_type_id</span> <span class="o">=</span> <span class="n">ACTIVE_TYPE_DICT</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">node</span><span class="p">[</span><span class="s2">&quot;op&quot;</span><span class="p">])</span>
+  <span class="k">elif</span> <span class="p">(</span><span class="n">ACTIVE_TYPE_DICT</span><span class="o">.</span><span class="fm">__contains__</span><span class="p">(</span><span class="n">node</span><span class="p">[</span><span class="s2">&quot;attrs&quot;</span><span class="p">][</span><span class="s2">&quot;act_type&quot;</span><span class="p">])):</span>
+    <span class="n">active_type_id</span> <span class="o">=</span> <span class="n">ACTIVE_TYPE_DICT</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">node</span><span class="p">[</span><span class="s2">&quot;attrs&quot;</span><span class="p">][</span><span class="s2">&quot;act_type&quot;</span><span class="p">])</span>
+  <span class="k">elif</span> <span class="p">(</span><span class="n">ACTIVE_TYPE_DICT</span><span class="o">.</span><span class="fm">__contains__</span><span class="p">(</span><span class="n">node</span><span class="p">[</span><span class="s2">&quot;param&quot;</span><span class="p">][</span><span class="s2">&quot;act_type&quot;</span><span class="p">])):</span>
+    <span class="n">active_type_id</span> <span class="o">=</span> <span class="n">ACTIVE_TYPE_DICT</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">node</span><span class="p">[</span><span class="s2">&quot;param&quot;</span><span class="p">][</span><span class="s2">&quot;act_type&quot;</span><span class="p">])</span>
+  <span class="k">else</span><span class="p">:</span>
+    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Not support activate layer type&quot;</span><span class="p">)</span>
+
+  <span class="k">print</span><span class="p">(</span><span class="s1">&#39;EXT Factory: Bmlang activation is called&#39;</span><span class="p">)</span>
+
+  <span class="c1">## Get information of the input and output tensor</span>
+  <span class="n">shape_dim</span> <span class="o">=</span> <span class="n">tensor</span><span class="o">.</span><span class="n">InTensorDim</span>
+  <span class="n">bottom_name</span> <span class="o">=</span> <span class="n">tensor</span><span class="o">.</span><span class="n">InTensorName</span>
+  <span class="n">top_name</span> <span class="o">=</span> <span class="n">tensor</span><span class="o">.</span><span class="n">OutTensorName</span>
+  <span class="n">tensor_shape</span> <span class="o">=</span> <span class="n">tensor</span><span class="o">.</span><span class="n">InTensorShape</span>
+
+  <span class="c1">## Then set the bmlang model to COMPILE</span>
+  <span class="c1">## Now we set the mode of bmlang to BMLANG_COMPILE</span>
+  <span class="c1">## This mean compile this OP through bmcompiler</span>
+  <span class="n">bmlang</span><span class="o">.</span><span class="n">set_mode</span><span class="p">(</span><span class="n">bmlang</span><span class="o">.</span><span class="n">BMLANG_COMPILE</span><span class="p">)</span>
+  <span class="c1">## At last, call the compute core written through bmlang</span>
+  <span class="c1">## Compile the activation core</span>
+  <span class="n">activation_core</span><span class="p">(</span><span class="n">bottom_name</span><span class="p">,</span> <span class="n">top_name</span><span class="p">,</span> <span class="n">shape_dim</span><span class="p">,</span> <span class="n">tensor_shape</span><span class="p">,</span> <span class="n">active_type_id</span><span class="p">)</span>
+
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">BMLang debug example</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="k">def</span> <span class="nf">bmlang_active_debug</span><span class="p">():</span>
+  <span class="c1">## 1. call mxnet active cpu compuation</span>
+  <span class="c1">## 2. bmlang.set_mode(bmlang.BMLANG_COMPILE)</span>
+  <span class="c1">## 3. call activation_core()</span>
+  <span class="c1">## 4. compare results from 1 and 3 above</span>
+</pre></div>
+</div>
+</div></blockquote>
+<ol class="arabic simple" start="3">
+<li>在layer_ext_register.py代码中给bmnetm注册user_activation这个函数</li>
+</ol>
+<p>代码如下，如果要注册其它的自定义layer可以类似Activation一样在这里增加注册。</p>
+<blockquote>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">bmnetm</span>
+<span class="kn">from</span> <span class="nn">layers_ext.activate_layer</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="c1">## The layer that is wrote by bmlang can be registered here</span>
+<span class="k">def</span> <span class="nf">layer_ext_register</span><span class="p">():</span>
+    <span class="c1">## bmnetm.register(&#39;node_op_name&#39;, bmlang_register_func)</span>
+    <span class="n">bmnetm</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s1">&#39;Activation&#39;</span><span class="p">,</span> <span class="n">user_activation</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>其中’Activation’为该OP，对应.json文件中的”op”: “Activation”</p>
+<blockquote>
+<div><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;op&quot;</span><span class="p">:</span> <span class="s2">&quot;Activation&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;relu4&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;attrs&quot;</span><span class="p">:</span> <span class="p">{</span><span class="nt">&quot;act_type&quot;</span><span class="p">:</span> <span class="s2">&quot;relu&quot;</span><span class="p">},</span>
+  <span class="nt">&quot;inputs&quot;</span><span class="p">:</span> <span class="p">[[</span><span class="mi">19</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+<ol class="arabic simple" start="4">
+<li>基于Python来编译MxNet模型</li>
+</ol>
+<p>以下是以lenet为例来介绍，在使用bmnetm compile接口前，需要执行之前的注册程序layer_ext_register()。</p>
+<blockquote>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#model = r&#39;/path/to/xxx-symbol.json&#39;</span>
+<span class="n">model</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;../../../nnmodel/mxnet_models/lenet/lenet-symbol.json&#39;</span>
+
+<span class="c1">#weight = r&#39;/path/to/xxxx-xxxx.params&#39;</span>
+<span class="n">weight</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;../../../nnmodel/mxnet_models/lenet/lenet-0100.params&#39;</span>
+
+<span class="c1">#export_dir = r&#39;./xxx&#39;</span>
+<span class="n">export_dir</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;./compilation&#39;</span>
+
+<span class="c1">#set target</span>
+<span class="n">target</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;BM1682&#39;</span>
+
+<span class="c1">#set input shapes</span>
+<span class="n">shapes</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">28</span><span class="p">,</span> <span class="mi">28</span><span class="p">]]</span>
+
+<span class="c1">#set network name</span>
+<span class="n">net_name</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;lenet&#39;</span>
+
+<span class="c1">## If user writes user-defined layers through bmlang, please register these layers firstly</span>
+<span class="c1">## If user does not have user-defined layer through bmlang, please delete the following</span>
+<span class="kn">import</span> <span class="nn">layers_ext.layer_ext_register</span> <span class="kn">as</span> <span class="nn">new_register</span>
+<span class="n">new_register</span><span class="o">.</span><span class="n">layer_ext_register</span><span class="p">()</span>
+
+<span class="c1">## Launch bmnetm compilation</span>
+<span class="kn">import</span> <span class="nn">bmnetm</span>
+<span class="n">bmnetm</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">weight</span><span class="p">,</span> <span class="n">export_dir</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">shapes</span><span class="p">,</span> <span class="n">net_name</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+<ol class="arabic simple" start="5">
+<li>运行Python进行模型编译，最终将生成.bmodel，之后可用BMRuntime接口驱动.bmodel在BMTPU芯片上运行。假设上述程序文件是example.py，则：</li>
+</ol>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">python3</span> <span class="pre">example.py</span></code></p>
+<p>若仍有为支持的layer，程序会报错提示。然后开发新layer BMLang实现。</p>
+</div></blockquote>
+<ol class="arabic simple" start="6">
+<li>我们也可以对BMLang程序进行单元测试并调试，看bmlang描述的计算模式对不对。可以写一个test程序，调用mxnet的activation计算，在使用bmlang.set_mode(bmlang.BMLANG_COMPUTE)后调用activation_core，对两个输出结果进行比对。若不正确，则调试修改activation_core程序。</li>
+</ol>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="bmnetp.html" class="btn btn-neutral float-right" title="BMNETP 使用" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="bmnett.html" class="btn btn-neutral float-left" title="BMNETT 使用" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Sophon
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

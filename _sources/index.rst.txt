@@ -1,0 +1,48 @@
+.. NNToolChain documentation master file, created by
+   sphinx-quickstart on Thu Jan 31 14:55:12 2019.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
+
+NNToolChain 中文文档
+====================
+
+NNToolChain 是用于编译和部署深度学习模型到Sophon TPU的工具(https://sophon.ai), 包含
+
+#. Caffe/TensorFlow/MXNet/PyTorch 的前端parser
+#. 计算图优化的编译器及运行时
+#. Layer-based API: bmdnn/bmcv (similar to cuDNN for NVIDIA GPU);
+#. Tensor/Operator-based API: bmlang (writing custom op);
+
+**版权声明**
+
+版权所有 © 2018 北京比特大陆科技有限公司，未经比特大陆事先
+书面许可，不得以任何形式或方式复制、传播本文档的任何内容。
+如需获取更多信息，请浏览比特大陆官方网站 www.sophon.ai。
+
+NNToolChain 快速开始
+---------------------
+.. toctree::
+   :maxdepth: 1
+
+   quickstart/abstract
+   quickstart/install
+
+NNToolChain 使用说明
+---------------------
+.. toctree::
+   :maxdepth: 1
+
+   usage/bmnetc
+   usage/bmnett
+   usage/bmnetm
+   usage/bmnetp
+   usage/bmlang
+   usage/runtime
+   usage/bmodel
+
+NNToolChain 示例程序
+---------------------
+.. toctree::
+   :maxdepth: 1
+
+   sample

@@ -1,0 +1,310 @@
+BMNETM 使用
+===========
+
+编译MxNet模型
+_________________
+
+BMNETM是针对mxnet的模型编译器，可以将mxnet格式的模型结构文件和参数文件（比如：lenet-symbol.json和lenet-0100.params）在经过图编译优化后，转换成BMRuntime所需的文件。可选择将每一个操作的NPU模型计算结果和原始模型在mxnet框架上的计算结果进行对比，保证模型转换的正确性。下面分别介绍该编译器的安装需求、配置步骤和使用方法及命令参数简介。
+
+1. 安装需求
+
+   * python 3.5.x
+   * mxnet>=1.3.0
+   * linux
+
+2. 配置步骤
+
+   * 步骤1：
+
+   .. code-block:: shell
+
+      #安装mxnet 1.3.0
+      pip3 install mxnet==1.3.0
+      #验证mxnet安装的正确性，安装异常提示No module named "mxnet";
+      python3 –c "import mxnet as mx"
+
+   * 步骤2:
+
+   .. code-block:: shell
+
+      #安装bmnetm python包
+      pip3 install --user bmnetm-x.x.x-py2.py3-none-any.whl
+
+   * 步骤3:
+
+   设置LD_LIBRARY_PATH。可以使用以下方式在当前shell中设置该库的路径，或者也可以选择将该路径的设置永久地添加到‘.bashrc’文件中，如下：
+
+   ``export LD_LIBRARY_PATH=path_to_bmcompiler_lib:$ LD_LIBRARY_PATH``
+
+3. 使用方法
+
+   1. 方式一：命令形式
+
+   Command name: python3 -m bmnetm    - BMNet compiler command for MxNet model
+
+   .. code-block:: shell
+
+      python3 -m bmnetm [--model=<path>] \
+                        [--weight=<path>] \
+                        [--shapes=<string>] \
+                        [--input_names=<string>] \
+                        [--net_name=<name>] \
+                        [--opt=<value>] \
+                        [--dyn=<bool>] \
+                        [--outdir=<path>] \
+                        [--target=<name>] \
+                        [--cmp=<bool>]
+
+   参数介绍如下：
+
+   +---------------+-----------+-------------------------------------------------------+
+   |    args       |    type   |                   Description                         |
+   +===============+===========+=======================================================+
+   |    model      |  string   | **Necessary**. MxNet symbol .json path                |
+   +---------------+-----------+-------------------------------------------------------+
+   |    weight     |  string   | **Necessary**. MxNet weight .params path              |
+   +---------------+-----------+-------------------------------------------------------+
+   |               |           | **Necessary**. Shapes of all inputs, default use      |
+   |    shapes     |  string   | the shape in prototxt, format [x,x,x,x],[x,x]…,       |
+   |               |           | these correspond to inputs one by one in sequence     |
+   +---------------+-----------+-------------------------------------------------------+
+   |   input_names |  string   | **Optional**. Set input name according to .json. They |
+   |               |           | correspond to shapes one by one. Default: "data".     |
+   |               |           | Format "name1,name2,...".                             |
+   +---------------+-----------+-------------------------------------------------------+
+   |    net_name   |  string   | **Necessary**. Name of the network, default use the   |
+   |               |           | name in prototxt                                      |
+   +---------------+-----------+-------------------------------------------------------+
+   |      opt      |   int     | **Optional**. Optimization level. Option: 0, 1, 2,    |
+   |               |           | default 1.                                            |
+   +---------------+-----------+-------------------------------------------------------+
+   |      dyn      |   bool    | **Optional**. Use dynamic compilation, default false. |
+   +---------------+-----------+-------------------------------------------------------+
+   |     outdir    |  string   | **Necessary**. Output directory                       |
+   +---------------+-----------+-------------------------------------------------------+
+   |     target    |  string   | **Necessary**. Option: BM1682, BM1684; default: BM1682|
+   +---------------+-----------+-------------------------------------------------------+
+   |      cmp      |   bool    | **Optional**.Check result during compilation.         |
+   |               |           | Default: true                                         |
+   +---------------+-----------+-------------------------------------------------------+
+
+   2. 方式二：python接口
+
+   bmnetm的python接口如下：
+
+   .. code-block:: python
+
+      import bmnetm
+      ## compile fp32 model
+      bmnetm.compile(
+        model = "/path/to/.json",       ## Necessary
+        weight = "/path/to/.params",    ## Necessary
+        ourdir = "xxx",                 ## Necessary
+        target = "BM1682",              ## Necessary
+        shapes = [[x,x,x,x], [x,x,x]],  ## Necessary
+        net_name = "name",              ## Necessary
+        input_names=["name1","name2"]   ## optional, if not set, default is "data"
+        opt = 2,                        ## optional, if not set, default equal to 1
+        dyn = False,                    ## optional, if not set, default equal to False
+        cmp = True                      ## optional, if not set, default equal to True
+      )
+
+
+实现MxNet自定义layer
+________________________
+
+BMNetM前端下自定义layer实现的可编程环境为python环境，该环境请见layers_ext文件夹。Note：bmnetm下自定义layer加入网络一起编译目前支持使用Python接口的方式。
+
+基于BMLang开发
+>>>>>>>>>>>>>>>>>>>
+
+BMLang是提供用户针对BMTPU编程的接口，所实现的算法可以在BMTPU中运行，详细见 :ref:`BMLang` 。
+
+这里介绍如何在bmnetm编程环境下对自定义layer或者bmnetm未支持的layer进行TPU编程，并将BMLang实现的layer插入到网络中，与其他layer一起进行网络级的编译，生成网络的bmodel。
+
+这里我们以activate_layer为例，介绍基于BMLang开发网络中未支持layer的步骤：
+
+1. MxNet的python包更新
+
+在进行BMLang开发前，需要将包含自定义layer实现的mxnet python包安装替换原来的mxnet python包。如果已经安装的mxnet python包中已经包含用户自定义layer的cpu实现，则直接进入第2步。
+
+2. 在layer_ext文件夹里加入代码文件
+
+文件夹中已经存在activate_layer.py这个example。其源代码为：
+
+其中，activation_core函数是使用BMLang对activate这个算法进行编程。user_activation则是解析改OP的参数，并调用activation_core。
+
+  .. code-block:: python
+
+    '''
+    The following is an example that use bmlang(python) to implement a operation for BITMAIN TPU
+    A typical bmlang program for an OP implementation should include
+    1. A compute core that is written by bmlang
+    2. A register that import the bmlang program to bmnetm compiler
+    3. (Optional) A debug module that check the accuracy of bmlang program
+    '''
+    
+    import bmlang
+    
+    ACTIVE_TYPE_DICT = {
+        'tanh'    : 0,
+        'sigmoid' : 1,
+        'Sigmoid' : 1,
+        'relu'    : 2,
+        'exp'     : 3,
+        'elu'     : 4,
+        'sort'    : 5,
+        'square'  : 6,
+        'rsort'   : 7,
+        'absval'  : 8,
+        'ln'      : 9,
+    }
+    
+    '''
+    The following is the activation compute core that is written by bmlang API
+    The parameters in this function are defined by users
+    ''' 
+    def activation_core(bottom_name, top_name, shape_dim, tensor_shape, active_type_id):
+      print(shape_dim)
+      print('in tensor name: ', bottom_name[0], 'out tensor name: ', top_name[0])
+      if shape_dim == [4]:
+        print('add active layer, dim is 4')
+        ## create bmlang tensor of activation input
+        inp_tensor = bmlang.bmtensor_float(bottom_name[0], tensor_shape[0][0], tensor_shape[0][1], tensor_shape[0][2], tensor_shape[0][3])
+        ## create bmlang tensor of activation output
+        oup_tensor = bmlang.bmtensor_float(top_name[0], tensor_shape[0][0], tensor_shape[0][1], tensor_shape[0][2], tensor_shape[0][3])
+        ## bmlang compution operation
+        bmlang.bm_active_float(inp_tensor, oup_tensor, active_type_id)
+      elif shape_dim == [2]:
+        print('add active layer, dim is 2')
+        ## create bmlang tensor of activation input
+        inp_tensor = bmlang.bmtensor_float(bottom_name[0], tensor_shape[0][0], tensor_shape[0][1])
+        ## create bmlang tensor of activation output
+        oup_tensor = bmlang.bmtensor_float(top_name[0], tensor_shape[0][0], tensor_shape[0][1])
+        ## bmlang compution operation
+        bmlang.bm_active_float(inp_tensor, oup_tensor, active_type_id)
+    
+    '''
+    The following is the register that import bmlang program to bmnetm compiler
+    When we finish it. We must register this function in layer_ext_register.py
+    The name of the function can be defined by users
+    But the paramteters must be set as follows
+      @param node           The node of mxnet. It correspond to each node of mxnet symbol.json
+      @param tensor         The input and output tensors of the node
+      The tensor information include
+        tensor.InTensorName           The name of the inputs of this node. It is corresponding to the input name in mxnet symbol.json
+        tensor.InTensorShape          The input shapes of the node.
+        tensor.InTensorDim            The dimension number of each input shapes.
+        tensor.InTensorRawData        The raw data of tensor. Mainly for coefficient.
+        tensor.OutTensorName          The name of the outputs of this node. It is corresponding to the output name in mxnet symbol.json
+        tensor.OutTensorShape         The output shapes of the node.
+        tensor.OutTensorDim           The dimension number of each output shapes.
+    '''
+    def user_activation(node, tensor):
+      '''
+      In the register, we should firstly parse the params of the OP
+      The following is parser of this OP
+      The key/value of node is the same with node information in symbol.json
+      '''
+      if (ACTIVE_TYPE_DICT.__contains__(node["op"])):
+        active_type_id = ACTIVE_TYPE_DICT.get(node["op"])
+      elif (ACTIVE_TYPE_DICT.__contains__(node["attrs"]["act_type"])):
+        active_type_id = ACTIVE_TYPE_DICT.get(node["attrs"]["act_type"])
+      elif (ACTIVE_TYPE_DICT.__contains__(node["param"]["act_type"])):
+        active_type_id = ACTIVE_TYPE_DICT.get(node["param"]["act_type"])
+      else:
+        raise RuntimeError("Not support activate layer type")
+    
+      print('EXT Factory: Bmlang activation is called')
+    
+      ## Get information of the input and output tensor
+      shape_dim = tensor.InTensorDim
+      bottom_name = tensor.InTensorName
+      top_name = tensor.OutTensorName
+      tensor_shape = tensor.InTensorShape
+    
+      ## Then set the bmlang model to COMPILE
+      ## Now we set the mode of bmlang to BMLANG_COMPILE
+      ## This mean compile this OP through bmcompiler
+      bmlang.set_mode(bmlang.BMLANG_COMPILE)
+      ## At last, call the compute core written through bmlang
+      ## Compile the activation core
+      activation_core(bottom_name, top_name, shape_dim, tensor_shape, active_type_id)
+    
+    '''
+    BMLang debug example
+    '''
+    def bmlang_active_debug():
+      ## 1. call mxnet active cpu compuation
+      ## 2. bmlang.set_mode(bmlang.BMLANG_COMPILE)
+      ## 3. call activation_core()
+      ## 4. compare results from 1 and 3 above
+
+3. 在layer_ext_register.py代码中给bmnetm注册user_activation这个函数
+
+代码如下，如果要注册其它的自定义layer可以类似Activation一样在这里增加注册。
+
+  .. code-block:: python
+
+    import bmnetm
+    from layers_ext.activate_layer import *
+    
+    ## The layer that is wrote by bmlang can be registered here
+    def layer_ext_register():
+        ## bmnetm.register('node_op_name', bmlang_register_func)
+        bmnetm.register('Activation', user_activation) 
+
+其中'Activation'为该OP，对应.json文件中的"op": "Activation"
+
+  .. code-block:: json
+
+    {
+      "op": "Activation",
+      "name": "relu4",
+      "attrs": {"act_type": "relu"},
+      "inputs": [[19, 0, 0]]
+    }
+
+4. 基于Python来编译MxNet模型
+
+以下是以lenet为例来介绍，在使用bmnetm compile接口前，需要执行之前的注册程序layer_ext_register()。
+
+  .. code-block:: python
+
+    #model = r'/path/to/xxx-symbol.json'
+    model = r'../../../nnmodel/mxnet_models/lenet/lenet-symbol.json'
+    
+    #weight = r'/path/to/xxxx-xxxx.params'
+    weight = r'../../../nnmodel/mxnet_models/lenet/lenet-0100.params'
+    
+    #export_dir = r'./xxx'
+    export_dir = r'./compilation'
+    
+    #set target
+    target = r'BM1682'
+    
+    #set input shapes
+    shapes = [[1, 1, 28, 28]]
+    
+    #set network name
+    net_name = r'lenet'
+    
+    ## If user writes user-defined layers through bmlang, please register these layers firstly
+    ## If user does not have user-defined layer through bmlang, please delete the following
+    import layers_ext.layer_ext_register as new_register
+    new_register.layer_ext_register()
+    
+    ## Launch bmnetm compilation
+    import bmnetm
+    bmnetm.compile(model, weight, export_dir, target, shapes, net_name)
+
+5. 运行Python进行模型编译，最终将生成.bmodel，之后可用BMRuntime接口驱动.bmodel在BMTPU芯片上运行。假设上述程序文件是example.py，则：
+
+  ``python3 example.py``
+
+  若仍有为支持的layer，程序会报错提示。然后开发新layer BMLang实现。
+
+
+6. 我们也可以对BMLang程序进行单元测试并调试，看bmlang描述的计算模式对不对。可以写一个test程序，调用mxnet的activation计算，在使用bmlang.set_mode(bmlang.BMLANG_COMPUTE)后调用activation_core，对两个输出结果进行比对。若不正确，则调试修改activation_core程序。
+
+

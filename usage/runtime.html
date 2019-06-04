@@ -1,0 +1,1088 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>BMRuntime 使用 &mdash; NNToolChain  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="bmodel 使用" href="bmodel.html" />
+    <link rel="prev" title="BMLang 说明" href="bmlang.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> NNToolChain
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart/abstract.html">NNToolChain 基本概念介绍</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart/abstract.html#id1">版本特性</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart/abstract.html#id2">NNToolChain 整体架构</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart/install.html">NNToolChain 安装说明</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart/install.html#pcie">PCIE模式安装</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart/install.html#soc">SoC模式安装</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="bmnetc.html">BMNETC 使用</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bmnett.html">BMNETT 使用</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bmnetm.html">BMNETM 使用</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bmnetp.html">BMNETP 使用</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bmlang.html">BMLang 说明</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">BMRuntime 使用</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#c-interface-base">C Interface (Base)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#create-bmruntime">Create bmruntime</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#destroy-bmruntime">Destroy bmruntime</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#load-bmodel">Load bmodel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#show-neuron-network">Show neuron network</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#get-network-number">Get network number</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#get-network-names">Get network names</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#get-network-index">Get network index</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#get-input-tensors">Get input tensors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#get-output-tensors">Get output tensors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#get-input-shape">Get input shape</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#get-output-shape">Get output shape</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#get-input-data-type">Get input data type</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#get-output-data-type">Get output data type</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#get-input-store-mode">Get input store mode</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#get-output-store-mode">Get output store mode</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#input-shape-change">Input shape change</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#launch-computation">Launch computation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#malloc-device-memory">Malloc device memory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#free-device-memory">Free device memory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#data-copy">Data copy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#program-synchronize">Program synchronize</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#c-interface-caffe-like">C++ Interface (Caffe like)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="bmodel.html">bmodel 使用</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../sample.html">示例代码</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">NNToolChain</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>BMRuntime 使用</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/usage/runtime.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="bmruntime">
+<h1>BMRuntime 使用<a class="headerlink" href="#bmruntime" title="Permalink to this headline">¶</a></h1>
+<p>BMRUNTIME用于读取BMCompiler的编译输出(.bmodel)，驱动其在BITMAIN TPU芯片中执行。BMRUNTIME向用户提供了丰富的接口，便于用户移植算法，其软件架构如下:</p>
+<img alt="../_images/bmruntime.png" src="../_images/bmruntime.png" />
+<div class="section" id="c-interface-base">
+<h2>C Interface (Base)<a class="headerlink" href="#c-interface-base" title="Permalink to this headline">¶</a></h2>
+<p>基本的BMRuntime接口采用C语言，对应的头文件为bmruntime_interface.h，对应的lib库为libbmrt.so。</p>
+<div class="section" id="create-bmruntime">
+<h3>Create bmruntime<a class="headerlink" href="#create-bmruntime" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="o">*</span> <span class="nf">create_bmrt_helper</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">pbm_handle</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">chip_type</span><span class="p">,</span> <span class="kt">int</span> <span class="n">devid</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>This API creates the bmruntime. It returns a void* pointer which is the pointer of bmruntime. This API can set device id.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>[in/out] pbm_handle</strong> - BM runtime context. It is input if it had been created before. If it is NULL, it will be created as the output. This context is for using BMDNN and BMCV.</li>
+<li><strong>[in] chip_type</strong> - Chipname, such as BM1682_PCIE, BM1682_SOC, BM1682_PCIE, BM1684_SOC.</li>
+<li><strong>[in] devid</strong> - ID of device.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><ul class="first last simple">
+<li><strong>p_bmrt</strong> - The pointer of bmruntime</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#define create_bmruntime(pbm_handle, chip_type, ...) create_bmrt_helper(pbm_handle, chip_type, (0, ##__VA_ARGS__))</span>
+</pre></div>
+</div>
+<p>This API creates the bmruntime. It returns a void* pointer which is the pointer of bmruntime. This API default uses the 0-th device.</p>
+</div>
+<div class="section" id="destroy-bmruntime">
+<h3>Destroy bmruntime<a class="headerlink" href="#destroy-bmruntime" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">destroy_bmruntime</span><span class="p">(</span><span class="kt">void</span><span class="o">*</span> <span class="n">p_bmrt</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>This API destroys the bmruntime.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parametets:</th><td class="field-body"><ul class="first last simple">
+<li><strong>[in] p_bmrt</strong> - Bmruntime that had been created.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="load-bmodel">
+<h3>Load bmodel<a class="headerlink" href="#load-bmodel" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">bool</span> <span class="nf">bmrt_load_bmodel</span><span class="p">(</span><span class="kt">void</span><span class="o">*</span> <span class="n">p_bmrt</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">bmodel_path</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>This API is to load bmodel created by BM compiler. After loading bmodel, we can run the inference of neuron network. Different with bmrt_load context, bmodel is a file. Bmodel is the pack of the context.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>[in] p_bmrt</strong> - Bmruntime that had been created</li>
+<li><strong>[in] bmodel_path</strong> - Bmodel file directory.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><ul class="first last simple">
+<li><strong>bool</strong> - true: load bmodel success; false: load bmodel failed.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="show-neuron-network">
+<h3>Show neuron network<a class="headerlink" href="#show-neuron-network" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">bmrt_show_neuron_network</span><span class="p">(</span><span class="kt">void</span><span class="o">*</span> <span class="n">p_bmrt</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>To print the name of all neuron network</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>[in] p_bmrt</strong> - Bmruntime that had been created</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="get-network-number">
+<h3>Get network number<a class="headerlink" href="#get-network-number" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span> <span class="nf">bmrt_get_network_number</span><span class="p">(</span><span class="kt">void</span><span class="o">*</span> <span class="n">p_bmrt</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>To get the number of neuron network in the bmruntime</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>[in] p_bmrt</strong> - Bmruntime that had been created</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><ul class="first last simple">
+<li><strong>int</strong> - The number of neuron networks.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="get-network-names">
+<h3>Get network names<a class="headerlink" href="#get-network-names" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">bmrt_get_network_names</span><span class="p">(</span><span class="kt">void</span><span class="o">*</span> <span class="n">p_bmrt</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span><span class="o">***</span> <span class="n">network_names</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>To get the names of all neuron network in the bmruntime</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>[in] p_bmrt</strong> - Bmruntime that had been created.</li>
+<li><strong>[out] network_names</strong> - The names of all neuron networks. It should be declare as (const char** networks = NULL), and use as the param &amp;networks_. After this API, user need to free(networks) if user do not need it.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="get-network-index">
+<h3>Get network index<a class="headerlink" href="#get-network-index" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span> <span class="nf">bmrt_get_network_index</span><span class="p">(</span><span class="kt">void</span><span class="o">*</span> <span class="n">p_bmrt</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">net_name</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>To get the index of a network.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>[in] p_bmrt</strong> - Bmruntime that had been created</li>
+<li><strong>[in] net_name</strong> - The names of the neuron network.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><ul class="first last simple">
+<li><strong>int</strong> - The index of the network</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="get-input-tensors">
+<h3>Get input tensors<a class="headerlink" href="#get-input-tensors" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">bmrt_get_input_tensor</span><span class="p">(</span><span class="kt">void</span><span class="o">*</span> <span class="n">p_bmrt</span><span class="p">,</span> <span class="kt">int</span> <span class="n">net_idx</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">net_name</span><span class="p">,</span> <span class="kt">int</span> <span class="o">*</span><span class="n">input_num</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">***</span><span class="n">input_names</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>This API can get the input number and input name of a neuron network. This API can be used after loading context or bmodel.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>[in] p_bmrt</strong> - Bmruntime that had been created.</li>
+<li><strong>[in] net_idx</strong> - Neuron network index of the context. This parameter is enable if net_name == NULL, otherwise it is disable.</li>
+<li><strong>[in] net_name</strong> - The name of the neuron network. It can be NULL if we want to disable it.</li>
+<li><strong>[out] input_num</strong> - The input number of the neuron network.</li>
+<li><strong>[out] input_names</strong> - The input names of the neruon network. When we use this API, we can declare (const char** inputs = NULL), then use &amp;inputs as this parameter. Bmruntime will create space for inputs, and we need to free(inputs) if we do not use it.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="get-output-tensors">
+<h3>Get output tensors<a class="headerlink" href="#get-output-tensors" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">bmrt_get_output_tensor</span><span class="p">(</span><span class="kt">void</span><span class="o">*</span> <span class="n">p_bmrt</span><span class="p">,</span> <span class="kt">int</span> <span class="n">net_idx</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">net_name</span><span class="p">,</span> <span class="kt">int</span> <span class="o">*</span><span class="n">output_num</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">***</span><span class="n">output_names</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>This API can get the output number and output name of a neuron network. This API can only be used after loading context or bmodel.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>[in] p_bmrt</strong> - Bmruntime that had been created</li>
+<li><strong>[in] net_idx</strong> - Neuron network index of the context. This parameter is enable if net_name == NULL, otherwise it is disable.</li>
+<li><strong>[in] net_name</strong> - The name of the neuron network. It can be NULL if we want to use net_idx.</li>
+<li><strong>[out] output_num</strong> - The output number of the neuron network.</li>
+<li><strong>[out] output_names</strong> - The output names of the neruon network. When we use this API, we can declare (const char** outputs = NULL), then use &amp;outputs as this parameter. Bmruntime will create space for outputs, and we need to free(outputs) if we do not use it.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="get-input-shape">
+<h3>Get input shape<a class="headerlink" href="#get-input-shape" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">bmrt_get_input_blob_max_nhw</span><span class="p">(</span><span class="kt">void</span><span class="o">*</span> <span class="n">p_bmrt</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">tensor_name</span><span class="p">,</span>
+                                 <span class="kt">int</span> <span class="n">net_idx</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">net_name</span><span class="p">,</span>
+                                 <span class="kt">int</span> <span class="o">*</span> <span class="n">max_n</span><span class="p">,</span> <span class="kt">int</span> <span class="o">*</span> <span class="n">max_c</span><span class="p">,</span> <span class="kt">int</span> <span class="o">*</span> <span class="n">max_h</span><span class="p">,</span> <span class="kt">int</span> <span class="o">*</span> <span class="n">max_w</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>To get the max shape of the tensor. This API must indicate the name of the input tensor and neuron network. When using the neuron network that is static-compiled once, max shape is the real shape of the neuron netork. When using the neuron network that is dynamic-compiled, max shape is max value we can set.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>[in] p_bmrt</strong> - Bmruntime that had been created</li>
+<li><strong>[in] tensor_name</strong> - The name of the tensor.</li>
+<li><strong>[in] net_idx</strong> - Neuron network index of the context. This parameter is enable if net_name == NULL, otherwise it is disable.</li>
+<li><strong>[in] net_name</strong> - The name of the neuron network. It can be NULL if we want to use net_idx.</li>
+<li><strong>[out] max_n</strong> - The max batch number of the tensor.</li>
+<li><strong>[out] max_c</strong> - The max channels of the tensor.</li>
+<li><strong>[out] max_h</strong> - The max height of the tensor.</li>
+<li><strong>[out] max_w</strong> - The max width of the tensor.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="get-output-shape">
+<h3>Get output shape<a class="headerlink" href="#get-output-shape" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">bmrt_get_output_blob_max_nhw</span><span class="p">(</span><span class="kt">void</span><span class="o">*</span> <span class="n">p_bmrt</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">tensor_name</span><span class="p">,</span>
+                                  <span class="kt">int</span> <span class="n">net_idx</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">net_name</span><span class="p">,</span>
+                                  <span class="kt">int</span> <span class="o">*</span> <span class="n">max_n</span><span class="p">,</span> <span class="kt">int</span> <span class="o">*</span> <span class="n">max_c</span><span class="p">,</span> <span class="kt">int</span> <span class="o">*</span> <span class="n">max_h</span><span class="p">,</span> <span class="kt">int</span> <span class="o">*</span> <span class="n">max_w</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>To get the max shape of the tensor. This API must indicate the name of the output tensor and neuron network. When using the neuron network that is static-compiled once, max shape is the real shape of the neuron netork. When using the neuron network that is dynamic-compiled, max shape is max value we can set.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>[in] p_bmrt</strong> - Bmruntime that had been created</li>
+<li><strong>[in] tensor_name</strong> - The name of the tensor.</li>
+<li><strong>[in] net_idx</strong> - Neuron network index of the context. This parameter is enable if net_name == NULL, otherwise it is disable.</li>
+<li><strong>[in] net_name</strong> - The name of the neuron network. It can be NULL if we want to use net_idx.</li>
+<li><strong>[out] max_n</strong> - The max batch number of the tensor.</li>
+<li><strong>[out] max_c</strong> - The max channels of the tensor.</li>
+<li><strong>[out] max_h</strong> - The max height of the tensor.</li>
+<li><strong>[out] max_w</strong> - The max width of the tensor.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span> <span class="nf">bmrt_get_accurate_output_channel</span><span class="p">(</span><span class="kt">void</span><span class="o">*</span> <span class="n">p_bmrt</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">tensor_name</span><span class="p">,</span> <span class="kt">int</span> <span class="n">net_idx</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">net_name</span><span class="p">);</span>
+<span class="kt">int</span> <span class="nf">bmrt_get_accurate_output_height</span><span class="p">(</span><span class="kt">void</span><span class="o">*</span> <span class="n">p_bmrt</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">tensor_name</span><span class="p">,</span> <span class="kt">int</span> <span class="n">net_idx</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">net_name</span><span class="p">);</span>
+<span class="kt">int</span> <span class="nf">bmrt_get_accurate_output_width</span><span class="p">(</span><span class="kt">void</span><span class="o">*</span> <span class="n">p_bmrt</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">tensor_name</span><span class="p">,</span> <span class="kt">int</span> <span class="n">net_idx</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">net_name</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>To get the output channel, height and width. <strong>Note:</strong> These API must be called after inference launch. It will block cpu program to wait for the finishing of network inference if the neuron network is dynamic-compiled.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>[in] p_bmrt</strong> - Bmruntime that had been created.</li>
+<li><strong>[in] tensor_name</strong> - The name of the tensor</li>
+<li><strong>[in] net_idx</strong> - Neuron network index of the context. This parameter is enable if net_name == NULL, otherwise it is disable.</li>
+<li><strong>[in] net_name</strong> - The name of the neuron network. It can be NULL if we want to use net_idx.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><ul class="first last simple">
+<li><strong>int</strong> - The channels/height/width of the output tensor.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="get-input-data-type">
+<h3>Get input data type<a class="headerlink" href="#get-input-data-type" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span> <span class="nf">bmrt_get_input_data_type</span><span class="p">(</span><span class="kt">void</span><span class="o">*</span> <span class="n">p_bmrt</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">tensor_name</span><span class="p">,</span> <span class="kt">int</span> <span class="n">net_idx</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">net_name</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>To get the data type of the input tensor. The API is to get the data type of the tensor. Data type include float32, float16, int8, uint8, int16, uint16.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>[in] p_bmrt</strong> - Bmruntime that had been created</li>
+<li><strong>[in] tensor_name</strong> - The name of the tensor.</li>
+<li><strong>[in] net_idx</strong> - Neuron network index of the context. This parameter is enable if net_name == NULL, otherwise it is disable.</li>
+<li><strong>[in] net_name</strong> - The name of the neuron network. It can be NULL if we want to use net_idx.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><ul class="first last simple">
+<li><strong>int</strong> - 0: float32, 1: float16, 2: int8, 3: uint8, 4: int16, 5: uint16.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="get-output-data-type">
+<h3>Get output data type<a class="headerlink" href="#get-output-data-type" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span> <span class="nf">bmrt_get_output_data_type</span><span class="p">(</span><span class="kt">void</span><span class="o">*</span> <span class="n">p_bmrt</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">tensor_name</span><span class="p">,</span> <span class="kt">int</span> <span class="n">net_idx</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">net_name</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>To get the data type of the output tensor. The API is to get the data type of the tensor. Data type include float32, float16, int8, uint8, int16, uint16.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>[in] p_bmrt</strong> - Bmruntime that had been created</li>
+<li><strong>[in] tensor_name</strong> - The name of the tensor.</li>
+<li><strong>[in] net_idx</strong> - Neuron network index of the context. This parameter is enable if net_name == NULL, otherwise it is disable.</li>
+<li><strong>[in] net_name</strong> - The name of the neuron network. It can be NULL if we want to use net_idx.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><ul class="first last simple">
+<li><strong>int</strong> - 0: float32, 1: float16, 2: int8, 3: uint8, 4: int16, 5: uint16.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="get-input-store-mode">
+<h3>Get input store mode<a class="headerlink" href="#get-input-store-mode" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span> <span class="nf">bmrt_get_input_gmem_stmode</span><span class="p">(</span><span class="kt">void</span><span class="o">*</span> <span class="n">p_bmrt</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">tensor_name</span><span class="p">,</span> <span class="kt">int</span> <span class="n">net_idx</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">net_name</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>To get the data store mode of the input tensor. The API is to get the data store mode of the tensor. Data store mode includes 1N mode, 2N mode, 4N mode. 1N mode is the normal store mode we know.</p>
+<dl class="docutils">
+<dt>Parameters: - <strong>[in] p_bmrt</strong> - Bmruntime that had been created.</dt>
+<dd><ul class="first last simple">
+<li><strong>[in] tensor_name</strong> - The name of the tensor.</li>
+<li><strong>[in] net_idx</strong> - Neuron network index of the context. This parameter is enable if net_name == NULL, otherwise it is disable.</li>
+<li><strong>[in] net_name</strong> - The name of the neuron network. It can be NULL if we want to use net_idx.</li>
+</ul>
+</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><ul class="first last simple">
+<li><strong>int</strong> - 0: 1N, 1: 2N, 2: 4N</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="get-output-store-mode">
+<h3>Get output store mode<a class="headerlink" href="#get-output-store-mode" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span> <span class="nf">bmrt_get_output_gmem_stmode</span><span class="p">(</span><span class="kt">void</span><span class="o">*</span> <span class="n">p_bmrt</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">tensor_name</span><span class="p">,</span> <span class="kt">int</span> <span class="n">net_idx</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">net_name</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>To get the data store mode of the output tensor. The API is to get the data store mode of the tensor. Data store mode includes 1N mode, 2N mode, 4N mode. 1N mode is the normal store mode we know.</p>
+<dl class="docutils">
+<dt>Parameters: - <strong>[in] p_bmrt</strong> - Bmruntime that had been created.</dt>
+<dd><ul class="first last simple">
+<li><strong>[in] tensor_name</strong> - The name of the tensor.</li>
+<li><strong>[in] net_idx</strong> - Neuron network index of the context. This parameter is enable if net_name == NULL, otherwise it is disable.</li>
+<li><strong>[in] net_name</strong> - The name of the neuron network. It can be NULL if we want to use net_idx.</li>
+</ul>
+</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><ul class="first last simple">
+<li><strong>int</strong> - 0: 1N, 1: 2N, 2: 4N</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="input-shape-change">
+<h3>Input shape change<a class="headerlink" href="#input-shape-change" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">bool</span> <span class="nf">bmrt_can_batch_size_change</span><span class="p">(</span><span class="kt">void</span><span class="o">*</span> <span class="n">p_bmrt</span><span class="p">,</span> <span class="kt">int</span> <span class="n">net_idx</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">net_name</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>To judge if the neuron network after compiling can change batch size.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>[in] p_bmrt</strong> - Bmruntime that had been created.</li>
+<li><strong>[in] net_idx</strong> - Neuron network index of the context. This parameter is enable if net_name == NULL, otherwise it is disable.</li>
+<li><strong>[in] net_name</strong> - The name of the neuron network. It can be NULL if we want to use net_idx.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><ul class="first last simple">
+<li><strong>bool</strong> - ture: The neuron network after compiling can change batch size. false: The neuron network after compiling can not change batch size.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">bool</span> <span class="nf">bmrt_can_height_and_width_change</span><span class="p">(</span><span class="kt">void</span><span class="o">*</span> <span class="n">p_bmrt</span><span class="p">,</span> <span class="kt">int</span> <span class="n">net_idx</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">net_name</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>To judge if the neuron network after compiling can change input height and width</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>[in] p_bmrt</strong> - Bmruntime that had been created.</li>
+<li><strong>[in] net_idx</strong> - Neuron network index of the context. This parameter is enable if net_name == NULL, otherwise it is disable.</li>
+<li><strong>[in] net_name</strong> - The name of the neuron network. It can be NULL if we want to use net_idx.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><ul class="first last simple">
+<li><strong>bool</strong> - ture: The neuron network after compiling can change input height and width. false: The neuron network after compiling can not change input height and width.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="launch-computation">
+<h3>Launch computation<a class="headerlink" href="#launch-computation" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">bool</span> <span class="nf">bmrt_launch_nhw</span><span class="p">(</span><span class="kt">void</span><span class="o">*</span> <span class="n">p_bmrt</span><span class="p">,</span> <span class="kt">int</span> <span class="n">net_idx</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">net_name</span><span class="p">,</span>
+                     <span class="k">const</span> <span class="kt">void</span><span class="o">*</span> <span class="n">input_tensors</span><span class="p">,</span> <span class="kt">int</span> <span class="n">input_num</span><span class="p">,</span>
+                     <span class="k">const</span> <span class="kt">void</span><span class="o">*</span> <span class="n">output_tensors</span><span class="p">,</span> <span class="kt">int</span> <span class="n">output_num</span><span class="p">,</span>
+                     <span class="kt">int</span> <span class="n">n</span><span class="p">,</span> <span class="kt">int</span> <span class="n">h</span><span class="p">,</span> <span class="kt">int</span> <span class="n">w</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>To launch the inference of the neuron network with setting input n, h, w. This API supports the neuron nework that is static-compiled or dynamic-compiled. After calling this API, inference on TPU is launched. And the CPU
+program will not be blocked. <strong>Note:</strong> This API only support one input</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>[in] p_bmrt</strong> - Bmruntime that had been created.</li>
+<li><strong>[in] net_idx</strong> - Neuron network index of the context. This parameter is enable if net_name == NULL, otherwise it is disable.</li>
+<li><strong>[in] net_name</strong> - The name of the neuron network. It can be NULL if we want to use net_idx.</li>
+<li><strong>[in] input_tensors</strong> - The pointer of the input devce memory. It should be bm_device_mem_t*. input_tensors[i] must be created by malloc device memory.</li>
+<li><strong>[in] input_num</strong> - The input number of the neuron network.</li>
+<li><strong>[out] output_tensors</strong> - The pointer of the output devce memory. It should be bm_device_mem_t*. output_tensors[i] must be created by malloc device memory.</li>
+<li><strong>[in] output_num</strong> - The output number of the neuron network.</li>
+<li><strong>[in] n</strong> - The batch number of the neuron network.</li>
+<li><strong>[in] h</strong> - The input height of the neuron network.</li>
+<li><strong>[in] w</strong> - The input width of the neuron network.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><ul class="first last simple">
+<li><strong>bool</strong> - true: Launch success. false: Launch failed.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">bool</span> <span class="nf">bmrt_launch_shape</span><span class="p">(</span><span class="kt">void</span><span class="o">*</span> <span class="n">p_bmrt</span><span class="p">,</span> <span class="kt">int</span> <span class="n">net_idx</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">net_name</span><span class="p">,</span>
+                       <span class="k">const</span> <span class="kt">void</span><span class="o">*</span> <span class="n">input_tensors</span><span class="p">,</span> <span class="kt">int</span> <span class="n">input_num</span><span class="p">,</span>
+                       <span class="k">const</span> <span class="kt">int</span><span class="o">*</span> <span class="n">input_dim</span><span class="p">,</span> <span class="k">const</span> <span class="kt">int</span><span class="o">*</span> <span class="n">input_shape</span><span class="p">,</span>
+                       <span class="k">const</span> <span class="kt">void</span><span class="o">*</span> <span class="n">output_tensors</span><span class="p">,</span> <span class="kt">int</span> <span class="n">output_num</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>To launch the inference of the neuron network with setting input shape. This API supports the neuron nework that is static-compiled or dynamic-compiled. After calling this API, inference on TPU is launched. And the CPU
+program will not be blocked. This API support multiple inputs.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>[in] p_bmrt</strong> - Bmruntime that had been created.</li>
+<li><strong>[in] net_idx</strong> - Neuron network index of the context. This parameter is enable if net_name == NULL, otherwise it is disable.</li>
+<li><strong>[in] net_name</strong> - The name of the neuron network. It can be NULL if we want to use net_idx.</li>
+<li><strong>[in] input_tensors</strong> - The pointer of the input devce memory. It should be bm_device_mem_t*. input_tensors[i] must be created by malloc device memory.</li>
+<li><strong>[in] input_num</strong> - The input number of the neuron network.</li>
+<li><strong>[out] output_tensors</strong> - The pointer of the output devce memory. It should be bm_device_mem_t*. output_tensors[i] must be created by malloc device memory.</li>
+<li><strong>[in] output_num</strong> - The output number of the neuron network.</li>
+<li><strong>[in] input_dim</strong> - The dimension of each input.</li>
+<li><strong>[in] input_shape</strong> - The shape of each input. If the dimension of the i-th input is x, input_shape[i] has x elements. For example, 4 dimension will has 4 elements, input_shape[i][0] is N, input_shape[i][1] is C, input_shape[i][2] is H, input_shape[i][3] is W.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><ul class="first last simple">
+<li><strong>bool</strong> - true: Launch success. false: Launch failed.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">bool</span> <span class="nf">bmrt_launch_cpu_data</span><span class="p">(</span><span class="kt">void</span><span class="o">*</span> <span class="n">p_bmrt</span><span class="p">,</span> <span class="kt">int</span> <span class="n">net_idx</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">net_name</span><span class="p">,</span>
+                     <span class="kt">void</span><span class="o">*</span> <span class="n">input_tensors</span><span class="p">,</span> <span class="kt">int</span> <span class="n">input_num</span><span class="p">,</span>
+                     <span class="kt">void</span><span class="o">*</span> <span class="n">output_tensors</span><span class="p">,</span> <span class="kt">int</span> <span class="n">output_num</span><span class="p">,</span>
+                     <span class="k">const</span> <span class="kt">int</span><span class="o">*</span> <span class="n">in_shape</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">out_shape</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>To launch the inference of the neuron network with cpu data. This API supports the neuron nework that is static-compiled or dynamic-compiled. After calling this API, inference on TPU is launched. And the CPU program will be blocked.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>[in] p_bmrt</strong> - Bmruntime that had been created</li>
+<li><strong>[in] net_idxi</strong> - Neuron network index of the context. This parameter is enable if net_name == NULL, otherwise it is disable.</li>
+<li><strong>[in] net_name</strong> - The name of the neuron network. It can be NULL if we want to use net_idx.</li>
+<li><strong>[in] input_tensors</strong> - The cpu pointer of the input.</li>
+<li><strong>[in] input_num</strong> - The input number of the neuron network.</li>
+<li><strong>[out] output_tensors</strong> - The cpu pointer of the output.</li>
+<li><strong>[in] output_num</strong> - The output number of the neuron network.</li>
+<li><strong>[in] in_shape</strong> - The input shape of the neuron network. Support multiple inputs. shape format (net0_n, net0_c, net0_h, net0_w, net1_n, net1_c, net1_h, net1_w)</li>
+<li><strong>[out] out_shape</strong> - The output shape of the neuron network. Support multiple outputs. Bmruntime will set out_shape.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><ul class="first last simple">
+<li><strong>bool</strong> - true: Launch success. false: Launch failed.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">bool</span> <span class="nf">bmrt_launch_nhw_stmode</span><span class="p">(</span><span class="kt">void</span><span class="o">*</span> <span class="n">p_bmrt</span><span class="p">,</span> <span class="kt">int</span> <span class="n">net_idx</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">net_name</span><span class="p">,</span>
+                            <span class="k">const</span> <span class="kt">void</span><span class="o">*</span> <span class="n">input_tensors</span><span class="p">,</span> <span class="kt">int</span> <span class="n">input_num</span><span class="p">,</span>
+                            <span class="k">const</span> <span class="kt">void</span><span class="o">*</span> <span class="n">output_tensors</span><span class="p">,</span> <span class="kt">int</span> <span class="n">output_num</span><span class="p">,</span>
+                            <span class="kt">int</span> <span class="n">n</span><span class="p">,</span> <span class="kt">int</span> <span class="n">h</span><span class="p">,</span> <span class="kt">int</span> <span class="n">w</span><span class="p">,</span>
+                            <span class="kt">int</span><span class="o">*</span> <span class="n">in_stmode</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">out_stmode</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>To launch the inference of the neuron network with setting input n/h/w and store mode. This API supports the neuron nework that is static-compiled or dynamic-compiled. After calling this API, inference on TPU is launched. And the CPU. program will not be blocked. <strong>Note:</strong> This API only support one input of the neuron network.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>[in] p_bmrt</strong> - Bmruntime that had been created.</li>
+<li><strong>[in] net_idx</strong> - Neuron network index of the context. This parameter is enable if net_name == NULL, otherwise it is disable.</li>
+<li><strong>[in] net_name</strong> - The name of the neuron network. It can be NULL if we want to use net_idx.</li>
+<li><strong>[in] input_tensors</strong> - The pointer of the input devce memory. It should be bm_device_mem_t*. input_tensors[i] must be created by malloc device memory.</li>
+<li><strong>[in] input_num</strong> - The input number of the neuron network.</li>
+<li><strong>[out] output_tensors</strong> - The pointer of the output devce memory. It should be bm_device_mem_t*. output_tensors[i] must be created by malloc device memory.</li>
+<li><strong>[in] output_num</strong> - The output number of the neuron network.</li>
+<li><strong>[in] n</strong> - The batch number of the neuron network.</li>
+<li><strong>[in] h</strong> - The input height of the neuron network.</li>
+<li><strong>[in] w</strong> - The input width of the neuron network.</li>
+<li><strong>[in] in_stmode</strong> - User define the store mode of the input.</li>
+<li><strong>[in] out_stmode</strong> - User define the store mode of the output.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><ul class="first last simple">
+<li><strong>bool</strong> - true: Launch success. false: Launch failed.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">bool</span> <span class="nf">bmrt_launch_shape_stmode</span><span class="p">(</span><span class="kt">void</span><span class="o">*</span> <span class="n">p_bmrt</span><span class="p">,</span> <span class="kt">int</span> <span class="n">net_idx</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">net_name</span><span class="p">,</span>
+                              <span class="k">const</span> <span class="kt">void</span><span class="o">*</span> <span class="n">input_tensors</span><span class="p">,</span> <span class="kt">int</span> <span class="n">input_num</span><span class="p">,</span>
+                              <span class="k">const</span> <span class="kt">int</span><span class="o">*</span> <span class="n">input_dim</span><span class="p">,</span> <span class="k">const</span> <span class="kt">int</span><span class="o">*</span> <span class="n">input_shape</span><span class="p">,</span>
+                              <span class="k">const</span> <span class="kt">void</span><span class="o">*</span> <span class="n">output_tensors</span><span class="p">,</span> <span class="kt">int</span> <span class="n">output_num</span><span class="p">,</span>
+                              <span class="kt">int</span><span class="o">*</span> <span class="n">in_stmode</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">out_stmode</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>To launch the inference of the neuron network with setting input shape and store mode. This API supports the neuron nework that is static-compiled or dynamic-compiled After calling this API, inference on TPU is launched. And the CPU program will not be blocked. This API support multiple inputs of the neuron network.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>[in] p_bmrt</strong> - Bmruntime that had been created.</li>
+<li><strong>[in] net_idx</strong> - Neuron network index of the context. This parameter is enable if net_name == NULL, otherwise it is disable.</li>
+<li><strong>[in] net_name</strong> - The name of the neuron network. It can be NULL if we want to use net_idx.</li>
+<li><strong>[in] input_tensors</strong> - The pointer of the input devce memory. It should be bm_device_mem_t*. input_tensors[i] must be created by malloc device memory.</li>
+<li><strong>[in] input_num</strong> - The input number of the neuron network.</li>
+<li><strong>[out] output_tensors</strong> - The pointer of the output devce memory. It should be bm_device_mem_t*. output_tensors[i] must be created by malloc device memory.</li>
+<li><strong>[in] output_num</strong> - The output number of the neuron network.</li>
+<li><strong>[in] input_dim</strong> - The dimension of each input.</li>
+<li><strong>[in] input_shape</strong> - The shape of each input. If the dimension of the i-th input is x, input_shape[i] has x elements. For example, 4 dimension will has 4 elements, input_shape[i][0] is N, input_shape[i][1] is C, input_shape[i][2] is H, input_shape[i][3] is W.</li>
+<li><strong>[in] in_stmode</strong> - User define the store mode of the input.</li>
+<li><strong>[in] out_stmode</strong> - User define the store mode of the output.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><ul class="first last simple">
+<li><strong>bool</strong> - true: Launch success. false: Launch failed.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="malloc-device-memory">
+<h3>Malloc device memory<a class="headerlink" href="#malloc-device-memory" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span> <span class="nf">bmrt_malloc_device_byte</span><span class="p">(</span><span class="kt">void</span><span class="o">*</span> <span class="n">p_bmrt</span><span class="p">,</span> <span class="n">bm_device_mem_t</span> <span class="o">*</span><span class="n">pmem</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">size</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>To allocate device memory by byte size.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>[in] p_bmrt</strong> - Bmruntime that had been created.</li>
+<li><strong>[in] pmem</strong> - Device memory. If use declare device memory as (bm_device_mem_t mem), use it as parameter (&amp;mem).</li>
+<li><strong>[in] size</strong> - The number of byte.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><ul class="first last simple">
+<li><strong>int</strong> - 0: Success. other: fail.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span> <span class="nf">bmrt_malloc_neuron_device</span><span class="p">(</span><span class="kt">void</span><span class="o">*</span> <span class="n">p_bmrt</span><span class="p">,</span> <span class="n">bm_device_mem_t</span> <span class="o">*</span><span class="n">pmem</span><span class="p">,</span> <span class="kt">int</span> <span class="n">n</span><span class="p">,</span> <span class="kt">int</span> <span class="n">c</span><span class="p">,</span> <span class="kt">int</span> <span class="n">h</span><span class="p">,</span> <span class="kt">int</span> <span class="n">w</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>To allocate device memory by neuron. The size of the device memory by this API is (n * c * h * w * sizeof(float))</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>[in] p_bmrt</strong> - Bmruntime that had been created.</li>
+<li><strong>[in] pmem</strong> - Device memory. If use declare device memory as (bm_device_mem_t mem), use it as parameter (&amp;mem).</li>
+<li><strong>[in] n</strong> - The batch size.</li>
+<li><strong>[in] c</strong> - The channels.</li>
+<li><strong>[in] h</strong> - The height.</li>
+<li><strong>[in] w</strong> - The width.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><ul class="first last simple">
+<li><strong>int</strong> - 0: Success. other: fail.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="free-device-memory">
+<h3>Free device memory<a class="headerlink" href="#free-device-memory" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">bmrt_free_device</span><span class="p">(</span><span class="kt">void</span><span class="o">*</span> <span class="n">p_bmrt</span><span class="p">,</span> <span class="n">bm_device_mem_t</span> <span class="n">mem</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>To free the device memory.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>[in] p_bmrt</strong> - Bmruntime that had been created.</li>
+<li><strong>[in] pmem</strong> - Device memory. If use declare device memory as (bm_device_mem_t mem), use it as parameter (&amp;mem).</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="data-copy">
+<h3>Data copy<a class="headerlink" href="#data-copy" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span> <span class="nf">bmrt_memcpy_s2d</span><span class="p">(</span><span class="kt">void</span><span class="o">*</span> <span class="n">p_bmrt</span><span class="p">,</span> <span class="n">bm_device_mem_t</span> <span class="n">dst</span><span class="p">,</span> <span class="kt">void</span><span class="o">*</span> <span class="n">src</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>To copy data from system to device. The system memory is allocated by user. The data size transfered by this API is equal to the device memory capacity that user had allocated.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>[in] p_bmrt</strong> - Bmruntime that had been created.</li>
+<li><strong>[out] dst</strong> - destination device memory.</li>
+<li><strong>[in] src</strong> - Source system memory.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><ul class="first last simple">
+<li><strong>int</strong> - 0: Success. other: fail.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span> <span class="nf">bmrt_memcpy_d2s</span><span class="p">(</span><span class="kt">void</span><span class="o">*</span> <span class="n">p_bmrt</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">dst</span><span class="p">,</span> <span class="n">bm_device_mem_t</span> <span class="n">src</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>To copy data from device to system. The system memory is allocated by user. The data size transfered by this API is equal to the device memory capacity that user had allocated.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>[in] p_bmrt</strong> - Bmruntime that had been created.</li>
+<li><strong>[out] dst</strong> - destination system memory.</li>
+<li><strong>[in] src</strong> - Source device memory.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><ul class="first last simple">
+<li><strong>int</strong> - 0: Success. other: fail.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span> <span class="nf">bmrt_memcpy_s2d_withsize</span><span class="p">(</span><span class="kt">void</span><span class="o">*</span> <span class="n">p_bmrt</span><span class="p">,</span> <span class="n">bm_device_mem_t</span> <span class="n">dst</span><span class="p">,</span> <span class="kt">void</span><span class="o">*</span> <span class="n">src</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">size</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>To copy data from system to device with setting size. The system memory is allocated by user. The data size transfered by this API can be set by user.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>[in] p_bmrt</strong> - Bmruntime that had been created.</li>
+<li><strong>[out] dst</strong> - destination device memory.</li>
+<li><strong>[in] src</strong> - Source system memory.</li>
+<li><strong>[in] size</strong> - The byte size.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><ul class="first last simple">
+<li><strong>int</strong> - 0: Success. other: fail.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span> <span class="nf">bmrt_memcpy_d2s_withsize</span><span class="p">(</span><span class="kt">void</span><span class="o">*</span> <span class="n">p_bmrt</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">dst</span><span class="p">,</span> <span class="n">bm_device_mem_t</span> <span class="n">src</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">size</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>To copy data from device to system with setting size. The system memory is allocated by user. The data size transfered by this API can be set by user.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>[in] p_bmrt</strong> - Bmruntime that had been created.</li>
+<li><strong>[out] dst</strong> - destination system memory.</li>
+<li><strong>[in] src</strong> - Source device memory.</li>
+<li><strong>[in] size</strong> - The byte size.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><ul class="first last simple">
+<li><strong>int</strong> - 0: Success. other: fail.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span> <span class="nf">bmrt_memcpy_s2d_withsize_offset</span><span class="p">(</span><span class="kt">void</span><span class="o">*</span> <span class="n">p_bmrt</span><span class="p">,</span> <span class="n">bm_device_mem_t</span> <span class="n">dst</span><span class="p">,</span> <span class="kt">void</span><span class="o">*</span> <span class="n">src</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">size</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">dev_offset</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>To copy data from system to device with setting size and device memory offset. The system memory is allocated by user. The data size transfered by this API can be set by user. And device memory offset can be also set by user. Data from device memory (address + offset) is transfered.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>[in] p_bmrt</strong> - Bmruntime that had been created.</li>
+<li><strong>[out] dst</strong> - destination device memory.</li>
+<li><strong>[in] src</strong> - Source system memory.</li>
+<li><strong>[in] size</strong> - The byte size.</li>
+<li><strong>[in] dev_offset</strong> - Offset of device memory. Unit is byte.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><ul class="first last simple">
+<li><strong>int</strong> - 0: Success. other: fail.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span> <span class="nf">bmrt_memcpy_d2s_withsize_offset</span><span class="p">(</span><span class="kt">void</span><span class="o">*</span> <span class="n">p_bmrt</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">dst</span><span class="p">,</span> <span class="n">bm_device_mem_t</span> <span class="n">src</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">size</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">dev_offset</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>To copy data from device to system with setting size and device memory offset. The system memory is allocated by user. The data size transfered by this API can be set by user. And device memory offset can be also set by user. Data from device memory (address + offset) is transfered.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>[in] p_bmrt</strong> - Bmruntime that had been created.</li>
+<li><strong>[out] dst</strong> - destination system memory.</li>
+<li><strong>[in] src</strong> - Source device memory.</li>
+<li><strong>[in] size</strong> - The byte size.</li>
+<li><strong>[in] dev_offset</strong> - Offset of device memory. Unit is byte.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><ul class="first last simple">
+<li><strong>int</strong> - 0: Success. other: fail.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="program-synchronize">
+<h3>Program synchronize<a class="headerlink" href="#program-synchronize" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span> <span class="nf">bmrt_thread_sync</span><span class="p">(</span><span class="kt">void</span><span class="o">*</span> <span class="n">p_bmrt</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>To synchronize cpu program to device. This API is called when user program want to wait for the finishing of device.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>[in] p_bmrt</strong> - Bmruntime that had been created.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><ul class="first last simple">
+<li><strong>int</strong> - 0: Success. other: fail.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="c-interface-caffe-like">
+<h2>C++ Interface (Caffe like)<a class="headerlink" href="#c-interface-caffe-like" title="Permalink to this headline">¶</a></h2>
+<p>类Caffe的Inference C++接口。对应的头文件为bmblob.h, bmcnnctx.h, bmnet.h，对应的lib库为libbmrt.so。详细接口和注解请见bmblob.h, bmcnnctx.h, bmnet.h。</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="bmodel.html" class="btn btn-neutral float-right" title="bmodel 使用" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="bmlang.html" class="btn btn-neutral float-left" title="BMLang 说明" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Sophon
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

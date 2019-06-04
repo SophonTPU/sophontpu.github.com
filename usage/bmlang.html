@@ -1,0 +1,1948 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>BMLang 说明 &mdash; NNToolChain  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="BMRuntime 使用" href="runtime.html" />
+    <link rel="prev" title="BMNETP 使用" href="bmnetp.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> NNToolChain
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart/abstract.html">NNToolChain 基本概念介绍</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart/abstract.html#id1">版本特性</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart/abstract.html#id2">NNToolChain 整体架构</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart/install.html">NNToolChain 安装说明</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart/install.html#pcie">PCIE模式安装</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart/install.html#soc">SoC模式安装</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="bmnetc.html">BMNETC 使用</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bmnett.html">BMNETT 使用</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bmnetm.html">BMNETM 使用</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bmnetp.html">BMNETP 使用</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">BMLang 说明</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#install">Install</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#class">1. Class</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#c-class">C++ Class</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#bmtensor">bmtensor</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#python-class">Python Class</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#bmtensor-float">bmtensor_float</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#intvector">intVector</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#floatarray">floatArray</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#bmtfptrvector">bmtfPtrVector</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#operation-mode">2 Operation Mode</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#mode">2.1 mode</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#standalone">2.2 Standalone</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#calculation-op">3 Calculation Op</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#bm-mul">3.1  bm_mul</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#bm-div">3.2  bm_div</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#bm-add">3.3  bm_add</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#bm-sub">3.4  bm_sub</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#bm-max">3.5  bm_max</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#bm-min">3.6  bm_min</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#bm-adds">3.7  bm_adds</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#bm-muls">3.8  bm_muls</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#bm-maxs-todo">3.9  bm_maxs（TODO）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#bm-mins-todo">3.10  bm_mins（TODO）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#bm-axpy">3.11 bm_axpy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#bm-strideadd-todo">3.12 bm_strideadd（TODO）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#bm-stridesub-todo">3.13 bm_stridesub（TODO）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#bm-stridemul-todo">3.14 bm_stridemul（TODO）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#bm-stridemax-todo">3.15 bm_stridemax（TODO）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#bm-strideadd-offset-todo">3.16 bm_strideadd_offset（TODO）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#bm-stridesub-offset-todo">3.17 bm_stridesub_offset（TODO）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#bm-stridemul-offset-todo">3.18 bm_stridemul_offset（TODO）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#bm-stridemax-offset-todo">3.19 bm_stridemax_offset（TODO）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#bm-active">3.20 bm_active</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#bm-arg">3.21 bm_arg</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#bm-pool">3.22 bm_pool</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#bm-reduce">3.23 bm_reduce</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#relation-op">4 Relation Op</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#bm-gt">4.1  bm_gt</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#bm-ge">4.2  bm_ge</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#bm-lt">4.3  bm_lt</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#bm-le">4.4  bm_le</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#bm-ne">4.6  bm_ne</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#selection-op">5 Selection Op</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#bm-condselect">5.1  bm_condselect</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#bm-select">5.2  bm_select</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#data-manipulate-op">6 Data Manipulate Op</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#bm-permute">6.1  bm_permute</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#bm-extract">6.2  bm_extract</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#bm-setdata">6.3  bm_setdata</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#bm-broadcast">6.4  bm_broadcast</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#bm-concat">6.5  bm_concat</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#bm-split">6.6  bm_split</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#bm-reshape">6.7 bm_reshape</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#bm-stridecpy-todo">6.8  bm_stridecpy（TODO）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#bm-stridecpy-offset-todo">6.9  bm_stridecpy_offset（TODO）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#bm-lshift-todo">6.10  bm_lshift（TODO）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#bm-rshift-todo">6.11  bm_rshift（TODO）</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#matrix-op">7 Matrix Op</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#bm-matrixmul">7.1  bm_matrixmul</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="runtime.html">BMRuntime 使用</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bmodel.html">bmodel 使用</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../sample.html">示例代码</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">NNToolChain</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>BMLang 说明</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/usage/bmlang.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="bmlang">
+<span id="id1"></span><h1>BMLang 说明<a class="headerlink" href="#bmlang" title="Permalink to this headline">¶</a></h1>
+<p>BMLANG 是在BMTPU的基础之上封装了一些基本操作，开放给客户，客户可以基于此来实现其自定义或现有平台不支持的一些layer。
+BMLANG现在支持的一些操作以及说明在下面第一章中详细讲述。
+对于 mul、div、add、sub、max、min、gt、ge、lt、le、eq、ne， tensorA, tensorB 可以为data 或 coeff tensor，但不能同时为coeff tensor。
+除了个别ops 不能由输入tensor 推断出输出tensor shape，其它ops 由推断输出tensor shape的功能。例外的ops 为 bm_setdata。</p>
+<div class="section" id="install">
+<h2>Install<a class="headerlink" href="#install" title="Permalink to this headline">¶</a></h2>
+<p>如果使用C++编程，则需要链接libbmlang_C11ABI0.so或者libbmlang_C11ABI1.so，头文件为bmlang_common.h，bmlang.h和bmtensor.h。</p>
+<p>如果使用Python编程，需要安装BMLang Python包。</p>
+<p>Python版本为2.x需要安装</p>
+<blockquote>
+<div><div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1">#安装bmlang python 2.x包</span>
+pip install --user bmlang-x.x.x-py2-none-any.whl
+</pre></div>
+</div>
+</div></blockquote>
+<p>Python版本为3.x需要安装</p>
+<blockquote>
+<div><div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1">#安装bmlang python 3.x包</span>
+pip3 install --user bmlang-x.x.x-py2-none-any.whl
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="class">
+<h2>1. Class<a class="headerlink" href="#class" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="c-class">
+<h3>C++ Class<a class="headerlink" href="#c-class" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="bmtensor">
+<h4>bmtensor<a class="headerlink" href="#bmtensor" title="Permalink to this headline">¶</a></h4>
+<p>简介：在bmlang C++ API中使用bmtensor来定义tensor，支持float和double的数据类型，其具体的成员变量和方法的定义在bmtensor.h 中。
+示例：定义一个float类型的4D tensor，</p>
+<blockquote>
+<div><div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">bmtensor</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;</span>  <span class="n">tensor_float</span><span class="p">(</span><span class="s">&quot;name&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">);</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+</div>
+<div class="section" id="python-class">
+<h3>Python Class<a class="headerlink" href="#python-class" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="bmtensor-float">
+<h4>bmtensor_float<a class="headerlink" href="#bmtensor-float" title="Permalink to this headline">¶</a></h4>
+<p>简介：在bmlang python API中使用bmtensor_float来定义tensor，仅支持float的数据类型，其成员方法和变量的定义与bmtensor一致。
+示例：定义一个4D的tensor，</p>
+<blockquote>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Ftensor</span> <span class="o">=</span> <span class="n">bmtensor_float</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="intvector">
+<h4>intVector<a class="headerlink" href="#intvector" title="Permalink to this headline">¶</a></h4>
+<p>简介：python中定义vector&lt;int&gt;类型的数据，其使用方法同std::vector。
+示例：定义一个vector并赋值，</p>
+<blockquote>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Intvec</span> <span class="o">=</span> <span class="n">intVector</span><span class="p">()</span>
+<span class="n">Intvec</span><span class="o">.</span><span class="n">push_back</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="floatarray">
+<h4>floatArray<a class="headerlink" href="#floatarray" title="Permalink to this headline">¶</a></h4>
+<p>简介：python中定义一个float类型的数组。
+示例：定义并赋值一个数组，</p>
+<blockquote>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Farray</span> <span class="o">=</span> <span class="n">floatArray</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+  <span class="n">Farray</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="bmtfptrvector">
+<h4>bmtfPtrVector<a class="headerlink" href="#bmtfptrvector" title="Permalink to this headline">¶</a></h4>
+<p>简介：python中定义一个类似c++的vector&lt;bmtensor_float*&gt;
+示例：</p>
+<blockquote>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">refTenVec</span> <span class="o">=</span> <span class="n">bmtfPtrVector</span><span class="p">()</span>
+<span class="c1">## Create other intermediate tensors</span>
+<span class="n">inpTenList</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">phTensor</span> <span class="o">=</span> <span class="n">bmtensor_float</span><span class="p">(</span><span class="s1">&#39;x_tensor&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+<span class="n">inpTenList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">xTensor</span><span class="p">)</span>
+<span class="n">phTensor</span> <span class="o">=</span> <span class="n">bmtensor_float</span><span class="p">(</span><span class="s1">&#39;h_tensor_t-1&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+<span class="n">inpTenList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">phTensor</span><span class="p">)</span>
+<span class="n">pcTensor</span> <span class="o">=</span> <span class="n">bmtensor_float</span><span class="p">(</span><span class="s1">&#39;c_tensor_t-1&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+<span class="n">inpTenList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pcTensor</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">inpTenList</span><span class="p">)):</span>
+  <span class="bp">self</span><span class="o">.</span><span class="n">inpTenVec</span><span class="o">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">inpTenList</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">this</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+</div>
+</div>
+<div class="section" id="operation-mode">
+<h2>2 Operation Mode<a class="headerlink" href="#operation-mode" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="mode">
+<h3>2.1 mode<a class="headerlink" href="#mode" title="Permalink to this headline">¶</a></h3>
+<p>Bmlang 有两种工作模式：compute 和 compile。可以通过下面的接口实现：</p>
+<blockquote>
+<div><div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">set_mode</span><span class="p">(</span><span class="n">BMLANG_MODE_e</span> <span class="n">mode</span><span class="p">);</span>
+<span class="k">typedef</span> <span class="k">enum</span> <span class="n">bmlang_mode</span> <span class="p">{</span>
+  <span class="n">BMLANG_COMPUTE</span><span class="p">,</span>
+  <span class="n">BMLANG_COMPILE</span><span class="p">,</span>
+  <span class="n">BMLANG_BOTH</span><span class="p">,</span>
+  <span class="n">UNKNOWN_BMLANG_MODE</span>
+<span class="p">}</span><span class="n">BMLANG_MODE_e</span><span class="p">;</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>计算模式（BMLANG_COMPUTE）：基于cpu实现op，用来辅助比对基于bmlang 实现的layer的正确性。
+编译模式（BMLANG_COMPILE）：基于BMTPU 实现op，实现网络的编译。
+BMLANG_BOTH则是既COMPILE又COMPUTE，只有在调用bmlang_compile_with_result_check才是用这种mode。</p>
+</div>
+<div class="section" id="standalone">
+<h3>2.2 Standalone<a class="headerlink" href="#standalone" title="Permalink to this headline">¶</a></h3>
+<p>Bmlang可以脱离bmnetc/bmnetp/bmnett/bmnetm等编程框架使用。此时将单独实现算法在BMTPU里运行。以下接口用于单独使用Bmlang。</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li>初始化bmlang</li>
+</ol>
+<blockquote>
+<div><p>c++ API:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">bmlang_init</span><span class="p">(</span><span class="k">const</span> <span class="n">string</span><span class="o">&amp;</span> <span class="n">chip_name</span><span class="p">,</span> <span class="n">BMLANG_MODE_e</span> <span class="n">mode</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>python API:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bmlang_init</span><span class="p">(</span><span class="n">chip_name</span><span class="p">,</span> <span class="n">BMLANG_MODE_e</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+<ol class="arabic simple" start="2">
+<li>结束bmlang</li>
+</ol>
+<blockquote>
+<div><blockquote>
+<div><p>c++ API:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">bmlang_deinit</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>python API:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bmlang_deinit</span><span class="p">()</span>
+</pre></div>
+</div>
+</div></blockquote>
+<ol class="arabic simple" start="3">
+<li>启动compile only.</li>
+</ol>
+<blockquote>
+<div><p>C++ API:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">bmlang_compile</span><span class="p">(</span><span class="k">const</span> <span class="n">string</span><span class="o">&amp;</span> <span class="n">net_name</span><span class="p">,</span> <span class="kt">int</span> <span class="n">opt_level</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">dyn_cpl</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>Pyhton API:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bmlang_compile</span><span class="p">(</span><span class="n">net_name</span><span class="p">,</span> <span class="n">opt_level</span><span class="p">,</span> <span class="n">dyn_cpl</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+<ol class="arabic simple" start="4">
+<li>启动compile with result check。</li>
+</ol>
+<blockquote>
+<div><p>C++ API:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">bmlang_compile_with_result_check</span><span class="p">(</span>
+    <span class="k">const</span> <span class="n">string</span><span class="o">&amp;</span> <span class="n">net_name</span><span class="p">,</span>
+    <span class="kt">int</span> <span class="n">opt_level</span><span class="p">,</span>
+    <span class="kt">bool</span> <span class="n">dyn_cpl</span><span class="p">,</span>
+    <span class="n">vector</span><span class="o">&lt;</span><span class="n">bmtensor</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;*&gt;</span> <span class="n">inp_tensor</span><span class="p">,</span>
+    <span class="n">vector</span><span class="o">&lt;</span><span class="n">bmtensor</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;*&gt;</span> <span class="n">ref_tensor</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>Python API:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bmlang_compile_with_result_check</span><span class="p">(</span>
+    <span class="n">net_name</span><span class="p">,</span>
+    <span class="n">opt_level</span><span class="p">,</span>
+    <span class="n">dyn_cpl</span><span class="p">,</span>
+    <span class="n">inp_tensor</span><span class="p">,</span> <span class="c1">## it is bmtfPtrVector type</span>
+    <span class="n">ref_tensor</span><span class="p">)</span> <span class="c1">## it is bmtfPtrVector type</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div></blockquote>
+</div></blockquote>
+</div>
+</div>
+<div class="section" id="calculation-op">
+<h2>3 Calculation Op<a class="headerlink" href="#calculation-op" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="bm-mul">
+<h3>3.1  bm_mul<a class="headerlink" href="#bm-mul" title="Permalink to this headline">¶</a></h3>
+<p>tensor_result = tensorA * tensorB，实现两个tensor按元素乘，支持数据类型：float32。</p>
+<ol class="arabic">
+<li><p class="first">C++ API:</p>
+<blockquote>
+<div><div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">bm_mul</span><span class="p">(</span>
+<span class="k">const</span> <span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensorA</span><span class="p">,</span>
+<span class="k">const</span> <span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensorB</span><span class="p">,</span>
+<span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensor_result</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p>参数说明：tensorA，tensorB，tensor_result均是bmtensor类型。</p>
+<ol class="arabic" start="2">
+<li><p class="first">Python API:</p>
+<blockquote>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bm_mul_float</span><span class="p">(</span><span class="n">tensorA</span><span class="p">,</span>  <span class="n">tensorB</span><span class="p">,</span> <span class="n">tensor_result</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p>参数说明：tensorA，tensorB，tensor_result均是bmtensor_float类型。</p>
+</div>
+<div class="section" id="bm-div">
+<h3>3.2  bm_div<a class="headerlink" href="#bm-div" title="Permalink to this headline">¶</a></h3>
+<p>tensor_result = tensorA / tensorB，实现两个tensor按元素除，支持数据类型：float32。</p>
+<ol class="arabic">
+<li><p class="first">C++ API:</p>
+<blockquote>
+<div><div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">bm_div</span><span class="p">(</span>
+<span class="k">const</span> <span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensorA</span><span class="p">,</span>
+<span class="k">const</span> <span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensorB</span><span class="p">,</span>
+<span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensor_result</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p>参数说明：tensorA，tensorB，tensor_result均是bmtensor类型。</p>
+<ol class="arabic" start="2">
+<li><p class="first">Python API:</p>
+<blockquote>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bm_div_float</span><span class="p">(</span><span class="n">tensorA</span><span class="p">,</span>  <span class="n">tensorB</span><span class="p">,</span> <span class="n">tensor_result</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p>参数说明：tensorA，tensorB，tensor_result均是bmtensor_float类型。</p>
+</div>
+<div class="section" id="bm-add">
+<h3>3.3  bm_add<a class="headerlink" href="#bm-add" title="Permalink to this headline">¶</a></h3>
+<p>tensor_result = tensorA + tensorB，实现两个tensor按元素加，支持数据类型：float32。</p>
+<ol class="arabic">
+<li><p class="first">C++ API:</p>
+<blockquote>
+<div><div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">bm_add</span><span class="p">(</span>
+<span class="k">const</span> <span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensorA</span><span class="p">,</span>
+<span class="k">const</span> <span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensorB</span><span class="p">,</span>
+<span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensor_result</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p>参数说明：tensorA，tensorB，tensor_result均是bmtensor类型。</p>
+<ol class="arabic" start="2">
+<li><p class="first">Python API:</p>
+<blockquote>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bm_add_float</span><span class="p">(</span><span class="n">tensorA</span><span class="p">,</span>  <span class="n">tensorB</span><span class="p">,</span> <span class="n">tensor_result</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p>参数说明：tensorA，tensorB，tensor_result均是bmtensor_float类型。</p>
+</div>
+<div class="section" id="bm-sub">
+<h3>3.4  bm_sub<a class="headerlink" href="#bm-sub" title="Permalink to this headline">¶</a></h3>
+<p>tensor_result = tensorA - tensorB，实现两个tensor按元素减，支持数据类型：float32。</p>
+<ol class="arabic">
+<li><p class="first">C++ API:</p>
+<blockquote>
+<div><div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">bm_sub</span><span class="p">(</span>
+<span class="k">const</span> <span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensorA</span><span class="p">,</span>
+<span class="k">const</span> <span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensorB</span><span class="p">,</span>
+<span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensor_result</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p>参数说明：tensorA，tensorB，tensor_result均是bmtensor类型。</p>
+<ol class="arabic" start="2">
+<li><p class="first">Python API:</p>
+<blockquote>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bm_sub_float</span><span class="p">(</span><span class="n">tensorA</span><span class="p">,</span>  <span class="n">tensorB</span><span class="p">,</span> <span class="n">tensor_result</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p>参数说明：tensorA，tensorB，tensor_result均是bmtensor_float类型。</p>
+</div>
+<div class="section" id="bm-max">
+<h3>3.5  bm_max<a class="headerlink" href="#bm-max" title="Permalink to this headline">¶</a></h3>
+<p>tensor_result = max(tensorA, tensorB)，实现两个tensor按元素取最大值，支持数据类型：float32。</p>
+<ol class="arabic">
+<li><p class="first">C++ API:</p>
+<blockquote>
+<div><div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">bm_max</span><span class="p">(</span>
+<span class="k">const</span> <span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensorA</span><span class="p">,</span>
+<span class="k">const</span> <span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensorB</span><span class="p">,</span>
+<span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensor_result</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p>参数说明：tensorA，tensorB，tensor_result均是bmtensor类型。</p>
+<ol class="arabic" start="2">
+<li><p class="first">Python API:</p>
+<blockquote>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bm_max_float</span><span class="p">(</span><span class="n">tensorA</span><span class="p">,</span>  <span class="n">tensorB</span><span class="p">,</span> <span class="n">tensor_result</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p>参数说明：tensorA，tensorB，tensor_result均是bmtensor_float类型。</p>
+</div>
+<div class="section" id="bm-min">
+<h3>3.6  bm_min<a class="headerlink" href="#bm-min" title="Permalink to this headline">¶</a></h3>
+<p>tensor_result = min(tensorA, tensorB)，实现两个tensor按元素取最小值，支持数据类型：float32。</p>
+<ol class="arabic">
+<li><p class="first">C++ API:</p>
+<blockquote>
+<div><div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">bm_min</span><span class="p">(</span>
+<span class="k">const</span> <span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensorA</span><span class="p">,</span>
+<span class="k">const</span> <span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensorB</span><span class="p">,</span>
+<span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensor_result</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p>参数说明：tensorA，tensorB，tensor_result均是bmtensor类型。</p>
+<ol class="arabic" start="2">
+<li><p class="first">Python API:</p>
+<blockquote>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bm_min_float</span><span class="p">(</span><span class="n">tensorA</span><span class="p">,</span>  <span class="n">tensorB</span><span class="p">,</span> <span class="n">tensor_result</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p>参数说明：tensorA，tensorB，tensor_result均是bmtensor_float类型。</p>
+</div>
+<div class="section" id="bm-adds">
+<h3>3.7  bm_adds<a class="headerlink" href="#bm-adds" title="Permalink to this headline">¶</a></h3>
+<p>tensor_result = tensorA + scalar，实现tensorA中每个元素都加上scalar，支持数据类型：float32。</p>
+<ol class="arabic">
+<li><p class="first">C++ API:</p>
+<blockquote>
+<div><div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">bm_adds</span><span class="p">(</span>
+<span class="k">const</span> <span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensorA</span><span class="p">,</span>
+<span class="k">const</span> <span class="n">Dtype</span> <span class="n">scalar</span><span class="p">,</span>
+<span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensor_result</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p>参数说明：tensorA， tensor_result均是bmtensor类型，scalar是float32类型。</p>
+<ol class="arabic" start="2">
+<li><p class="first">Python API:</p>
+<blockquote>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bm_adds_float</span><span class="p">(</span><span class="n">tensorA</span><span class="p">,</span>  <span class="n">scalar</span><span class="p">,</span> <span class="n">tensor_result</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p>参数说明：tensorA， tensor_result均是bmtensor_float类型，scalar是标量类型。</p>
+</div>
+<div class="section" id="bm-muls">
+<h3>3.8  bm_muls<a class="headerlink" href="#bm-muls" title="Permalink to this headline">¶</a></h3>
+<p>tensor_result = tensorA * scalar，实现tensorA中每个元素都乘以scalar，支持数据类型：float32。</p>
+<ol class="arabic">
+<li><p class="first">C++ API:</p>
+<blockquote>
+<div><div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">bm_muls</span><span class="p">(</span>
+<span class="k">const</span> <span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensorA</span><span class="p">,</span>
+<span class="k">const</span> <span class="n">Dtype</span> <span class="n">scalar</span><span class="p">,</span>
+<span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensor_result</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p>参数说明：tensorA， tensor_result均是bmtensor类型，scalar是float32类型。</p>
+<ol class="arabic" start="2">
+<li><p class="first">Python API:</p>
+<blockquote>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bm_muls_float</span><span class="p">(</span><span class="n">tensorA</span><span class="p">,</span>  <span class="n">scalar</span><span class="p">,</span> <span class="n">tensor_result</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p>参数说明：tensorA， tensor_result均是bmtensor_float类型，scalar是标量类型。</p>
+</div>
+<div class="section" id="bm-maxs-todo">
+<h3>3.9  bm_maxs（TODO）<a class="headerlink" href="#bm-maxs-todo" title="Permalink to this headline">¶</a></h3>
+<p>tensor_result = max(tensorA, scalar)，实现tensorA中每个元素都与scalar比较大小，取大值输出，支持数据类型：float32。</p>
+<ol class="arabic">
+<li><p class="first">C++ API:</p>
+<blockquote>
+<div><div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">bm_maxs</span><span class="p">(</span>
+<span class="k">const</span> <span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensorA</span><span class="p">,</span>
+<span class="k">const</span> <span class="n">Dtype</span> <span class="n">scalar</span><span class="p">,</span>
+<span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensor_result</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p>参数说明：tensorA， tensor_result均是bmtensor类型，scalar是float32类型。</p>
+<ol class="arabic" start="2">
+<li><p class="first">Python API:</p>
+<blockquote>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bm_maxs_float</span><span class="p">(</span><span class="n">tensorA</span><span class="p">,</span>  <span class="n">scalar</span><span class="p">,</span> <span class="n">tensor_result</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p>参数说明：tensorA， tensor_result均是bmtensor_float类型，scalar是标量类型。</p>
+</div>
+<div class="section" id="bm-mins-todo">
+<h3>3.10  bm_mins（TODO）<a class="headerlink" href="#bm-mins-todo" title="Permalink to this headline">¶</a></h3>
+<p>tensor_result = min(tensorA, scalar)，实现tensorA中每个元素都与scalar比较大小，取小值输出，支持数据类型：float32。</p>
+<ol class="arabic">
+<li><p class="first">C++ API:</p>
+<blockquote>
+<div><div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">bm_mins</span><span class="p">(</span>
+<span class="k">const</span> <span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensorA</span><span class="p">,</span>
+<span class="k">const</span> <span class="n">Dtype</span> <span class="n">scalar</span><span class="p">,</span>
+<span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensor_result</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p>参数说明：tensorA， tensor_result均是bmtensor类型，scalar是float32类型。</p>
+<ol class="arabic" start="2">
+<li><p class="first">Python API:</p>
+<blockquote>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bm_mins_float</span><span class="p">(</span><span class="n">tensorA</span><span class="p">,</span> <span class="n">scalar</span><span class="p">,</span> <span class="n">tensor_result</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p>参数说明：tensorA，tensor_result均是bmtensor_float类型，scalar是标量类型。</p>
+</div>
+<div class="section" id="bm-axpy">
+<h3>3.11 bm_axpy<a class="headerlink" href="#bm-axpy" title="Permalink to this headline">¶</a></h3>
+<p>tensor_result = scalar * tensorA + tensor_result，实现tensorA中每个元素都与scalar相乘，再与tensor_result每个元素相加，支持数据类型：float32。</p>
+<ol class="arabic">
+<li><p class="first">C++ API:</p>
+<blockquote>
+<div><div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">bm_axpy</span><span class="p">(</span>
+<span class="k">const</span> <span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensorA</span><span class="p">,</span>
+<span class="k">const</span> <span class="n">Dtype</span> <span class="n">scalar</span><span class="p">,</span>
+<span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensor_result</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p>参数说明：tensorA， tensor_result均是bmtensor类型，scalar是float32类型。</p>
+<ol class="arabic" start="2">
+<li><p class="first">Python API:</p>
+<blockquote>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bm_axpy_float</span><span class="p">(</span><span class="n">tensorA</span><span class="p">,</span> <span class="n">scalar</span><span class="p">,</span> <span class="n">tensor_result</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p>参数说明：tensorA，tensor_result均是bmtensor_float类型，scalar是标量类型。</p>
+</div>
+<div class="section" id="bm-strideadd-todo">
+<h3>3.12 bm_strideadd（TODO）<a class="headerlink" href="#bm-strideadd-todo" title="Permalink to this headline">¶</a></h3>
+<p>tensor_result = tensorA_i + tensorB_i，依据各个dimation上设置的stride值执行两个tensor相应index的元素加，支持数据类型：float32。</p>
+<ol class="arabic">
+<li><p class="first">C++ API:</p>
+<blockquote>
+<div><div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">bm_strideadd</span><span class="p">(</span>
+<span class="k">const</span> <span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensorA</span><span class="p">,</span>
+<span class="k">const</span> <span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensorB</span><span class="p">,</span>
+<span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensor_result</span><span class="p">,</span>
+<span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">stride</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p>参数说明：tensorA，tensorB，tensor_result均是bmtensor类型；stride是vector&lt;int&gt;类型，用于指定shape每个维度上的stride。</p>
+<ol class="arabic" start="2">
+<li><p class="first">Python API:</p>
+<blockquote>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bm_strideadd_float</span><span class="p">(</span><span class="n">tensorA</span><span class="p">,</span>  <span class="n">tensorB</span><span class="p">,</span> <span class="n">tensor_result</span><span class="p">,</span> <span class="n">stride</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p>参数说明：tensorA，tensorB，tensor_result均是bmtensor_float类型；stride是intVector类型，用于指定shape每个维度上的stride。</p>
+</div>
+<div class="section" id="bm-stridesub-todo">
+<h3>3.13 bm_stridesub（TODO）<a class="headerlink" href="#bm-stridesub-todo" title="Permalink to this headline">¶</a></h3>
+<p>tensor_result = tensorA_i - tensorB_i，依据各个dimation上设置的stride值执行两个tensor相应index的元素减，支持数据类型：float32。</p>
+<ol class="arabic">
+<li><p class="first">C++ API:</p>
+<blockquote>
+<div><div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">bm_stridesub</span><span class="p">(</span>
+<span class="k">const</span> <span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensorA</span><span class="p">,</span>
+<span class="k">const</span> <span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensorB</span><span class="p">,</span>
+<span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensor_result</span><span class="p">,</span>
+<span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">stride</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p>参数说明：tensorA，tensorB，tensor_result均是bmtensor类型；stride是vector&lt;int&gt;类型，用于指定shape每个维度上的stride。</p>
+<ol class="arabic" start="2">
+<li><p class="first">Python API:</p>
+<blockquote>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bm_stridesub_float</span><span class="p">(</span><span class="n">tensorA</span><span class="p">,</span>  <span class="n">tensorB</span><span class="p">,</span> <span class="n">tensor_result</span><span class="p">,</span> <span class="n">stride</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p>参数说明：tensorA，tensorB，tensor_result均是bmtensor_float类型；stride是intVector类型，用于指定shape每个维度上的stride。</p>
+</div>
+<div class="section" id="bm-stridemul-todo">
+<h3>3.14 bm_stridemul（TODO）<a class="headerlink" href="#bm-stridemul-todo" title="Permalink to this headline">¶</a></h3>
+<p>tensor_result = tensorA_i * tensorB_i，依据各个dimation上设置的stride值执行两个tensor相应index的元素乘，支持数据类型：float32。</p>
+<ol class="arabic">
+<li><p class="first">C++ API:</p>
+<blockquote>
+<div><div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">bm_stridemul</span><span class="p">(</span>
+<span class="k">const</span> <span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensorA</span><span class="p">,</span>
+<span class="k">const</span> <span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensorB</span><span class="p">,</span>
+<span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensor_result</span><span class="p">,</span>
+<span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">stride</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p>参数说明：tensorA，tensorB，tensor_result均是bmtensor类型；stride是vector&lt;int&gt;类型，用于指定shape每个维度上的stride。</p>
+<ol class="arabic" start="2">
+<li><p class="first">Python API:</p>
+<blockquote>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bm_stridemul_float</span><span class="p">(</span><span class="n">tensorA</span><span class="p">,</span>  <span class="n">tensorB</span><span class="p">,</span> <span class="n">tensor_result</span><span class="p">,</span> <span class="n">stride</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p>参数说明：tensorA，tensorB，tensor_result均是bmtensor_float类型；stride是intVector类型，用于指定shape每个维度上的stride。</p>
+</div>
+<div class="section" id="bm-stridemax-todo">
+<h3>3.15 bm_stridemax（TODO）<a class="headerlink" href="#bm-stridemax-todo" title="Permalink to this headline">¶</a></h3>
+<p>tensor_result = max(tensorA_i, tensorB_i)，依据各个dimation上设置的stride值执行两个tensor相应index的元素比较，取大值输出，支持数据类型：float32。</p>
+<ol class="arabic">
+<li><p class="first">C++ API:</p>
+<blockquote>
+<div><div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">bm_stridemax</span><span class="p">(</span>
+<span class="k">const</span> <span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensorA</span><span class="p">,</span>
+<span class="k">const</span> <span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensorB</span><span class="p">,</span>
+<span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensor_result</span><span class="p">,</span>
+<span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">stride</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p>参数说明：tensorA，tensorB，tensor_result均是bmtensor类型；stride是vector&lt;int&gt;类型，用于指定shape每个维度上的stride。</p>
+<ol class="arabic" start="2">
+<li><p class="first">Python API:</p>
+<blockquote>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bm_stridemax_float</span><span class="p">(</span><span class="n">tensorA</span><span class="p">,</span>  <span class="n">tensorB</span><span class="p">,</span> <span class="n">tensor_result</span><span class="p">,</span> <span class="n">stride</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p>参数说明：tensorA，tensorB，tensor_result均是bmtensor_float类型；stride是intVector类型，用于指定shape每个维度上的stride。</p>
+</div>
+<div class="section" id="bm-strideadd-offset-todo">
+<h3>3.16 bm_strideadd_offset（TODO）<a class="headerlink" href="#bm-strideadd-offset-todo" title="Permalink to this headline">¶</a></h3>
+<p>tensor_result = tensorA_i_offset + tensorB_i_offset，以各个dimation上设置的offset为起点，并依据设置的stride值执行两个tensor相应index的元素加，支持数据类型：float32。</p>
+<ol class="arabic">
+<li><p class="first">C++ API:</p>
+<blockquote>
+<div><div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">bm_strideadd_offset</span><span class="p">(</span>
+<span class="k">const</span> <span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensorA</span><span class="p">,</span>
+<span class="k">const</span> <span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensorB</span><span class="p">,</span>
+<span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensor_result</span><span class="p">,</span>
+<span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">stride</span><span class="p">,</span>
+<span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">offset</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p>参数说明：
+tensorA，tensorB，tensor_result均是bmtensor类型；
+stride是vector&lt;int&gt;类型，用于指定shape每个维度上的stride；
+offset是vector&lt;int&gt;类型，用于指定shape每个维度上的offset。</p>
+<ol class="arabic" start="2">
+<li><p class="first">Python API:</p>
+<blockquote>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bm_strideadd_offset_float</span><span class="p">(</span><span class="n">tensorA</span><span class="p">,</span>  <span class="n">tensorB</span><span class="p">,</span> <span class="n">tensor_result</span><span class="p">,</span> <span class="n">stride</span><span class="p">,</span> <span class="n">offset</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p>参数说明：
+tensorA，tensorB，tensor_result均是bmtensor_float类型；
+stride是intVector类型，用于指定shape每个维度上的stride；
+offset是intVector类型，用于指定shape每个维度上的offset。</p>
+</div>
+<div class="section" id="bm-stridesub-offset-todo">
+<h3>3.17 bm_stridesub_offset（TODO）<a class="headerlink" href="#bm-stridesub-offset-todo" title="Permalink to this headline">¶</a></h3>
+<p>tensor_result = tensorA_i_offset - tensorB_i_offset，以各个dimation上设置的offset为起点，并依据设置的stride值执行两个tensor相应index的元素减，支持数据类型：float32。</p>
+<ol class="arabic">
+<li><p class="first">C++ API:</p>
+<blockquote>
+<div><div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">bm_stridesub_offset</span><span class="p">(</span>
+<span class="k">const</span> <span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensorA</span><span class="p">,</span>
+<span class="k">const</span> <span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensorB</span><span class="p">,</span>
+<span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensor_result</span><span class="p">,</span>
+<span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">stride</span><span class="p">,</span>
+<span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">offset</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p>参数说明：
+tensorA，tensorB，tensor_result均是bmtensor类型；
+stride是vector&lt;int&gt;类型，用于指定shape每个维度上的stride；
+offset是vector&lt;int&gt;类型，用于指定shape每个维度上的offset。</p>
+<ol class="arabic" start="2">
+<li><p class="first">Python API:</p>
+<blockquote>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bm_stridesub_offset_float</span><span class="p">(</span><span class="n">tensorA</span><span class="p">,</span>  <span class="n">tensorB</span><span class="p">,</span> <span class="n">tensor_result</span><span class="p">,</span> <span class="n">stride</span><span class="p">,</span> <span class="n">offset</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p>参数说明：
+tensorA，tensorB，tensor_result均是bmtensor_float类型；
+stride是intVector类型，用于指定shape每个维度上的stride；
+offset是intVector类型，用于指定shape每个维度上的offset。</p>
+</div>
+<div class="section" id="bm-stridemul-offset-todo">
+<h3>3.18 bm_stridemul_offset（TODO）<a class="headerlink" href="#bm-stridemul-offset-todo" title="Permalink to this headline">¶</a></h3>
+<p>tensor_result = tensorA_i_offset * tensorB_i_offset，以各个dimation上设置的offset为起点，并依据设置的stride值执行两个tensor相应index的元素乘，支持数据类型：float32。</p>
+<ol class="arabic">
+<li><p class="first">C++ API:</p>
+<blockquote>
+<div><div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">bm_stridemul_offset</span><span class="p">(</span>
+<span class="k">const</span> <span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensorA</span><span class="p">,</span>
+<span class="k">const</span> <span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensorB</span><span class="p">,</span>
+<span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensor_result</span><span class="p">,</span>
+<span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">stride</span><span class="p">,</span>
+<span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">offset</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p>参数说明：
+tensorA，tensorB，tensor_result均是bmtensor类型；
+stride是vector&lt;int&gt;类型，用于指定shape每个维度上的stride；
+offset是vector&lt;int&gt;类型，用于指定shape每个维度上的offset。</p>
+<ol class="arabic" start="2">
+<li><p class="first">Python API:</p>
+<blockquote>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bm_stridemul_offset_float</span><span class="p">(</span><span class="n">tensorA</span><span class="p">,</span>  <span class="n">tensorB</span><span class="p">,</span> <span class="n">tensor_result</span><span class="p">,</span> <span class="n">stride</span><span class="p">,</span> <span class="n">offset</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p>参数说明：
+tensorA，tensorB，tensor_result均是bmtensor_float类型；
+stride是intVector类型，用于指定shape每个维度上的stride；
+offset是intVector类型，用于指定shape每个维度上的offset。</p>
+</div>
+<div class="section" id="bm-stridemax-offset-todo">
+<h3>3.19 bm_stridemax_offset（TODO）<a class="headerlink" href="#bm-stridemax-offset-todo" title="Permalink to this headline">¶</a></h3>
+<p>tensor_result = max(tensorA_i_offset, tensorB_i_offset)，以各个dimation上设置的offset为起点，并依据设置的stride值执行两个tensor相应index的元素比较，取大值输出，支持数据类型：float32。</p>
+<ol class="arabic">
+<li><p class="first">C++ API:</p>
+<blockquote>
+<div><div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">bm_stridemax_offset</span><span class="p">(</span>
+<span class="k">const</span> <span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensorA</span><span class="p">,</span>
+<span class="k">const</span> <span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensorB</span><span class="p">,</span>
+<span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensor_result</span><span class="p">,</span>
+<span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">stride</span><span class="p">,</span>
+<span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">offset</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p>参数说明：
+tensorA，tensorB，tensor_result均是bmtensor类型；
+stride是vector&lt;int&gt;类型，用于指定shape每个维度上的stride；
+offset是vector&lt;int&gt;类型，用于指定shape每个维度上的offset。</p>
+<ol class="arabic" start="2">
+<li><p class="first">Python API:</p>
+<blockquote>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bm_stridemax_offset_float</span><span class="p">(</span><span class="n">tensorA</span><span class="p">,</span>  <span class="n">tensorB</span><span class="p">,</span> <span class="n">tensor_result</span><span class="p">,</span> <span class="n">stride</span><span class="p">,</span> <span class="n">offset</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p>参数说明：
+tensorA，tensorB，tensor_result均是bmtensor_float类型；
+stride是intVector类型，用于指定shape每个维度上的stride；
+offset是intVector类型，用于指定shape每个维度上的offset。</p>
+</div>
+<div class="section" id="bm-active">
+<h3>3.20 bm_active<a class="headerlink" href="#bm-active" title="Permalink to this headline">¶</a></h3>
+<p>对输入的tensor使用激活函数进行处理，激活类型在bmlang_common.h文件中ACTIVE_TYPE_e定义，支持数据类型：float32。
+支持的active type如下:</p>
+<blockquote>
+<div><div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">typedef</span> <span class="k">enum</span> <span class="n">active_type</span> <span class="p">{</span>
+  <span class="n">ACTIVE_TANH</span>   <span class="p">,</span>
+  <span class="n">ACTIVE_SIGMOID</span><span class="p">,</span>
+  <span class="n">ACTIVE_RELU</span>   <span class="p">,</span>
+  <span class="n">ACTIVE_EXP</span>    <span class="p">,</span>
+  <span class="n">ACTIVE_ELU</span>    <span class="p">,</span>
+  <span class="n">ACTIVE_SQRT</span>   <span class="p">,</span>
+  <span class="n">ACTIVE_SQUARE</span> <span class="p">,</span>
+  <span class="n">ACTIVE_RSQRT</span>  <span class="p">,</span>
+  <span class="n">ACTIVE_ABSVAL</span> <span class="p">,</span>
+  <span class="n">ACTIVE_LN</span><span class="p">,</span> <span class="c1">//（ln对数）</span>
+  <span class="n">UNKNOWN_ACTIVE_TYPE</span>
+<span class="p">}</span> <span class="n">ACTIVE_TYPE_e</span><span class="p">;</span>
+</pre></div>
+</div>
+</div></blockquote>
+<ol class="arabic">
+<li><p class="first">C++ API:</p>
+<blockquote>
+<div><div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">bm_active</span><span class="p">(</span>
+<span class="k">const</span> <span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensorA</span><span class="p">,</span>
+<span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensor_result</span><span class="p">,</span>
+<span class="n">ACTIVE_TYPE_e</span> <span class="n">active_type</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p>参数说明：
+tensorA，tensor_result均是bmtensor类型；
+active_type是ACTIVE_TYPE_e类型，指定激活函数的类型。</p>
+<ol class="arabic" start="2">
+<li><p class="first">Python API:</p>
+<blockquote>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bm_active_float</span><span class="p">(</span><span class="n">tensorA</span><span class="p">,</span> <span class="n">tensor_result</span><span class="p">,</span> <span class="n">active_type</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p>参数说明：
+tensorA，tensor_result均是bmtensor_float类型；
+active_type是ACTIVE_TYPE_e类型，指定激活函数的类型。</p>
+</div>
+<div class="section" id="bm-arg">
+<h3>3.21 bm_arg<a class="headerlink" href="#bm-arg" title="Permalink to this headline">¶</a></h3>
+<p>对输入tensor的指定的axis求最大或最小值，输出对应的index，并将该axis的dim设置为1，支持数据类型：float32。
+Arg参数结构体如下：</p>
+<blockquote>
+<div><div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">typedef</span> <span class="k">struct</span> <span class="n">arg_op</span><span class="p">{</span>
+  <span class="kt">int</span> <span class="n">axis</span><span class="p">;</span>
+  <span class="kt">int</span> <span class="n">method</span><span class="p">;</span>  <span class="c1">//0-&gt;max, 1-&gt;min</span>
+<span class="p">}</span> <span class="n">ARG_OP_t</span><span class="p">;</span>
+</pre></div>
+</div>
+</div></blockquote>
+<ol class="arabic">
+<li><p class="first">C++ API:</p>
+<blockquote>
+<div><div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">bm_arg</span><span class="p">(</span>
+<span class="k">const</span> <span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensorA</span><span class="p">,</span>
+<span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensor_result</span><span class="p">,</span>
+<span class="n">ARG_OP_t</span> <span class="n">arg_op</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p>参数说明：
+tensorA，tensor_result均是bmtensor类型；
+arg_op是ARG_OP_t类型，指定处理的轴和操作（max or min）。</p>
+<ol class="arabic" start="2">
+<li><p class="first">Python API:</p>
+<blockquote>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bm_arg_float</span><span class="p">(</span><span class="n">tensorA</span><span class="p">,</span> <span class="n">tensor_result</span><span class="p">,</span> <span class="n">arg_op</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p>参数说明：
+tensorA，tensor_result均是bmtensor_float类型；
+arg_op是ARG_OP_t类型，指定处理的轴和操作（max or min）。</p>
+</div>
+<div class="section" id="bm-pool">
+<h3>3.22 bm_pool<a class="headerlink" href="#bm-pool" title="Permalink to this headline">¶</a></h3>
+<p>对输入tensor进行池化处理，支持的数据类型：float32。
+池化参数如下：</p>
+<blockquote>
+<div><div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">typedef</span> <span class="k">enum</span> <span class="n">pooling_type</span> <span class="p">{</span>
+  <span class="n">AVE</span><span class="p">,</span>
+  <span class="n">MAX</span><span class="p">,</span>
+  <span class="n">STOCHASTIC</span><span class="p">,</span>
+  <span class="n">UNKNOWN</span><span class="p">,</span>
+<span class="p">}</span>  <span class="n">POOLING_TYPE_e</span><span class="p">;</span>
+<span class="k">typedef</span> <span class="k">struct</span> <span class="n">pooling_param</span> <span class="p">{</span>
+  <span class="kt">int</span> <span class="n">stride_h</span><span class="p">;</span>
+  <span class="kt">int</span> <span class="n">stride_w</span><span class="p">;</span>
+  <span class="kt">int</span> <span class="n">pad_h</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+  <span class="kt">int</span> <span class="n">pad_w</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+  <span class="kt">int</span> <span class="n">kernel_h</span><span class="p">;</span> <span class="c1">// if global pooling, no need to specify kernel height and weight.</span>
+  <span class="kt">int</span> <span class="n">kernel_w</span><span class="p">;</span>
+  <span class="n">POOLING_TYPE_e</span> <span class="n">pooling_type</span> <span class="o">=</span> <span class="n">AVE</span><span class="p">;</span>
+  <span class="kt">bool</span> <span class="n">is_global_pooling</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
+  <span class="kt">bool</span> <span class="n">is_ceil_mode</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
+<span class="p">}</span>  <span class="n">POOLING_PARAM_t</span><span class="p">;</span>
+</pre></div>
+</div>
+</div></blockquote>
+<ol class="arabic">
+<li><p class="first">C++ API:</p>
+<blockquote>
+<div><div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">bm_pool</span><span class="p">(</span>
+<span class="k">const</span> <span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensorA</span><span class="p">,</span>
+<span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensor_result</span><span class="p">,</span>
+<span class="k">const</span> <span class="n">PoolingParam</span><span class="o">&amp;</span> <span class="n">pooling_param</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p>参数说明：
+tensorA，tensor_result均是bmtensor类型；
+pooling_param是PoolingParam类型，指定池化相关参数。</p>
+<ol class="arabic" start="2">
+<li><p class="first">Python API:</p>
+<blockquote>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bm_pool_float</span><span class="p">(</span><span class="n">tensorA</span><span class="p">,</span> <span class="n">tensor_result</span><span class="p">,</span> <span class="n">pooling_param</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p>参数说明：
+tensorA，tensor_result均是bmtensor_float类型；
+pooling_param是PoolingParam类型，指定池化相关参数。</p>
+</div>
+<div class="section" id="bm-reduce">
+<h3>3.23 bm_reduce<a class="headerlink" href="#bm-reduce" title="Permalink to this headline">¶</a></h3>
+<p>依据reduce way，对输入的tensor做reduce操作，支持数据类型：float32。
+reduce的算子类型如下：</p>
+<blockquote>
+<div><div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">typedef</span> <span class="k">enum</span> <span class="n">reduce_method</span> <span class="p">{</span>
+  <span class="n">REDUCE_MEAN</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+  <span class="n">REDUCE_SUM</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+  <span class="n">REDUCE_MAX</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+  <span class="n">REDUCE_MIN</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
+  <span class="n">REDUCE_PROD</span><span class="o">=</span> <span class="mi">4</span>
+<span class="p">}</span> <span class="n">REDUCE_METHOD_e</span><span class="p">;</span>
+<span class="c1">//对被reduce的所有轴求平均，求和，求最大值，求最小值，求内积。</span>
+
+<span class="c1">//reduce 参数如下：</span>
+<span class="k">typedef</span> <span class="k">struct</span> <span class="n">reduce_op</span><span class="p">{</span>
+  <span class="n">REDUCE_METHOD_e</span> <span class="n">reduce_method</span><span class="p">;</span>
+  <span class="kt">int</span> <span class="n">reduce_axis</span><span class="p">;</span>
+  <span class="kt">int</span> <span class="n">reduce_way</span><span class="p">;</span>
+<span class="p">}</span> <span class="n">REDUCE_OP_t</span><span class="p">;</span>
+<span class="cm">/*</span>
+<span class="cm">reduce_method指定reduce算子类型；</span>
+<span class="cm">reduce_axis指定reduce轴；</span>
+<span class="cm">reduce_way指定reduce策略 —— 0：对reduce_axis轴及其之后的轴进行reduce操作</span>
+<span class="cm">                            1：只对reduce_axis轴进行reduce操作</span>
+<span class="cm">                            2：对除axis==1（即C轴）外的所有轴进行reduce。</span>
+<span class="cm">*/</span>
+
+<span class="c1">//For example:</span>
+<span class="n">tensorA_shape</span> <span class="o">=</span> <span class="p">{</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span><span class="mi">30</span><span class="p">,</span><span class="mi">40</span><span class="p">},</span> <span class="n">reduce_axis</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="cm">/*educe_way = 0 –&gt;*/</span> <span class="n">tensor_result_shape</span> <span class="o">=</span> <span class="p">{</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">}</span>
+<span class="cm">/*reduce_way = 1 –&gt;*/</span> <span class="n">tensor_result_shape</span> <span class="o">=</span> <span class="p">{</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">40</span><span class="p">}</span>
+<span class="cm">/*reduce_way = 2 –&gt;*/</span> <span class="n">tensor_result_shape</span> <span class="o">=</span> <span class="p">{</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">}</span>
+<span class="kt">void</span> <span class="n">bm_reduce</span><span class="p">(</span><span class="k">const</span> <span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensorA</span><span class="p">,</span> <span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensor_result</span><span class="p">,);</span>
+</pre></div>
+</div>
+</div></blockquote>
+<ol class="arabic">
+<li><p class="first">C++ API:</p>
+<blockquote>
+<div><div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">bm_reduce</span><span class="p">(</span>
+<span class="k">const</span> <span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensorA</span><span class="p">,</span>
+<span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensor_result</span><span class="p">,</span>
+<span class="n">REDUCE_OP_t</span> <span class="n">reduce_op</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p>参数说明：
+tensorA，tensor_result均是bmtensor类型；
+reduce_op是REDUCE_OP_t类型，指定reduce相关参数。</p>
+<ol class="arabic" start="2">
+<li><p class="first">Python API:</p>
+<blockquote>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bm_reduce_float</span><span class="p">(</span><span class="n">tensorA</span><span class="p">,</span> <span class="n">tensor_result</span><span class="p">,</span> <span class="n">reduce_op</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p>参数说明：
+tensorA，tensor_result均是bmtensor_float类型；
+reduce_op是REDUCE_OP_t类型，指定reduce相关参数。</p>
+</div>
+</div>
+<div class="section" id="relation-op">
+<h2>4 Relation Op<a class="headerlink" href="#relation-op" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="bm-gt">
+<h3>4.1  bm_gt<a class="headerlink" href="#bm-gt" title="Permalink to this headline">¶</a></h3>
+<p>tensor_result = tensorA  &gt; tensorB  ?  1 : 0，两个tensor按元素比较，如果A大于B输出1，否则输出0，支持数据类型：float32。</p>
+<ol class="arabic">
+<li><p class="first">C++ API:</p>
+<blockquote>
+<div><div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">bm_gt</span><span class="p">(</span>
+<span class="k">const</span> <span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensorA</span> <span class="p">,</span>
+<span class="k">const</span> <span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensorB</span><span class="p">,</span>
+<span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">result_tensor</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p>参数说明：
+tensorA，tensorB，tensor_result均是bmtensor类型。</p>
+<ol class="arabic" start="2">
+<li><p class="first">Python API:</p>
+<blockquote>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bm_gt_float</span><span class="p">(</span><span class="n">tensorA</span><span class="p">,</span> <span class="n">tensorB</span><span class="p">,</span> <span class="n">tensor_result</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p>参数说明：
+tensorA，tensorB，tensor_result均是bmtensor_float类型。</p>
+</div>
+<div class="section" id="bm-ge">
+<h3>4.2  bm_ge<a class="headerlink" href="#bm-ge" title="Permalink to this headline">¶</a></h3>
+<p>tensor_result = tensorA  &gt;= tensorB  ?  1 : 0，两个tensor按元素比较，如果A大于等于B输出1，否则输出0，支持数据类型：float32。</p>
+<ol class="arabic">
+<li><p class="first">C++ API:</p>
+<blockquote>
+<div><div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">bm_ge</span><span class="p">(</span>
+<span class="k">const</span> <span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensorA</span> <span class="p">,</span>
+<span class="k">const</span> <span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensorB</span><span class="p">,</span>
+<span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">result_tensor</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p>参数说明：
+tensorA，tensorB，tensor_result均是bmtensor类型。</p>
+<ol class="arabic" start="2">
+<li><p class="first">Python API:</p>
+<blockquote>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bm_ge_float</span><span class="p">(</span><span class="n">tensorA</span><span class="p">,</span> <span class="n">tensorB</span><span class="p">,</span> <span class="n">tensor_result</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p>参数说明：
+tensorA，tensorB，tensor_result均是bmtensor_float类型。</p>
+</div>
+<div class="section" id="bm-lt">
+<h3>4.3  bm_lt<a class="headerlink" href="#bm-lt" title="Permalink to this headline">¶</a></h3>
+<p>tensor_result = tensorA  &lt; tensorB  ?  1 : 0，两个tensor按元素比较，如果A小于B输出1，否则输出0，支持数据类型：float32。</p>
+<ol class="arabic">
+<li><p class="first">C++ API:</p>
+<blockquote>
+<div><div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">bm_lt</span><span class="p">(</span>
+<span class="k">const</span> <span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensorA</span> <span class="p">,</span>
+<span class="k">const</span> <span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensorB</span><span class="p">,</span>
+<span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">result_tensor</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p>参数说明：
+tensorA，tensorB，tensor_result均是bmtensor类型。</p>
+<ol class="arabic" start="2">
+<li><p class="first">Python API:</p>
+<blockquote>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bm_lt_float</span><span class="p">(</span><span class="n">tensorA</span><span class="p">,</span> <span class="n">tensorB</span><span class="p">,</span> <span class="n">tensor_result</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p>参数说明：
+tensorA，tensorB，tensor_result均是bmtensor_float类型。</p>
+</div>
+<div class="section" id="bm-le">
+<h3>4.4  bm_le<a class="headerlink" href="#bm-le" title="Permalink to this headline">¶</a></h3>
+<p>tensor_result = tensorA  &lt;= tensorB  ?  1 : 0，两个tensor按元素比较，如果A小于等于B输出1，否则输出0，支持数据类型：float32。</p>
+<ol class="arabic">
+<li><p class="first">C++ API:</p>
+<blockquote>
+<div><div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">bm_le</span><span class="p">(</span>
+<span class="k">const</span> <span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensorA</span> <span class="p">,</span>
+<span class="k">const</span> <span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensorB</span><span class="p">,</span>
+<span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">result_tensor</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p>参数说明：
+tensorA，tensorB，tensor_result均是bmtensor类型。</p>
+<ol class="arabic" start="2">
+<li><p class="first">Python API:</p>
+<blockquote>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bm_le_float</span><span class="p">(</span><span class="n">tensorA</span><span class="p">,</span> <span class="n">tensorB</span><span class="p">,</span> <span class="n">tensor_result</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p>参数说明：
+tensorA，tensorB，tensor_result均是bmtensor_float类型。</p>
+<p>4.5  bm_eq</p>
+<p>tensor_result = tensorA  == tensorB  ?  1 : 0，两个tensor按元素比较，如果A等于B输出1，否则输出0，支持数据类型：float32。</p>
+<ol class="arabic">
+<li><p class="first">C++ API:</p>
+<blockquote>
+<div><div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">bm_eq</span><span class="p">(</span>
+<span class="k">const</span> <span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensorA</span> <span class="p">,</span>
+<span class="k">const</span> <span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensorB</span><span class="p">,</span>
+<span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">result_tensor</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p>参数说明：
+tensorA，tensorB，tensor_result均是bmtensor类型。</p>
+<ol class="arabic" start="2">
+<li><p class="first">Python API:</p>
+<blockquote>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bm_le_float</span><span class="p">(</span><span class="n">tensorA</span><span class="p">,</span> <span class="n">tensorB</span><span class="p">,</span> <span class="n">tensor_result</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p>参数说明：
+tensorA，tensorB，tensor_result均是bmtensor_float类型。</p>
+</div>
+<div class="section" id="bm-ne">
+<h3>4.6  bm_ne<a class="headerlink" href="#bm-ne" title="Permalink to this headline">¶</a></h3>
+<p>tensor_result = tensorA  != tensorB  ?  1 : 0，两个tensor按元素比较，如果A不等于B输出1，否则输出0，支持数据类型：float32。</p>
+<ol class="arabic">
+<li><p class="first">C++ API:</p>
+<blockquote>
+<div><div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">bm_ne</span><span class="p">(</span>
+<span class="k">const</span> <span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensorA</span> <span class="p">,</span>
+<span class="k">const</span> <span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensorB</span><span class="p">,</span>
+<span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">result_tensor</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p>参数说明：
+tensorA，tensorB，tensor_result均是bmtensor类型。</p>
+<ol class="arabic" start="2">
+<li><p class="first">Python API:</p>
+<blockquote>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bm_ne_float</span><span class="p">(</span><span class="n">tensorA</span><span class="p">,</span> <span class="n">tensorB</span><span class="p">,</span> <span class="n">tensor_result</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p>参数说明：
+tensorA，tensorB，tensor_result均是bmtensor_float类型。</p>
+</div>
+</div>
+<div class="section" id="selection-op">
+<h2>5 Selection Op<a class="headerlink" href="#selection-op" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="bm-condselect">
+<h3>5.1  bm_condselect<a class="headerlink" href="#bm-condselect" title="Permalink to this headline">¶</a></h3>
+<p>tensor_result = cond &gt; 0  ?  tensorB : tensorC，tensor cond按元素与0比较，大于0时输出tensorB对应位置元素，否则输出tensorC，支持数据类型：float32。cond 不能为常数，tensorC 和 tensorB 可以为常系数，需要设置tensor type 为COEFF_TENSOR 。</p>
+<ol class="arabic">
+<li><p class="first">C++ API:</p>
+<blockquote>
+<div><div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">bm_condselect</span><span class="p">(</span>
+<span class="k">const</span> <span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">cond</span><span class="p">,</span>
+<span class="k">const</span> <span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensorB</span><span class="p">,</span>
+<span class="k">const</span> <span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensorC</span><span class="p">,</span>
+<span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensor_result</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p>参数说明：
+cond，tensorB，tensorC，tensor_result均是bmtensor类型。</p>
+<ol class="arabic" start="2">
+<li><p class="first">Python API:</p>
+<blockquote>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bm_condselect_float</span><span class="p">(</span><span class="n">cond</span><span class="p">,</span> <span class="n">tensorB</span><span class="p">,</span> <span class="n">tensorC</span><span class="p">,</span> <span class="n">tensor_result</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p>参数说明：
+cond，tensorB，tensorC，tensor_result均是bmtensor_float类型。</p>
+</div>
+<div class="section" id="bm-select">
+<h3>5.2  bm_select<a class="headerlink" href="#bm-select" title="Permalink to this headline">¶</a></h3>
+<p>select有两种method：</p>
+<blockquote>
+<div><div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">typedef</span> <span class="k">enum</span> <span class="n">select_op</span> <span class="p">{</span>
+  <span class="n">GREATER_THAN</span><span class="p">,</span>
+  <span class="n">GREATER_EQUAL</span><span class="p">,</span>
+  <span class="n">UNKNOWN_SELECT_OP</span>
+<span class="p">}</span> <span class="n">SELECT_OP_e</span><span class="p">;</span>
+
+<span class="n">select_opt</span> <span class="o">==</span> <span class="nl">GREATER_THAN</span><span class="p">:</span>
+<span class="n">tensor_result</span> <span class="o">=</span> <span class="n">tensorA</span> <span class="o">&gt;</span> <span class="n">tensor</span> <span class="n">B</span>  <span class="o">?</span>  <span class="nl">tensorC</span> <span class="p">:</span> <span class="n">tensorD</span><span class="p">;</span> <span class="c1">//tensor按元素比较，A大于B时输出tensorC对应位置的元素值，否则输出tensorD。</span>
+
+<span class="n">select_opt</span> <span class="o">==</span> <span class="n">GREATER_</span> <span class="nl">EQUAL</span><span class="p">:</span>
+<span class="n">tensor_result</span> <span class="o">=</span> <span class="n">tensorA</span> <span class="o">&gt;=</span> <span class="n">tensor</span> <span class="n">B</span>  <span class="o">?</span>  <span class="nl">tensorC</span> <span class="p">:</span> <span class="n">tensorD</span><span class="p">;</span> <span class="c1">//tensor按元素比较，A大于等于B时输出tensorC对应位置的元素值，否则输出tensorD。</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>tensorA 和 tensorB 其中之一可以为常系数，需要设置tensor type为COEFF_TENSOR。
+tensorC 和 tensorD 可以为常系数，需要设置tensor type 为COEFF_TENSOR。
+支持数据类型为：float32。</p>
+<ol class="arabic">
+<li><p class="first">C++ API:</p>
+<blockquote>
+<div><div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">bm_select</span><span class="p">(</span>
+<span class="k">const</span> <span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensorA</span><span class="p">,</span>
+<span class="k">const</span> <span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensorB</span><span class="p">,</span>
+<span class="k">const</span> <span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensorC</span><span class="p">,</span>
+<span class="k">const</span> <span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensorD</span><span class="p">,</span>
+<span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensor_result</span><span class="p">,</span>
+<span class="n">SELECT_OP_e</span> <span class="n">select_op</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p>参数说明：
+tensorA，tensorB，tensorC，tensorD，tensor_result均是bmtensor类型；
+select_op是SELECT_OP_e类型，指定select method。</p>
+<ol class="arabic" start="2">
+<li><p class="first">Python API:</p>
+<blockquote>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bm_select_float</span><span class="p">(</span><span class="n">tensorA</span><span class="p">,</span> <span class="n">tensorB</span><span class="p">,</span> <span class="n">tensorC</span><span class="p">,</span> <span class="n">tensorD</span><span class="p">,</span> <span class="n">tensor_result</span><span class="p">,</span> <span class="n">select_op</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p>参数说明：
+tensorA，tensorB，tensorC，tensorD，tensor_result均是bmtensor_float类型;
+select_op是SELECT_OP_e类型，指定select method。</p>
+</div>
+</div>
+<div class="section" id="data-manipulate-op">
+<h2>6 Data Manipulate Op<a class="headerlink" href="#data-manipulate-op" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="bm-permute">
+<h3>6.1  bm_permute<a class="headerlink" href="#bm-permute" title="Permalink to this headline">¶</a></h3>
+<p>置换tensor shape的axis，并相应进行数据的交换，支持数据类型：float32。
+例如：输入shape为（6，7，8，9），置换参数order为（1，3，2，0），则输出的shape为（7，9，8，6）。</p>
+<ol class="arabic">
+<li><p class="first">C++ API:</p>
+<blockquote>
+<div><div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">bm_permute</span><span class="p">(</span>
+<span class="k">const</span> <span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensorA</span><span class="p">,</span>
+<span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensor_result</span><span class="p">,</span>
+<span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;&amp;</span> <span class="n">permute_order</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p>参数说明：
+tensorA， tensor_result均是bmtensor类型；
+permute_order是vector&lt;int&gt;类型，指定permute order参数。</p>
+<ol class="arabic" start="2">
+<li><p class="first">Python API:</p>
+<blockquote>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bm_permute_float</span><span class="p">(</span><span class="n">tensorA</span><span class="p">,</span> <span class="n">tensor_result</span><span class="p">,</span> <span class="n">permute_order</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p>参数说明：
+tensorA， tensor_result均是bmtensor_float类型;
+permute_order是intVector类型，指定permute order参数。</p>
+</div>
+<div class="section" id="bm-extract">
+<h3>6.2  bm_extract<a class="headerlink" href="#bm-extract" title="Permalink to this headline">¶</a></h3>
+<p>对tensor 4个维度上的数据做带stride的抽取操作，支持数据类型：float32。
+extract参数如下：</p>
+<blockquote>
+<div><div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">typedef</span> <span class="k">struct</span> <span class="n">extract_op</span><span class="p">{</span>
+  <span class="kt">int</span> <span class="n">start</span><span class="p">[</span><span class="mi">4</span><span class="p">];</span>
+  <span class="kt">int</span> <span class="n">stride</span><span class="p">[</span><span class="mi">4</span><span class="p">];</span>
+  <span class="kt">int</span> <span class="n">end</span><span class="p">[</span><span class="mi">4</span><span class="p">];</span>
+<span class="p">}</span> <span class="n">EXTRACT_OP_t</span><span class="p">;</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>输出shape的每个axis计算方式为：(end[i] – start[i]) / stride[i]。
+例如某个axis的值为10，start为1，end为7，stride为2，则extract之后输出axis的值为（7-1）/ 2 = 3，index分别为1，3，5。</p>
+<ol class="arabic">
+<li><p class="first">C++ API:</p>
+<blockquote>
+<div><div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">bm_extract</span><span class="p">(</span>
+<span class="k">const</span> <span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensorA</span><span class="p">,</span>
+<span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensor_result</span><span class="p">,</span>
+<span class="n">EXTRACT_OP_t</span> <span class="n">extract_op</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p>参数说明：
+tensorA， tensor_result均是bmtensor类型；
+extract_op是EXTRACT_OP_t类型，指定data extract method参数。</p>
+<ol class="arabic" start="2">
+<li><p class="first">Python API:</p>
+<blockquote>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bm_extract_float</span><span class="p">(</span><span class="n">tensorA</span><span class="p">,</span> <span class="n">tensor_result</span><span class="p">,</span> <span class="n">extract_op</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p>参数说明：
+tensorA， tensor_result均是bmtensor_float类型;
+extract_op是EXTRACT_OP_t类型，指定data extract method参数。</p>
+</div>
+<div class="section" id="bm-setdata">
+<h3>6.3  bm_setdata<a class="headerlink" href="#bm-setdata" title="Permalink to this headline">¶</a></h3>
+<p>tensor_result = tensorA ，tensorA 的tensor type可以是DATA_TENSOR或 COEFF_TENSOR，支持广播，被广播的那一维度的维度值需要设置为1，需要指定tensor_result 的shape，因为不能由输入推断出输出的维度，支持数据类型：float32。
+<strong>Note:</strong> 该op并不是TPU的实际操作。若tensor type是DATA_TENSOR，则该操作只在COMPILE/COMPUTE模式下设置数据值，实际TPU runtime时不会是这里所设置的数据。若tensor type是COEFF_TENSOR，则此时设置的数据是固定的，并且在TPU runtime时，也将是这里设置的数据。</p>
+<ol class="arabic">
+<li><p class="first">C++ API:</p>
+<blockquote>
+<div><div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">bm_setdata</span><span class="p">(</span>
+<span class="k">const</span> <span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensorA</span><span class="p">,</span>
+<span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensor_result</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p>参数说明：
+tensorA， tensor_result均是bmtensor类型。</p>
+<ol class="arabic" start="2">
+<li><p class="first">Python API:</p>
+<blockquote>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bm_setdata_float</span><span class="p">(</span><span class="n">tensorA</span><span class="p">,</span> <span class="n">tensor_result</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p>参数说明：
+tensorA， tensor_result均是bmtensor_float类型。</p>
+</div>
+<div class="section" id="bm-broadcast">
+<h3>6.4  bm_broadcast<a class="headerlink" href="#bm-broadcast" title="Permalink to this headline">¶</a></h3>
+<p>将输入tensor数据广播到输出，支持数据类型：float32。
+broadcast参数为：</p>
+<blockquote>
+<div><div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">typedef</span> <span class="k">struct</span> <span class="n">broadcast_op</span><span class="p">{</span>
+  <span class="kt">int</span> <span class="n">times</span><span class="p">[</span><span class="mi">4</span><span class="p">];</span>
+<span class="p">}</span> <span class="n">BROADCAST_OP_t</span><span class="p">;</span>
+<span class="c1">//times[4] 分别表示每一维度被广播的份数。</span>
+</pre></div>
+</div>
+</div></blockquote>
+<ol class="arabic">
+<li><p class="first">C++ API:</p>
+<blockquote>
+<div><div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">bm_broadcast</span> <span class="p">(</span>
+<span class="k">const</span> <span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensorA</span><span class="p">,</span>
+<span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensor_result</span><span class="p">,</span>
+<span class="n">BROADCAST_OP_t</span> <span class="n">broadcast_op</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p>参数说明：
+tensorA， tensor_result均是bmtensor类型；
+broadcast_op是BROADCAST_OP_t类型，指定每个维度广播的份数。</p>
+<ol class="arabic" start="2">
+<li><p class="first">Python API:</p>
+<blockquote>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bm_broadcast_float</span><span class="p">(</span><span class="n">tensorA</span><span class="p">,</span> <span class="n">tensor_result</span><span class="p">,</span> <span class="n">broadcast_op</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p>参数说明：
+tensorA， tensor_result均是bmtensor_float类型；
+broadcast_op是BROADCAST_OP_t类型，指定每个维度广播的份数。</p>
+</div>
+<div class="section" id="bm-concat">
+<h3>6.5  bm_concat<a class="headerlink" href="#bm-concat" title="Permalink to this headline">¶</a></h3>
+<p>对多个tensor 在指定的轴上进行拼接，支持的数据类型：float32。</p>
+<ol class="arabic">
+<li><p class="first">C++ API:</p>
+<blockquote>
+<div><div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">bm_concat</span> <span class="p">(</span>
+<span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;*</span> <span class="o">&gt;&amp;</span> <span class="n">tensorA</span><span class="p">,</span>
+<span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensor_result</span><span class="p">,</span>
+<span class="kt">int</span> <span class="n">axis_</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p>参数说明：
+tensorA是vector&lt;bmtensor*&gt;类型，多个tensor的指针；
+tensor_result是bmtensor类型；
+axis_是int类型，指定在哪一个轴上进行拼接。</p>
+<ol class="arabic" start="2">
+<li><p class="first">Python API:</p>
+<blockquote>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bm_concat_float</span><span class="p">(</span><span class="n">tfp_tensorA</span><span class="p">,</span> <span class="n">tensor_result</span><span class="p">,</span> <span class="n">axis_</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p>参数说明：
+tfp_tensorA是bmtfpVector类型，多个tensor的指针；
+tensor_result是bmtensor_float类型；
+axis_是标量，指定在哪一个轴上进行拼接。</p>
+</div>
+<div class="section" id="bm-split">
+<h3>6.6  bm_split<a class="headerlink" href="#bm-split" title="Permalink to this headline">¶</a></h3>
+<p>bm_concat 的逆操作。
+Split 参数：</p>
+<blockquote>
+<div><div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">typedef</span> <span class="k">struct</span> <span class="n">split_op</span><span class="p">{</span>
+  <span class="kt">int</span> <span class="n">size</span><span class="p">[</span><span class="n">MAX_SPLITNUM</span><span class="p">];</span>
+  <span class="kt">int</span> <span class="n">axis_</span><span class="p">;</span>
+  <span class="kt">int</span> <span class="n">num</span><span class="p">;</span>
+<span class="p">}</span> <span class="n">SPLIT_OP_t</span><span class="p">;</span>
+<span class="c1">//axis_：指定在哪个轴上split；</span>
+<span class="c1">//num：分裂份数；</span>
+<span class="c1">//size[]：每一份的大小（支持非平均分裂）。</span>
+</pre></div>
+</div>
+</div></blockquote>
+<ol class="arabic">
+<li><p class="first">C++ API:</p>
+<blockquote>
+<div><div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">bm_split</span> <span class="p">(</span>
+<span class="k">const</span> <span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensorA</span><span class="p">,</span>
+<span class="n">vector</span><span class="o">&lt;</span><span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;*</span> <span class="o">&gt;&amp;</span> <span class="n">tensor_result</span><span class="p">,</span>
+<span class="n">SPLIT_OP_t</span> <span class="n">split_op</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p>参数说明：
+tensorA是bmtensor类型；
+tensor_result是vector&lt;bmtensor*&gt;类型，多个tensor的指针；
+split_op是SPLIT_OP_t类型，指定split参数。</p>
+<ol class="arabic" start="2">
+<li><p class="first">Python API:</p>
+<blockquote>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bm_split_float</span><span class="p">(</span><span class="n">tensorA</span><span class="p">,</span> <span class="n">tfp_vector_result</span><span class="p">,</span> <span class="n">split_op</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p>参数说明：
+tensorA是bmtensor_float类型；
+tfp_vector_result是bmtfpVector类型，多个tensor的指针；
+split_op是SPLIT_OP_t类型，指定split参数。</p>
+</div>
+<div class="section" id="bm-reshape">
+<h3>6.7 bm_reshape<a class="headerlink" href="#bm-reshape" title="Permalink to this headline">¶</a></h3>
+<p>对输入tensor做reshape的操作，支持数据类型：float32。
+void bm_reshape(const bmtensor&lt;Dtype&gt;&amp; tensorA,bmtensor&lt;Dtype&gt;&amp; tensor_result, RESHAPE_OP_t reshape_op);
+reshap参数：</p>
+<blockquote>
+<div><div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">typedef</span> <span class="k">struct</span> <span class="n">reshape_op</span><span class="p">{</span>
+  <span class="kt">int</span> <span class="n">param</span><span class="p">[</span><span class="mi">4</span><span class="p">];</span>
+<span class="p">}</span> <span class="n">RESHAPE_OP_t</span><span class="p">;</span>
+<span class="cm">/*</span>
+<span class="cm">RESHAPE_OP_t  specify the output dimensions.</span>
+<span class="cm">If some of the dimensions are set to 0,</span>
+<span class="cm">the corresponding dimension from the bottom layer is used (unchanged).</span>
+<span class="cm">Exactly one dimension may be set to -1, in which case its value is inferred from the count of the bottom blob and the remaining dimensions.</span>
+<span class="cm">*/</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>For example:
+tensorA_shape = (10, 20, 30, 40)
+param = (0, 10, -1, 10)
+tensor_result_shape = (10, 10, 240, 10)</p>
+<ol class="arabic">
+<li><p class="first">C++ API:</p>
+<blockquote>
+<div><div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">bm_reshape</span> <span class="p">(</span>
+<span class="k">const</span> <span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensorA</span><span class="p">,</span>
+<span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensor_result</span><span class="p">,</span>
+<span class="n">RESHAPE_OP_t</span> <span class="n">reshape_op</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p>参数说明：
+tensorA和tensor_result均是bmtensor类型；
+reshape_op是RESHAPE_OP_t类型，指定reshape参数。</p>
+<ol class="arabic" start="2">
+<li><p class="first">Python API:</p>
+<blockquote>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bm_reshape_float</span><span class="p">(</span><span class="n">tensorA</span><span class="p">,</span> <span class="n">tensor_result</span><span class="p">,</span> <span class="n">reshape_op</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p>参数说明：
+tensorA和tensor_result均是bmtensor_float类型；
+reshape_op是RESHAPE_OP_t类型，指定reshape参数。</p>
+</div>
+<div class="section" id="bm-stridecpy-todo">
+<h3>6.8  bm_stridecpy（TODO）<a class="headerlink" href="#bm-stridecpy-todo" title="Permalink to this headline">¶</a></h3>
+<p>tensor_result = tensorA_i，依据各个dimation上设置的stride值复制输入tensor相应index的元素到输出，支持数据类型：float32。</p>
+<ol class="arabic">
+<li><p class="first">C++ API:</p>
+<blockquote>
+<div><div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">bm_stridecpy</span><span class="p">(</span>
+<span class="k">const</span> <span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensorA</span><span class="p">,</span>
+<span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensor_result</span><span class="p">,</span>
+<span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">stride</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p>参数说明：
+tensor，tensor_result均是bmtensor类型；
+stride是vector&lt;int&gt;类型，用于指定shape每个维度上的stride。</p>
+<ol class="arabic" start="2">
+<li><p class="first">Python API:</p>
+<blockquote>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bm_stridecpy_float</span><span class="p">(</span><span class="n">tensorA</span><span class="p">,</span>  <span class="n">tensor_result</span><span class="p">,</span> <span class="n">stride</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p>参数说明：
+tensorA，tensor_result均是bmtensor_float类型；
+stride是intVector类型，用于指定shape每个维度上的stride。</p>
+</div>
+<div class="section" id="bm-stridecpy-offset-todo">
+<h3>6.9  bm_stridecpy_offset（TODO）<a class="headerlink" href="#bm-stridecpy-offset-todo" title="Permalink to this headline">¶</a></h3>
+<p>tensor_result = tensorA_i_offset，以各个dimation上设置的offset为起点，并依据设置的stride值复制输入tensor相应index的元素到输出，支持数据类型：float32。</p>
+<ol class="arabic">
+<li><p class="first">C++ API:</p>
+<blockquote>
+<div><div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">bm_stridecpy_offset</span><span class="p">(</span>
+<span class="k">const</span> <span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensorA</span><span class="p">,</span>
+<span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensor_result</span><span class="p">,</span>
+<span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">stride</span><span class="p">,</span>
+<span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">offset</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p>参数说明：
+tensorA，tensor_result均是bmtensor类型；
+stride是vector&lt;int&gt;类型，用于指定shape每个维度上的stride；
+offset是vector&lt;int&gt;类型，用于指定shape每个维度上的offset。</p>
+<ol class="arabic" start="2">
+<li><p class="first">Python API:</p>
+<blockquote>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bm_stridecpy_offset_float</span><span class="p">(</span><span class="n">tensorA</span><span class="p">,</span> <span class="n">tensor_result</span><span class="p">,</span> <span class="n">stride</span><span class="p">,</span> <span class="n">offset</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p>参数说明：
+tensorA，tensor_result均是bmtensor_float类型；
+stride是intVector类型，用于指定shape每个维度上的stride；
+offset是intVector类型，用于指定shape每个维度上的offset。</p>
+</div>
+<div class="section" id="bm-lshift-todo">
+<h3>6.10  bm_lshift（TODO）<a class="headerlink" href="#bm-lshift-todo" title="Permalink to this headline">¶</a></h3>
+<p>tensor_result = lshift(tensorA, shift_num)，对指定axis左移数据操作，支持数据类型：float32。
+举例：
+一个tensor是n c h w四个维度，当做c维度的逻辑左移时，高序号的c维度数据转到低序号的低维度数据，最高序号的c维度数据补0。逻辑右移时则相反。比如对一个tensor做c维度上的逻辑左移2位，c的范围为0~c-1, 则c=0, c=1的数据丢弃，原来Ci上的数据等于移到了Ci-2位置上面。c-1和c-2上的数据补0。</p>
+<ol class="arabic">
+<li><p class="first">C++ API:</p>
+<blockquote>
+<div><div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">bm_lshift</span><span class="p">(</span>
+<span class="k">const</span> <span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensorA</span><span class="p">,</span>
+<span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensor_result</span><span class="p">,</span>
+<span class="kt">int</span> <span class="n">shift_dim</span><span class="p">,</span>
+<span class="kt">int</span> <span class="n">shift_num</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p>参数说明：
+tensorA，tensor_result均是bmtensor类型；
+shift_dim是int类型，用于指定左移的轴；
+shift_num是int类型，用于指定左移位数。</p>
+<ol class="arabic" start="2">
+<li><p class="first">Python API:</p>
+<blockquote>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bm_lshift_float</span><span class="p">(</span><span class="n">tensorA</span><span class="p">,</span> <span class="n">tensor_result</span><span class="p">,</span> <span class="n">shift_dim</span><span class="p">,</span> <span class="n">shift_num</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p>参数说明：
+tensorA，tensor_result均是bmtensor_float类型；
+shift_dim是标量类型，用于指定左移的轴；
+shift_num是标量类型，用于指定左移位数。</p>
+</div>
+<div class="section" id="bm-rshift-todo">
+<h3>6.11  bm_rshift（TODO）<a class="headerlink" href="#bm-rshift-todo" title="Permalink to this headline">¶</a></h3>
+<p>tensor_result = rshift(tensorA, shift_num)，对指定axis右移数据操作，支持数据类型：float32。</p>
+<ol class="arabic">
+<li><p class="first">C++ API:</p>
+<blockquote>
+<div><div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">bm_rshift</span><span class="p">(</span>
+<span class="k">const</span> <span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensorA</span><span class="p">,</span>
+<span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensor_result</span><span class="p">,</span>
+<span class="kt">int</span> <span class="n">shift_dim</span><span class="p">,</span>
+<span class="kt">int</span> <span class="n">shift_num</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p>参数说明：
+tensorA，tensor_result均是bmtensor类型；
+shift_dim是int类型，用于指定右移的轴；
+shift_num是int类型，用于指定右移位数。</p>
+<ol class="arabic" start="2">
+<li><p class="first">Python API:</p>
+<blockquote>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bm_rshift_float</span><span class="p">(</span><span class="n">tensorA</span><span class="p">,</span> <span class="n">tensor_result</span><span class="p">,</span> <span class="n">shift_dim</span><span class="p">,</span> <span class="n">shift_num</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p>参数说明：
+tensorA，tensor_result均是bmtensor_float类型；
+shift_dim是标量类型，用于指定右移的轴；
+shift_num是标量类型，用于指定右移位数。</p>
+</div>
+</div>
+<div class="section" id="matrix-op">
+<h2>7 Matrix Op<a class="headerlink" href="#matrix-op" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="bm-matrixmul">
+<h3>7.1  bm_matrixmul<a class="headerlink" href="#bm-matrixmul" title="Permalink to this headline">¶</a></h3>
+<p>tensor_result = mat_tensorA * mat_tensorB，对输入两个矩阵做乘法，例如：matA(m,k) * matB(k,n)输出的matrix是matR(m,n)，支持数据类型：float32。</p>
+<ol class="arabic">
+<li><p class="first">C++ API:</p>
+<blockquote>
+<div><div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">bm_matrixmul</span><span class="p">(</span>
+<span class="k">const</span> <span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensorA</span><span class="p">,</span>
+<span class="k">const</span> <span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensorB</span><span class="p">,</span>
+<span class="k">const</span> <span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensorC</span><span class="p">,</span>
+<span class="n">bmtensor</span><span class="o">&lt;</span><span class="n">Dtype</span><span class="o">&gt;&amp;</span> <span class="n">tensor_result</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p>参数说明：
+tensorA，tensorB ，tensorC，tensor_result均是bmtensor类型。</p>
+<ol class="arabic" start="2">
+<li><p class="first">Python API:</p>
+<blockquote>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bm_matrixmul_float</span><span class="p">(</span><span class="n">tensorA</span><span class="p">,</span> <span class="n">tensorB</span> <span class="p">,</span> <span class="p">[</span><span class="n">tensorC</span><span class="p">,]</span> <span class="n">tensor_result</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p>参数说明：
+tensorA，tensorB ，tensorC，tensor_result均是bmtensor_float类型。
+特殊说明：tensorC为可选，传参存在tensorC，执行加bias，否则不加，bias个数等于右矩阵列数。</p>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="runtime.html" class="btn btn-neutral float-right" title="BMRuntime 使用" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="bmnetp.html" class="btn btn-neutral float-left" title="BMNETP 使用" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Sophon
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
